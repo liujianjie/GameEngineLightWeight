@@ -1,0 +1,2 @@
+$(SolutionDir)bin\$(Configuration)-$(Platform)\$(ProjectName)\
+$(SolutionDir)bin-init\$(Configuration)-$(Platform)\$(ProjectName)\
