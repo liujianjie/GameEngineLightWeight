@@ -1,2 +1,16 @@
-﻿    正在创建库 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib 和对象 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.exp
-  GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.dll
+﻿  Application.cpp
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(17,22): error C2061: 语法错误: 标识符“WindowCloseEvent”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(18,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(18): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.cpp(20,69): error C2664: “bool Hazel::EventDispatcher::Dispatch<Hazel::WindowCloseEvent>(std::function<bool (Hazel::WindowCloseEvent &)>)”: 无法将参数 1 从“std::_Binder<std::_Unforced,bool (__cdecl Hazel::Application::* )(void),Hazel::Application *,const std::_Ph<1> &>”转换为“std::function<bool (Hazel::WindowCloseEvent &)>”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.cpp(20,41): message : 没有可用于执行该转换的用户定义的转换运算符，或者无法调用该运算符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\Event.h(52,8): message : 参见“Hazel::EventDispatcher::Dispatch”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.cpp(32,55): error C2511: “bool Hazel::Application::OnWindowClose(Hazel::WindowCloseEvent &)”:“Hazel::Application”中没有找到重载的成员函数
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(8): message : 参见“Hazel::Application”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.cpp(33,3): error C2597: 对非静态成员“Hazel::Application::m_Running”的非法引用
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(19): message : 参见“Hazel::Application::m_Running”的声明
+  Log.cpp
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(17,22): error C2061: 语法错误: 标识符“WindowCloseEvent”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(18,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(18): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
+  正在生成代码...
