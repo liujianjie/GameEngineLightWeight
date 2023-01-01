@@ -13,9 +13,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "GameEngineLightWeight/vendor/GLFW/include"
 IncludeDir["Glad"] = "GameEngineLightWeight/vendor/Glad/include"
+IncludeDir["ImGui"] = "GameEngineLightWeight/vendor/imgui"
 
 include "GameEngineLightWeight/vendor/GLFW"
 include "GameEngineLightWeight/vendor/Glad"
+include "GameEngineLightWeight/vendor/imgui"
 project "GameEngineLightWeight"
 	location "GameEngineLightWeight"
 	kind "SharedLib"
@@ -36,11 +38,13 @@ project "GameEngineLightWeight"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}"
 	}
 	links{
 		"GLFW",
 		"Glad",
+		"ImGui",
 		"opengl32.lib"
 	}
 	filter "system:windows"
@@ -51,7 +55,8 @@ project "GameEngineLightWeight"
 		defines{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"IMGUI_IMPL_OPENGL_LOADER_CUSTOM"
 		}
 
 		postbuildcommands{

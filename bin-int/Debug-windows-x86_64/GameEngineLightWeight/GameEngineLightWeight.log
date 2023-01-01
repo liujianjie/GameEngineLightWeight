@@ -1,10 +1,4 @@
 ﻿cl : 命令行 warning D9025: 正在重写“/MTd”(用“/MDd”)
-  hzpch.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Log.h(16,42): warning C4251: “Hazel::Log::s_CoreLogger”: class“std::shared_ptr<spdlog::logger>”需要有 dll 接口由 class“Hazel::Log”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\spdlog\include\spdlog\details\registry.h(34): message : 参见“std::shared_ptr<spdlog::logger>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Log.h(17,42): warning C4251: “Hazel::Log::s_ClientLogger”: class“std::shared_ptr<spdlog::logger>”需要有 dll 接口由 class“Hazel::Log”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\spdlog\include\spdlog\details\registry.h(34): message : 参见“std::shared_ptr<spdlog::logger>”的声明
-cl : 命令行 warning D9025: 正在重写“/MTd”(用“/MDd”)
   Application.cpp
 E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
 D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
@@ -20,43 +14,8 @@ D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vec
           [
               _Ty=Hazel::Layer *
           ]
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(26,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(26): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
-  Layer.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-  LayerStack.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-  Log.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(26,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(26): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
   WindowsWindow.cpp
 E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(45,46): warning C4244: “return”: 从“const float”转换到“int”，可能丢失数据
 E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(49,42): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
