@@ -5,6 +5,8 @@
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/ApplicationEvent.h"
 
+#include <glad/glad.h>
+
 namespace Hazel {
 	static bool s_GLFWInitialized = false;
 	static void GLFWErrorCallback(int error, const char* description) {
@@ -36,6 +38,8 @@ namespace Hazel {
 		}
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		HZ_CORE_ASSERT(status, "≥ı ºªØglad ß∞‹");
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 

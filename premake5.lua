@@ -12,8 +12,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "GameEngineLightWeight/vendor/GLFW/include"
+IncludeDir["Glad"] = "GameEngineLightWeight/vendor/Glad/include"
 
 include "GameEngineLightWeight/vendor/GLFW"
+include "GameEngineLightWeight/vendor/Glad"
 project "GameEngineLightWeight"
 	location "GameEngineLightWeight"
 	kind "SharedLib"
@@ -33,10 +35,12 @@ project "GameEngineLightWeight"
 	includedirs{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 	links{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 	filter "system:windows"
@@ -47,8 +51,7 @@ project "GameEngineLightWeight"
 		defines{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"HZ_ENABLE_ASSERTS",
-			"wahte"
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands{
@@ -57,14 +60,17 @@ project "GameEngineLightWeight"
 
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
+			buildoptions "/MDd"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
+			buildoptions "/MD"
 			symbols "On"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
+			buildoptions "/MD"
 			symbols "On"
 
 project "Sandbox"
@@ -100,12 +106,15 @@ project "Sandbox"
 
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
+			buildoptions "/MDd"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
+			buildoptions "/MD"
 			symbols "On"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
+			buildoptions "/MD"
 			symbols "On"
