@@ -60,8 +60,7 @@ project "GameEngineLightWeight"
 		defines{
 			"HZ_PLATFORM_WINDOWS",
 			"HZ_BUILD_DLL",
-			"GLFW_INCLUDE_NONE",
-			"IMGUI_IMPL_OPENGL_LOADER_CUSTOM"
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands{
