@@ -7,3 +7,6 @@
 [submodule "GameEngineLightWeight/vendor/imgui"]
 	path = GameEngineLightWeight/vendor/imgui
 	url = https://github.com/TheCherno/imgui
+[submodule "GameEngineLightWeight/vendor/glm"]
+	path = GameEngineLightWeight/vendor/glm
+	url = https://github.com/g-truc/glm

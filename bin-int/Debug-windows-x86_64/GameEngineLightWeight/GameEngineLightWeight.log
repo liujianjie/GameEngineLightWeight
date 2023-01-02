@@ -1,95 +1,121 @@
-﻿  hzpch.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Log.h(16,42): warning C4251: “Hazel::Log::s_CoreLogger”: class“std::shared_ptr<spdlog::logger>”需要有 dll 接口由 class“Hazel::Log”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\spdlog\include\spdlog\details\registry.h(34): message : 参见“std::shared_ptr<spdlog::logger>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Log.h(17,42): warning C4251: “Hazel::Log::s_ClientLogger”: class“std::shared_ptr<spdlog::logger>”需要有 dll 接口由 class“Hazel::Log”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\spdlog\include\spdlog\details\registry.h(34): message : 参见“std::shared_ptr<spdlog::logger>”的声明
-  Application.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
-  ImGuiLayer.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(45,46): warning C4244: “return”: 从“const float”转换到“int”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(49,42): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\ImGui\ImGuiLayer.cpp(58,80): warning C4244: “参数”: 从“unsigned int”转换到“float”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\ImGui\ImGuiLayer.cpp(58,51): warning C4244: “参数”: 从“unsigned int”转换到“float”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\ImGui\ImGuiLayer.cpp(140,52): warning C4244: “参数”: 从“unsigned int”转换到“float”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\ImGui\ImGuiLayer.cpp(140,37): warning C4244: “参数”: 从“unsigned int”转换到“float”，可能丢失数据
-  Layer.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-  LayerStack.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-  Log.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Layer.h(20,15): warning C4251: “Hazel::Layer::m_DebugName”: class“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”需要有 dll 接口由 class“Hazel::Layer”的客户端使用
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\xstring(4905): message : 参见“std::basic_string<char,std::char_traits<char>,std::allocator<char>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(21,23): warning C4251: “Hazel::LayerStack::m_Layers”: class“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(17): message : 参见“std::vector<Hazel::Layer *,std::allocator<Hazel::Layer *>>”的声明
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\LayerStack.h(22,33): warning C4251: “Hazel::LayerStack::m_LayerInsert”: class“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”需要有 dll 接口由 class“Hazel::LayerStack”的客户端使用
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-D:\1softanddate\MicrosoftVS\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(470): message : 参见“std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>”的声明
-          with
-          [
-              _Ty=Hazel::Layer *
-          ]
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29,27): warning C4251: “Hazel::Application::m_Window”: class“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”需要有 dll 接口由 class“Hazel::Application”的客户端使用
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.h(29): message : 参见“std::unique_ptr<Hazel::Window,std::default_delete<Hazel::Window>>”的声明
-  ImGuiOpenGLRenderer.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(91): warning C4603: “_CRT_SECURE_NO_WARNINGS”: 未定义宏或在预编译头使用后定义发生改变
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(91): message : 将宏添加到预编译头中，而不是在此处定义
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(94): message : 使用预编译头
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(273,9): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(309,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(310,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\ImGuiOpenGLRenderer.cpp(702,5): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  WindowsWindow.cpp
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(45,46): warning C4244: “return”: 从“const float”转换到“int”，可能丢失数据
-E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Events\MouseEvent.h(49,42): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
-  正在生成代码...
-    正在创建库 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib 和对象 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.exp
-LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-  GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.dll
+﻿  ImGuiBuild.cpp
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(186,21): error C3646: “GlVersion”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(186,30): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(188,21): error C3646: “FontTexture”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(188,32): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(189,21): error C3646: “ShaderHandle”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(189,33): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(190,21): error C3646: “AttribLocationTex”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(190,38): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(191,21): error C3646: “AttribLocationProjMtx”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(191,42): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(192,21): error C3646: “AttribLocationVtxPos”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(192,41): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(193,21): error C3646: “AttribLocationVtxUV”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(193,40): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(194,21): error C3646: “AttribLocationVtxColor”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(194,43): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(196,21): error C3646: “VertexBufferSize”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(196,37): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(197,21): error C3646: “IndexBufferSize”: 未知重写说明符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(197,36): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(261,5): error C2065: “GLint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(261,11): error C2146: 语法错误: 缺少“;”(在标识符“major”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(261,11): error C2065: “major”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(262,5): error C2065: “GLint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(262,11): error C2146: 语法错误: 缺少“;”(在标识符“minor”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(262,11): error C2065: “minor”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(263,19): error C2065: “GL_MAJOR_VERSION”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(263,38): error C2065: “major”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(263,5): error C3861: “glGetIntegerv”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(264,19): error C2065: “GL_MINOR_VERSION”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(264,38): error C2065: “minor”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(264,5): error C3861: “glGetIntegerv”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(265,9): error C2065: “major”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(265,23): error C2065: “minor”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(268,59): error C2065: “GL_VERSION”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(268,47): error C3861: “glGetString”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(269,38): error C2065: “major”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(269,46): error C2065: “minor”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(271,9): error C2039: "GlVersion": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(271,22): error C2065: “GLuint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(271,30): error C2065: “major”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(271,44): error C2065: “minor”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(275,55): error C2065: “GL_VENDOR”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(275,43): error C3861: “glGetString”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(310,5): error C2065: “GLint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(310,11): error C2146: 语法错误: 缺少“;”(在标识符“current_texture”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(310,11): error C2065: “current_texture”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(311,19): error C2065: “GL_TEXTURE_BINDING_2D”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(311,43): error C2065: “current_texture”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(311,5): error C3861: “glGetIntegerv”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(314,30): error C2039: "GlVersion": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(316,5): error C2065: “GLint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(316,11): error C2146: 语法错误: 缺少“;”(在标识符“num_extensions”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(316,11): error C2065: “num_extensions”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(317,19): error C2065: “GL_NUM_EXTENSIONS”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(317,39): error C2065: “num_extensions”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(317,5): error C3861: “glGetIntegerv”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,10): error C2065: “GLint”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,16): error C2146: 语法错误: 缺少“;”(在标识符“i”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,18): error C2143: 语法错误: 缺少“;”(在“=”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,18): error C2143: 语法错误: 缺少“)”(在“=”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,18): error C2059: 语法错误:“=”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,23): error C2065: “i”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,27): error C2065: “num_extensions”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,43): error C2065: “i”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(318,46): error C2059: 语法错误:“)”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(320,9): error C2059: 语法错误:“const”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(321,13): error C2065: “extension”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(321,41): error C2065: “extension”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(305,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(306,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(326,5): error C2059: 语法错误:“if”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(329,5): error C2059: 语法错误:“return”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(330,1): error C2059: 语法错误:“}”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(330,1): error C2143: 语法错误: 缺少“;”(在“}”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(333,1): error C2143: 语法错误: 缺少“;”(在“{”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(333,1): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(350,14): error C2039: "ShaderHandle": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(354,100): error C2061: 语法错误: 标识符“GLuint”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(359,14): error C2065: “GL_BLEND”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(359,5): error C3861: “glEnable”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(360,21): error C2065: “GL_FUNC_ADD”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(360,5): error C3861: “glBlendEquation”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(361,25): error C2065: “GL_SRC_ALPHA”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(361,39): error C2065: “GL_ONE_MINUS_SRC_ALPHA”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(361,63): error C2065: “GL_ONE”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(361,71): error C2065: “GL_ONE_MINUS_SRC_ALPHA”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(361,5): error C3861: “glBlendFuncSeparate”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(362,15): error C2065: “GL_CULL_FACE”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(362,5): error C3861: “glDisable”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(363,15): error C2065: “GL_DEPTH_TEST”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(363,5): error C3861: “glDisable”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(364,15): error C2065: “GL_STENCIL_TEST”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(364,5): error C3861: “glDisable”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(365,14): error C2065: “GL_SCISSOR_TEST”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(365,5): error C3861: “glEnable”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,23): error C2065: “GLsizei”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,31): error C2146: 语法错误: 缺少“)”(在标识符“fb_width”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,5): error C3861: “glViewport”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,31): error C2146: 语法错误: 缺少“;”(在标识符“fb_width”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,42): error C2065: “GLsizei”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,50): error C2146: 语法错误: 缺少“;”(在标识符“fb_height”的前面)
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(387,59): error C2059: 语法错误:“)”
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(402,22): error C2039: "ShaderHandle": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(402,5): error C3861: “glUseProgram”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(403,21): error C2039: "AttribLocationTex": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(403,5): error C3861: “glUniform1i”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(404,28): error C2039: "AttribLocationProjMtx": 不是 "ImGui_ImplOpenGL3_Data" 的成员
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(184): message : 参见“ImGui_ImplOpenGL3_Data”的声明
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(404,54): error C2065: “GL_FALSE”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(404,5): error C3861: “glUniformMatrix4fv”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(411,11): error C2065: “vertex_array_object”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(413,23): error C2065: “vertex_array_object”: 未声明的标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(413,5): error C3861: “glBindVertexArray”: 找不到标识符
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\vendor\imgui\backends\imgui_impl_opengl3.cpp(413,42): fatal error C1003: 错误计数超过 100；正在停止编译

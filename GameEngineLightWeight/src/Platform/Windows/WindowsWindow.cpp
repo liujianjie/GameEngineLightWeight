@@ -63,11 +63,11 @@ namespace Hazel {
 
 			switch (action) {
 				case GLFW_PRESS: {
-					std::cout << "KeyPressedEvent before------------------" << std::endl;
+					//std::cout << "KeyPressedEvent before------------------" << std::endl;
 					KeyPressedEvent event(key, 0);
-					std::cout << "KeyPressedEvent center------------------" << std::endl;
+					//std::cout << "KeyPressedEvent center------------------" << std::endl;
 					data.EventCallback(event);
-					std::cout << "KeyPressedEvent after------------------" << std::endl;
+					//std::cout << "KeyPressedEvent after------------------" << std::endl;
 					break;
 				}
 				case GLFW_RELEASE: {
