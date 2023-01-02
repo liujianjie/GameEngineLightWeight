@@ -1,6 +1,6 @@
 workspace "GameEngineLightWeight"
 	architecture "x64"
-
+	startproject "Sandbox"
 	configurations{
 		"Debug",
 		"Release",
@@ -22,6 +22,7 @@ project "GameEngineLightWeight"
 	location "GameEngineLightWeight"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -49,7 +50,7 @@ project "GameEngineLightWeight"
 	}
 	filter "system:windows"
 		cppdialect "C++17"	
-		staticruntime "On"
+		--staticruntime "On"
 		systemversion "latest"
 
 		defines{
@@ -65,23 +66,24 @@ project "GameEngineLightWeight"
 
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
-			buildoptions "/MDd"
+			runtime "Debug"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
-			buildoptions "/MD"
+			runtime "Release"
 			symbols "On"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
-			buildoptions "/MD"
+			runtime "Release"
 			symbols "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -102,7 +104,7 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"	
-		staticruntime "On"
+		--staticruntime "On"
 		systemversion "latest"
 
 		defines{
@@ -111,15 +113,15 @@ project "Sandbox"
 
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
-			buildoptions "/MDd"
+			runtime "Debug"
 			symbols "On"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
-			buildoptions "/MD"
+			runtime "Release"
 			symbols "On"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
-			buildoptions "/MD"
+			runtime "Release"
 			symbols "On"
