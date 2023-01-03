@@ -47,7 +47,7 @@ namespace Hazel {
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
 		MouseButtonEvent(int button) : m_Button(button){}
-		float m_Button;
+		int m_Button;
 	};
 
 	class HAZEL_API MouseButtonPressedEvent :public MouseButtonEvent {

@@ -19,11 +19,13 @@ IncludeDir["glm"] = "GameEngineLightWeight/vendor/glm"
 include "GameEngineLightWeight/vendor/GLFW"
 include "GameEngineLightWeight/vendor/Glad"
 include "GameEngineLightWeight/vendor/imgui"
+
 project "GameEngineLightWeight"
 	location "GameEngineLightWeight"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"	
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -36,6 +38,9 @@ project "GameEngineLightWeight"
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
+	}
+	defines{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	includedirs{
@@ -53,8 +58,6 @@ project "GameEngineLightWeight"
 		"opengl32.lib"
 	}
 	filter "system:windows"
-		cppdialect "C++17"	
-		--staticruntime "On"
 		systemversion "latest"
 
 		defines{
@@ -63,30 +66,27 @@ project "GameEngineLightWeight"
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-		}
-
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
 			runtime "Debug"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
 			runtime "Release"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
 			runtime "Release"
-			symbols "On"
+			symbols "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"	
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -108,8 +108,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"	
-		--staticruntime "On"
 		systemversion "latest"
 
 		defines{
@@ -119,14 +117,14 @@ project "Sandbox"
 		filter "configurations:Debug"
 			defines "HZ_DEBUG"
 			runtime "Debug"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
 			runtime "Release"
-			symbols "On"
+			symbols "on"
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
 			runtime "Release"
-			symbols "On"
+			symbols "on"

@@ -1,3 +1,11 @@
-﻿    正在创建库 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib 和对象 ..\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.exp
-LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-  GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.dll
+﻿  hzpch.cpp
+  Application.cpp
+  ImGuiBuild.cpp
+  ImGuiLayer.cpp
+  Layer.cpp
+  LayerStack.cpp
+  Log.cpp
+  WindowsInput.cpp
+  WindowsWindow.cpp
+  正在生成代码...
+  GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib
