@@ -20,7 +20,7 @@ namespace Hazel {
 	}
 
 	void ImGuiLayer::OnAttach() {
-		std::cout << "调用ImGuiLayer的OnAttach了吗" << std::endl;
+		//std::cout << "调用ImGuiLayer的OnAttach了吗" << std::endl;
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
