@@ -1,5 +1,3 @@
 ﻿  Application.cpp
-  Buffer.cpp
-  OpenGLBuffer.cpp
-  正在生成代码...
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Hazel\Application.cpp(77,32): warning C4312: “类型强制转换”: 从“const uint32_t”转换到更大的“const void *”
   GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib

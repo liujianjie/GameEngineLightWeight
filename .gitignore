@@ -1,7 +1,20 @@
-# Directories
-.vs/
-bin/
-bin-init/
+# Binaries
+**/bin/
+bin-int/
+Intermediates/
 
-# Files
-*.user
+# Hazel files
+*.log
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+
+# Directories
+# GameEngineLightWeight/vendor/VulkanSDK
+# Hazelnut/assets/cache
+# scripts/__pycache__
