@@ -27,25 +27,23 @@ namespace Hazel {
 		// 第一个三角形
 		glGenVertexArrays(1, &m_VertexArray); // 生成一个顶点数组，返回顶点数组id
 		glBindVertexArray(m_VertexArray);		// OpenGL上下文绑定这个顶点数组	
-
-		glGenBuffers(1, &m_VertexBuffer);		// 生成一个缓冲区，返回缓冲区的id
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);// OpenGl使用这个缓冲区，并声明为数组型的
-
+		
+		// 顶点缓冲
 		float vertices[3 * 3] = {
 			-0.5f, -0.5f, 0.0f,
 			0.5f,  -0.5f, 0.0f,
 			0.0f,   0.5f, 0.0f
 		};
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		// 索引缓冲
+		uint32_t indices[3] = { 0, 1, 2 };
 
-		unsigned int indices[3] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
 		// 着色器
 		std::string vertexSrc = R"(
@@ -68,7 +66,7 @@ namespace Hazel {
 			in vec3 v_Position;
 
 			void main(){
-				color = vec4(v_Position * 0.5 + 0.5, 1.0f);
+				color = vec4(v_Position * 0.5 + 0.5, 1.0);
 			}			
 		)";
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
@@ -105,7 +103,8 @@ namespace Hazel {
 			m_Shader->Bind();
 
 			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
