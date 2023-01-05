@@ -1,10 +1,11 @@
 # Binaries
 **/bin/
 bin-int/
-Intermediates/
 
 # Hazel files
 *.log
+
+*.tlog
 
 # Visual Studio files and folder
 .vs/

@@ -11,7 +11,7 @@ namespace Hazel {
 	{
 		glCreateBuffers(1, &m_RendererID);		// 生成一个缓冲区，返回缓冲区的id
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);// OpenGl使用这个缓冲区，并声明为数组型的
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW); //  creates and initializes a buffer object's data store
 	}
 
 	Hazel::OpenGLVertexBuffer::~OpenGLVertexBuffer()
