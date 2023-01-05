@@ -32,4 +32,3 @@ namespace Hazel {
 		uint32_t m_Count;
 	};
 }
-
