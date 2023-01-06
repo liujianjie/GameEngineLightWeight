@@ -47,7 +47,7 @@ namespace Hazel {
 		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
+		//SetVSync(true);
 
 		// 设置GLFW回调
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
@@ -134,9 +134,14 @@ namespace Hazel {
 		//glfwSwapBuffers(m_Window);
 		m_Context->SwapBuffers();// 用渲染上下文去交换buffer
 	}
+	/*
+	　开启垂直同步,如果它设定为60Hz（60FPS），那么我们就有60FPS。刷新率可以设置还是根据屏幕来得？
+	 我们可以通过在glfwSwapInterval方法中设置高于1的数字来降低这个速率（如果设置为2，将得到30FPS）。
+	 0：关闭垂直同步 ; 1：60FPS ; 2：30FPS。
+	*/
 	void WindowsWindow::SetVSync(bool enabled) {
 		if (enabled) {
-			glfwSwapInterval(1);
+			glfwSwapInterval(3);
 		}
 		else {
 			glfwSwapInterval(0);

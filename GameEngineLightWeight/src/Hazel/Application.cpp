@@ -7,6 +7,8 @@
 
 #include "Input.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Hazel {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 	Application* Application::s_Instance = nullptr;
@@ -30,6 +32,8 @@ namespace Hazel {
 		// 创建窗口
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		//m_Window->SetVSync(true);
+		//m_Window->SetVSync(false);
 
 		// 创建imgui
 		m_ImGuiLayer = new ImGuiLayer();
@@ -64,9 +68,15 @@ namespace Hazel {
 	}
 	void Application::Run() {
 		while (m_Running) {
+
+			// 得出每一帧的间隔时间
+			float time = (float)glfwGetTime(); // 是从应用开始计算总共的时间
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			// 每一层在update
 			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 			}
 			// imgui在update
 			m_ImGuiLayer->Begin();

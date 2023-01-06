@@ -10,6 +10,8 @@
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 
+#include "Hazel/Core/Timestep.h"
+
 namespace Hazel {
 	class HAZEL_API Application
 	{
@@ -35,6 +37,8 @@ namespace Hazel {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
+		// 计算deltatime,每一帧的间隔时间
+		float m_LastFrameTime = 0.0f;
 	private:
 		static Application* s_Instance;
 	};

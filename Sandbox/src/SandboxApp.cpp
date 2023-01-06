@@ -131,43 +131,44 @@ public:
 		)";
 		m_BlueShader.reset(new Hazel::Shader(blueShaderVertexSrc, blueShaderfragmentSrc));
 	}
-	void OnUpdate() override {
+	void OnUpdate(Hazel::Timestep ts) override {
+		HZ_TRACE("DeltaTime:{0}, millionTime({1})", ts, ts.GetMilliseconds());
 		// 轮询
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB)) {
 			HZ_TRACE("Tab key is pressed!(POLL)");
 		}
 
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_UP)) {
-			m_CameraPosition.y += m_CameraMoveSpeed;
+			m_CameraPosition.y += m_CameraMoveSpeed * ts;
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_DOWN)) {
-			m_CameraPosition.y -= m_CameraMoveSpeed;
+			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
 		}
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_LEFT)) {
-			m_CameraPosition.x -= m_CameraMoveSpeed;
+			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_RIGHT)) {
-			m_CameraPosition.x += m_CameraMoveSpeed;
+			m_CameraPosition.x += m_CameraMoveSpeed * ts;
 		}
 
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_A)) {
-			m_CameraRotation += m_CameraRotationSpeed; // 注意是+
+			m_CameraRotation += m_CameraRotationSpeed * ts; // 注意是+
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D)) {
-			m_CameraRotation -= m_CameraRotationSpeed;
+			m_CameraRotation -= m_CameraRotationSpeed * ts;
 		}
 		// jkl控制物体的世界矩阵
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_I)) {
-			m_SquarePosition.y += m_SquareMoveSpeed;
+			m_SquarePosition.y += m_SquareMoveSpeed * ts;
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_K)) {
-			m_SquarePosition.y -= m_SquareMoveSpeed;
+			m_SquarePosition.y -= m_SquareMoveSpeed * ts;
 		}
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_J)) {
-			m_SquarePosition.x -= m_SquareMoveSpeed;
+			m_SquarePosition.x -= m_SquareMoveSpeed * ts;
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_L)) {
-			m_SquarePosition.x += m_SquareMoveSpeed;
+			m_SquarePosition.x += m_SquareMoveSpeed * ts;
 		}
 
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -250,14 +251,14 @@ private:
 
 	// 为完成移动旋转的属性
 	glm::vec3 m_CameraPosition;
-	float m_CameraMoveSpeed = 0.05f;
+	float m_CameraMoveSpeed = 5.0f;
 
 	float m_CameraRotation = 0.0f;
-	float m_CameraRotationSpeed = 1.0f;
+	float m_CameraRotationSpeed = 180.0f;
 
 	// 矩形的世界矩阵的属性
 	glm::vec3 m_SquarePosition = { -1.0f, -1.0f, -1.0f };
-	float m_SquareMoveSpeed = 0.05f;
+	float m_SquareMoveSpeed = 5.0f;
 };
 
 class Sandbox : public Hazel::Application {
