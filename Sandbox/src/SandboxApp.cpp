@@ -1,6 +1,8 @@
 #include <Hazel.h>
 #include "imgui/imgui.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 class ExampleLayer :public Hazel::Layer {
 public:
 	ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) ,m_CameraPosition(0.0f)
@@ -44,6 +46,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -51,7 +54,7 @@ public:
 			void main(){
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}			
 		)";
 		std::string fragmentSrc = R"(
@@ -106,12 +109,13 @@ public:
 			
 			layout(location = 0) in vec3 a_Position;
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 
 			void main(){
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}			
 		)";
 		std::string blueShaderfragmentSrc = R"(
@@ -147,10 +151,23 @@ public:
 		}
 
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_A)) {
-			m_CameraRotation -= m_CameraRotationSpeed;
+			m_CameraRotation += m_CameraRotationSpeed; // 注意是+
 		}
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D)) {
-			m_CameraRotation += m_CameraRotationSpeed;
+			m_CameraRotation -= m_CameraRotationSpeed;
+		}
+		// jkl控制物体的世界矩阵
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_I)) {
+			m_SquarePosition.y += m_SquareMoveSpeed;
+		}
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_K)) {
+			m_SquarePosition.y -= m_SquareMoveSpeed;
+		}
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_J)) {
+			m_SquarePosition.x -= m_SquareMoveSpeed;
+		}
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_L)) {
+			m_SquarePosition.x += m_SquareMoveSpeed;
 		}
 
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -161,7 +178,18 @@ public:
 		Hazel::Renderer::BeginScene(m_Camera);
 
 		// 正方形
-		Hazel::Renderer::Submit(m_BlueShader, m_SquareVA);
+		glm::mat4 sqtransfrom = glm::translate(glm::mat4(1.0f), m_SquarePosition);
+		Hazel::Renderer::Submit(m_BlueShader, m_SquareVA, sqtransfrom);
+
+		// 渲染一组正方形
+		// 缩放
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), {0.05f, 0.05f, 0.05f});
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				glm::mat4 smallsqtransfrom = glm::translate(glm::mat4(1.0f), { i * 0.08f, j * 0.08f, 0.0f }) * scale;
+				Hazel::Renderer::Submit(m_BlueShader, m_SquareVA, smallsqtransfrom);
+			}
+		}
 
 		// 三角形
 		Hazel::Renderer::Submit(m_Shader, m_VertexArray);
@@ -226,6 +254,10 @@ private:
 
 	float m_CameraRotation = 0.0f;
 	float m_CameraRotationSpeed = 1.0f;
+
+	// 矩形的世界矩阵的属性
+	glm::vec3 m_SquarePosition = { -1.0f, -1.0f, -1.0f };
+	float m_SquareMoveSpeed = 0.05f;
 };
 
 class Sandbox : public Hazel::Application {
