@@ -12,18 +12,17 @@ namespace Hazel {
 	Application* Application::s_Instance = nullptr;
 
 	/*
-	由于窗口的大小是1280 ：720，是16 / 9 = 1.77777
-	那么设置m_Camera的left 设置 -1.6,bottom为-0.9就可以解决？？
-	我怎么感觉反了，明明
-	1280 * 0.9 = 720 * 1.6,怎么left是-1.6，而不是0.9...
+		由于窗口的大小是1280 ：720，是16 / 9 = 1.77777
+		那么设置m_Camera的left 设置 -1.6,bottom为-0.9就可以解决？？
+		我怎么感觉反了，明明
+		1280 * 0.9 = 720 * 1.6,怎么left是-1.6，而不是0.9...
 
 
-	:m_Camera(-2.0f, 2.0f, -2.0f, 2.0f)
-	:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
-	:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
+		:m_Camera(-2.0f, 2.0f, -2.0f, 2.0f)
+		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	*/
 	Application::Application()
-		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		//HZ_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -37,127 +36,7 @@ namespace Hazel {
 		PushOverlay(m_ImGuiLayer);
 
 		// 上面已经创建了window和imguilayer
-		float vertices[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
-		};
-		// 1.创建顶点数组
-		m_VertexArray.reset(VertexArray::Create());
-
-		// 2.创建顶点缓冲区
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		// 2.1设置顶点缓冲区布局
-		BufferLayout layout = {
-			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"}
-		};
-		vertexBuffer->SetLayout(layout);
-
-		// 1.1顶点数组添加顶点缓冲区，并且在这个缓冲区中设置布局
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-		// 3.索引缓冲
-		uint32_t indices[3] = { 0, 1, 2 };
-
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-
-		// 1.2顶点数组设置索引缓冲区
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-
-		// 4.着色器
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjection;
-
-			out vec3 v_Position;
-			out vec4 v_Color;
-
-			void main(){
-				v_Position = a_Position;
-				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-			}			
-		)";
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main(){
-				color = vec4(v_Position * 0.5 + 0.5, 1.0);	
-				color = v_Color;
-			}			
-		)";
-		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
-
-		// 新增内容：渲染正方形
-		float squareVertices[3 * 4] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f
-		};
-		// 1.创建顶点数组
-		m_SquareVA.reset(VertexArray::Create());
-
-		// 2.创建顶点缓冲区
-		std::shared_ptr<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-
-		// 2.1设置顶点缓冲区布局
-		squareVB->SetLayout({
-			{ShaderDataType::Float3, "a_Position"}
-		});
-
-		// 1.1顶点数组添加顶点缓冲区，并且在这个缓冲区中设置布局
-		m_SquareVA->AddVertexBuffer(squareVB);
-
-		// 3.索引缓冲
-		uint32_t squareIndices[] = { 0, 1, 2, 2, 3, 0 };
-
-		std::shared_ptr<IndexBuffer> squareIB;
-		squareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-
-		// 1.2顶点数组设置索引缓冲区
-		m_SquareVA->SetIndexBuffer(squareIB);
-
-		// 4.着色器
-		std::string blueShaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			uniform mat4 u_ViewProjection;
-
-			out vec3 v_Position;
-
-			void main(){
-				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-			}			
-		)";
-		std::string blueShaderfragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-
-			void main(){
-				color = vec4(0.2, 0.3, 0.8, 1.0);	
-			}			
-		)";
-		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderfragmentSrc));
+		
 	}
 	Application::~Application() {
 
@@ -185,28 +64,16 @@ namespace Hazel {
 	}
 	void Application::Run() {
 		while (m_Running) {
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-			RenderCommand::Clear();
-
-			//m_Camera.SetPosition({ 0.5f, 0.5f, 0.5f});
-			Renderer::BeginScene(m_Camera);
-
-			// 正方形
-			Renderer::Submit(m_BlueShader,m_SquareVA);
-
-			// 三角形
-			Renderer::Submit(m_Shader, m_VertexArray);
-
-			Renderer::EndScene();
-
+			// 每一层在update
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
+			// imgui在update
 			m_ImGuiLayer->Begin();
 			for (Layer* layer : m_LayerStack)
 				layer->OnImgGuiRender();
 			m_ImGuiLayer->End();
-
+			// 窗口在update
 			m_Window->OnUpdate();
 		}
 	}
