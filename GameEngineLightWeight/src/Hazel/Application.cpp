@@ -5,15 +5,26 @@
 
 #include "Hazel/Renderer/Renderer.h"
 
-//#include <glad/glad.h>
-
 #include "Input.h"
 
 namespace Hazel {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() {
+	/*
+	由于窗口的大小是1280 ：720，是16 / 9 = 1.77777
+	那么设置m_Camera的left 设置 -1.6,bottom为-0.9就可以解决？？
+	我怎么感觉反了，明明
+	1280 * 0.9 = 720 * 1.6,怎么left是-1.6，而不是0.9...
+
+
+	:m_Camera(-2.0f, 2.0f, -2.0f, 2.0f)
+	:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
+	*/
+	Application::Application()
+		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	{
 		//HZ_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
@@ -64,13 +75,15 @@ namespace Hazel {
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+			uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
 			void main(){
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}			
 		)";
 		std::string fragmentSrc = R"(
@@ -124,12 +137,13 @@ namespace Hazel {
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
+			uniform mat4 u_ViewProjection;
 
 			out vec3 v_Position;
 
 			void main(){
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 			}			
 		)";
 		std::string blueShaderfragmentSrc = R"(
@@ -171,25 +185,17 @@ namespace Hazel {
 	}
 	void Application::Run() {
 		while (m_Running) {
-			//glClearColor(0.1f, 0.1f, 0.1f, 1);
-			//glClear(GL_COLOR_BUFFER_BIT);
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			//m_Camera.SetPosition({ 0.5f, 0.5f, 0.5f});
+			Renderer::BeginScene(m_Camera);
 
 			// 正方形
-			m_BlueShader->Bind();		// 绑定shader
-			Renderer::Submit(m_SquareVA);
-			//m_SquareVA->Bind();		// 绑定顶点数组
-			//glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+			Renderer::Submit(m_BlueShader,m_SquareVA);
 
 			// 三角形
-			m_Shader->Bind();		// 绑定shader
-			Renderer::Submit(m_VertexArray);
-			//m_VertexArray->Bind();	// 绑定顶点数组
-			//glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_Shader, m_VertexArray);
 
 			Renderer::EndScene();
 

@@ -16,6 +16,9 @@
 
 #include "Hazel/Renderer/VertexArray.h"
 
+
+#include "Hazel/Renderer/OrthographicCamera.h"
+
 namespace Hazel {
 	class HAZEL_API Application
 	{
@@ -39,16 +42,13 @@ namespace Hazel {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		//unsigned int m_VertexArray;
-		//std::unique_ptr<Shader> m_Shader;
-		//std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		//std::unique_ptr<IndexBuffer> m_IndexBuffer;
-
 		std::shared_ptr<Shader> m_Shader;				// shader类 指针
 		std::shared_ptr<VertexArray> m_VertexArray;		// 顶点数组类 指针
 
 		std::shared_ptr<Shader> m_BlueShader;			// shader类 指针
 		std::shared_ptr<VertexArray> m_SquareVA;			// 顶点数组类 指针
+
+		OrthographicCamera m_Camera;
 	private:
 		static Application* s_Instance;
 	};

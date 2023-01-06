@@ -1,11 +1,10 @@
 # Binaries
 **/bin/
 bin-int/
+Intermediates/
 
 # Hazel files
 *.log
-
-*.tlog
 
 # Visual Studio files and folder
 .vs/
@@ -16,6 +15,6 @@ bin-int/
 **.csproj
 
 # Directories
-# GameEngineLightWeight/vendor/VulkanSDK
-# Hazelnut/assets/cache
-# scripts/__pycache__
+GameEngineLightWeight/vendor/VulkanSDK
+Hazelnut/assets/cache
+scripts/__pycache__
