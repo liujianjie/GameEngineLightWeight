@@ -124,15 +124,17 @@ public:
 			layout(location = 0) out vec4 color;
 
 			in vec3 v_Position;
-
+			
+			uniform vec4 u_Color;
+				
 			void main(){
-				color = vec4(0.2, 0.3, 0.8, 1.0);	
+				color = u_Color;	
 			}			
 		)";
 		m_BlueShader.reset(new Hazel::Shader(blueShaderVertexSrc, blueShaderfragmentSrc));
 	}
 	void OnUpdate(Hazel::Timestep ts) override {
-		HZ_TRACE("DeltaTime:{0}, millionTime({1})", ts, ts.GetMilliseconds());
+		//HZ_TRACE("DeltaTime:{0}, millionTime({1})", ts, ts.GetMilliseconds());
 		// 轮询
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB)) {
 			HZ_TRACE("Tab key is pressed!(POLL)");
@@ -176,6 +178,7 @@ public:
 
 		m_Camera.SetPosition(m_CameraPosition);
 		m_Camera.SetRotation(m_CameraRotation);
+
 		Hazel::Renderer::BeginScene(m_Camera);
 
 		// 正方形
@@ -183,11 +186,20 @@ public:
 		Hazel::Renderer::Submit(m_BlueShader, m_SquareVA, sqtransfrom);
 
 		// 渲染一组正方形
+		glm::vec4 redColor(0.8f, 0.2f, 0.3f, 1.0f);
+		glm::vec4 blueColor(0.2f, 0.3f, 0.8f, 1.0f);
 		// 缩放
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), {0.05f, 0.05f, 0.05f});
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
-				glm::mat4 smallsqtransfrom = glm::translate(glm::mat4(1.0f), { i * 0.08f, j * 0.08f, 0.0f }) * scale;
+				if (j % 2 == 0) {
+					m_BlueShader->UploadUniformFloat4("u_Color", redColor);
+				}
+				else {
+					m_BlueShader->UploadUniformFloat4("u_Color", blueColor);
+				}
+				glm::vec3 pos(i * 0.08f, j * 0.08f, 0.0f);
+				glm::mat4 smallsqtransfrom = glm::translate(glm::mat4(1.0f), pos) * scale;
 				Hazel::Renderer::Submit(m_BlueShader, m_SquareVA, smallsqtransfrom);
 			}
 		}
