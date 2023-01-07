@@ -15,6 +15,7 @@ IncludeDir["GLFW"] = "GameEngineLightWeight/vendor/GLFW/include"
 IncludeDir["Glad"] = "GameEngineLightWeight/vendor/Glad/include"
 IncludeDir["ImGui"] = "GameEngineLightWeight/vendor/imgui"
 IncludeDir["glm"] = "GameEngineLightWeight/vendor/glm"
+IncludeDir["stb_image"] = "GameEngineLightWeight/vendor/stb_image"
 
 include "GameEngineLightWeight/vendor/GLFW"
 include "GameEngineLightWeight/vendor/Glad"
@@ -36,6 +37,8 @@ project "GameEngineLightWeight"
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
@@ -49,7 +52,8 @@ project "GameEngineLightWeight"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 	links{
 		"GLFW",
