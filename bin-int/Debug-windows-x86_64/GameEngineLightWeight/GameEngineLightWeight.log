@@ -1,7 +1,4 @@
-﻿  Application.cpp
-  Buffer.cpp
-  Renderer.cpp
-  Shader.cpp
+﻿  OpenGLShader.cpp
   VertexArray.cpp
   正在生成代码...
   GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib

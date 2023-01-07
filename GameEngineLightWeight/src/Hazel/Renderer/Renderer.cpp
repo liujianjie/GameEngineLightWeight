@@ -1,6 +1,6 @@
 #include "hzpch.h"
 #include "Renderer.h"
-
+#include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Hazel {
 
@@ -19,9 +19,9 @@ namespace Hazel {
 
 		shader->Bind();		// 绑定shader
 		// 上传矩阵数据到glsl
-		shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
 
-		shader->UploadUniformMat4("u_Transform", transform);
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
 
 		RenderCommand::DrawIndexed(vertexArray);
 	}
