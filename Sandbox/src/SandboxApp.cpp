@@ -18,7 +18,7 @@ public:
 		m_VertexArray.reset(Hazel::VertexArray::Create());
 
 		// 2.创建顶点缓冲区
-		std::shared_ptr<Hazel::VertexBuffer> vertexBuffer;
+		Hazel::Ref<Hazel::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(Hazel::VertexBuffer::Create(vertices, sizeof(vertices)));
 
 		// 2.1设置顶点缓冲区布局
@@ -34,7 +34,7 @@ public:
 		// 3.索引缓冲
 		uint32_t indices[3] = { 0, 1, 2 };
 
-		std::shared_ptr<Hazel::IndexBuffer> indexBuffer;
+		Hazel::Ref<Hazel::IndexBuffer> indexBuffer;
 		indexBuffer.reset(Hazel::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
@@ -85,7 +85,7 @@ public:
 		m_SquareVA.reset(Hazel::VertexArray::Create());
 
 		// 2.创建顶点缓冲区
-		std::shared_ptr<Hazel::VertexBuffer> squareVB;
+		Hazel::Ref<Hazel::VertexBuffer> squareVB;
 		squareVB.reset(Hazel::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
 		// 2.1设置顶点缓冲区布局
@@ -99,7 +99,7 @@ public:
 		// 3.索引缓冲
 		uint32_t squareIndices[] = { 0, 1, 2, 2, 3, 0 };
 
-		std::shared_ptr<Hazel::IndexBuffer> squareIB;
+		Hazel::Ref<Hazel::IndexBuffer> squareIB;
 		squareIB.reset(Hazel::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
@@ -249,11 +249,11 @@ public:
 		ImGui::End();
 	}
 private:
-	std::shared_ptr<Hazel::Shader> m_Shader;				// shader类 指针
-	std::shared_ptr<Hazel::VertexArray> m_VertexArray;		// 顶点数组类 指针
+	Hazel::Ref<Hazel::Shader> m_Shader;				// shader类 指针
+	Hazel::Ref<Hazel::VertexArray> m_VertexArray;		// 顶点数组类 指针
 
-	std::shared_ptr<Hazel::Shader> m_FlatShader;			// shader类 指针
-	std::shared_ptr<Hazel::VertexArray> m_SquareVA;			// 顶点数组类 指针
+	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader类 指针
+	Hazel::Ref<Hazel::VertexArray> m_SquareVA;			// 顶点数组类 指针
 
 	Hazel::OrthographicCamera m_Camera;
 

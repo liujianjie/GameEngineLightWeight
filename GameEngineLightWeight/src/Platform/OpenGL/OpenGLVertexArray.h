@@ -12,15 +12,15 @@ namespace Hazel {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
-		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
+		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer);
+		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer);
 
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffer() const { return m_VertexBuffers; };
-		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffer() const { return m_VertexBuffers; };
+		virtual const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 	private:
 		uint32_t m_RendererID;
-		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+		Ref<IndexBuffer> m_IndexBuffer;
 	};
 
 }
