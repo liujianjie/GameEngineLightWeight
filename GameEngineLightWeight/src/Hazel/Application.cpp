@@ -40,7 +40,9 @@ namespace Hazel {
 		PushOverlay(m_ImGuiLayer);
 
 		// 上面已经创建了window和imguilayer
-		
+
+		// 初始化渲染
+		Renderer::Init();
 	}
 	Application::~Application() {
 

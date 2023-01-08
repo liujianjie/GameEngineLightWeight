@@ -203,7 +203,7 @@ public:
 		m_SquareTexCoordShader.reset(Hazel::Shader::Create(squareTexCoordShaderVertexSrc, squareTexCoordShaderfragmentSrc));
 		// 只需绑定和上传一次，所以放在这里
 		m_SquareTexture = Hazel::Texture2D::Create("asserts/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
-		
+		m_SquareBlendTexture = Hazel::Texture2D::Create("asserts/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->Bind();
 		/*把fragment的u_Texture要采样的纹理槽为0
 		因为下面的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
@@ -260,12 +260,18 @@ public:
 
 		// 0.带纹理的正方形
 		m_SquareTexture->Bind();
-		glm::mat4 squareTexCoordtransfrom = glm::translate(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f });
+		glm::mat4 squareTexCoordtransfrom = glm::translate(glm::mat4(1.0f), { 0.0f, 0.0f, 0.0f });
 		Hazel::Renderer::Submit(m_SquareTexCoordShader, m_SquareTexCoordVertexArray, squareTexCoordtransfrom);
 
+		// 混合的带纹理的正方形
+		m_SquareBlendTexture->Bind();
+		glm::mat4 squareTexCoordBlendtransfrom = glm::translate(glm::mat4(1.0f), { 0.25f, -0.25f, 0.0f });
+		Hazel::Renderer::Submit(m_SquareTexCoordShader, m_SquareTexCoordVertexArray, squareTexCoordBlendtransfrom);
+
+
 		// 1.带纹理颜色的正方形
-		glm::mat4 squaretransfrom = glm::translate(glm::mat4(1.0f), { -0.5f, 0.0f, 0.0f });
-		Hazel::Renderer::Submit(m_SquareShader, m_SquareVertexArray, squaretransfrom);
+		/*glm::mat4 squaretransfrom = glm::translate(glm::mat4(1.0f), { -0.5f, 0.0f, 0.0f });
+		Hazel::Renderer::Submit(m_SquareShader, m_SquareVertexArray, squaretransfrom);*/
 
 		// 2.渲染一组正方形
 		glm::mat4 flattransfrom = glm::translate(glm::mat4(1.0f), m_flatPosition);
@@ -295,13 +301,6 @@ public:
 		//	}
 		//	HZ_TRACE("{0}", (char)e.GetKeyCode());
 		//}
-		// 用事件完成移动摄像机
-		//Hazel::EventDispatcher dispatcher(event);
-		//dispatcher.Dispatch<Hazel::KeyPressedEvent>(HZ_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
-	}
-	// 事件执行的func
-	bool OnKeyPressedEvent(Hazel::KeyPressedEvent& event) {
-		return false;
 	}
 
 	virtual void OnImgGuiRender()override {
@@ -314,6 +313,9 @@ private:
 	Hazel::Ref<Hazel::Shader> m_SquareTexCoordShader;				// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_SquareTexCoordVertexArray;		// 顶点数组类 指针
 	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 纹理
+
+	// 混合需要用的纹理
+	Hazel::Ref<Hazel::Texture2D> m_SquareBlendTexture;		// 纹理
 
 	// 纹理颜色的
 	Hazel::Ref<Hazel::Shader> m_SquareShader;				// shader类 指针

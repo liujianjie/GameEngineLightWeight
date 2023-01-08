@@ -18,16 +18,26 @@ namespace Hazel {
 		m_Width = width;
 		m_Height = height;
 
+		GLenum internalFormat = 0, dataFormat = 0;
+		if (channels == 4) {
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+		}
+		else if (channels == 3) {
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+		}
+		HZ_CORE_ASSERT(internalFormat & dataFormat, "图片格式不支持");
 		/*是纹理、要1个、生成纹理缓冲区返回id给变量*/ // 是GL_TEXTURE_2D，写错过GL_TEXTURE
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 		/*告诉OpenGLm_RendererID的纹理存储的是rbg8位，宽高的缓冲区*/
-		glTextureStorage2D(m_RendererID, 1, GL_RGB8, m_Width, m_Height);
+		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 		/*告诉opengl，纹理缩小时用线性过滤*/
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINE);
 		/*告诉opengl，纹理放大时用周围颜色的平均值过滤*/
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		/*指定截取子区域，将纹理图片数据给上传OpenGL。m_RendererID后一个参数是级别。。。啥东西？*/
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 		/*设置完OpenGL后可以释放，生成的字符串*/
 		stbi_image_free(data);
 	}
