@@ -68,7 +68,8 @@ public:
 				color = vec4(u_Color, 1.0f);	
 			}			
 		)";
-		m_FlatShader.reset(Hazel::Shader::Create(flatShaderVertexSrc, flatShaderfragmentSrc));
+		//m_FlatShader.reset(Hazel::Shader::Create(flatShaderVertexSrc, flatShaderfragmentSrc));
+		m_FlatShader = Hazel::Shader::Create("flatPosColorShader", flatShaderVertexSrc, flatShaderfragmentSrc);
 
 
 		// 二、渲染正方形的纹理颜色。这里纹理坐标是基于左下角为中心算的，负的为0，正的为1，比如(-0.5f, 0.5f)的坐标纹理是(0.0f, 1.0f)
@@ -134,7 +135,8 @@ public:
 				color = vec4(v_TexCoord, 0.0f, 1.0f);	
 			}			
 		)";
-		m_SquareShader.reset(Hazel::Shader::Create(squareShaderVertexSrc, squareShaderfragmentSrc));
+		//m_SquareShader.reset(Hazel::Shader::Create(squareShaderVertexSrc, squareShaderfragmentSrc));
+		m_SquareShader = Hazel::Shader::Create("squareTexColorShader", squareShaderVertexSrc, squareShaderfragmentSrc);
 
 		// 三、渲染正方形的纹理。
 		float squareTexCoordVertices[5 * 4] = {
@@ -174,7 +176,9 @@ public:
 		//std::string squareTexCoordShaderfragmentSrc = R"(
 		//)";
 		//m_SquareTexCoordShader.reset(Hazel::Shader::Create(squareTexCoordShaderVertexSrc, squareTexCoordShaderfragmentSrc));
-		m_SquareTexCoordShader.reset(Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
+		//m_SquareTexCoordShader.reset(Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
+		//m_SquareTexCoordShader = (Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
+		auto m_SquareTexCoordShader = m_ShaderLibrary.Load("asserts/shaders/Texture.glsl");
 		// 只需绑定和上传一次，所以放在这里
 		m_SquareTexture = Hazel::Texture2D::Create("asserts/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		m_SquareBlendTexture = Hazel::Texture2D::Create("asserts/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
@@ -231,6 +235,9 @@ public:
 
 		Hazel::Renderer::BeginScene(m_Camera);
 
+		// 用shader库获取shader
+		auto m_SquareTexCoordShader = m_ShaderLibrary.Get("Texture");
+
 		// 0.带纹理的正方形
 		m_SquareTexture->Bind();
 		glm::mat4 squareTexCoordtransfrom = glm::translate(glm::mat4(1.0f), { 0.0f, 0.0f, 0.0f });
@@ -249,8 +256,8 @@ public:
 		glm::mat4 flattransfrom = glm::translate(glm::mat4(1.0f), m_flatPosition);
 
 		// 设置这一组正方形的颜色，通过imgui来设置
-		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->Bind();
-		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->Bind();
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 		// 缩放
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), {0.05f, 0.05f, 0.05f});
 		for (int i = 0; i < 20; i++) {
@@ -280,8 +287,11 @@ public:
 		ImGui::End();
 	}
 private:
+	// shader库
+	Hazel::ShaderLibrary m_ShaderLibrary;
+
 	// 纹理的
-	Hazel::Ref<Hazel::Shader> m_SquareTexCoordShader;				// shader类 指针
+	//Hazel::Ref<Hazel::Shader> m_SquareTexCoordShader;				// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_SquareTexCoordVertexArray;		// 顶点数组类 指针
 	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 纹理
 

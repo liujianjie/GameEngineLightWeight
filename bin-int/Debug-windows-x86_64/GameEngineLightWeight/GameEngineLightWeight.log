@@ -1,2 +1,29 @@
-﻿  OpenGLShader.cpp
+﻿  hzpch.cpp
+  Application.cpp
+  ImGuiBuild.cpp
+  ImGuiLayer.cpp
+  Layer.cpp
+  LayerStack.cpp
+  Log.cpp
+  Buffer.cpp
+  OrthographicCamera.cpp
+  RenderCommand.cpp
+  Renderer.cpp
+  RendererAPI.cpp
+  Shader.cpp
+  Texture.cpp
+  VertexArray.cpp
+  OpenGLBuffer.cpp
+  OpenGLContext.cpp
+  OpenGLRendererAPI.cpp
+  OpenGLShader.cpp
+  OpenGLTexture.cpp
+  OpenGLVertexArray.cpp
+E:\AllWorkSpace1\GameEngineLightWeight\GameEngineLightWeight\src\Platform\OpenGL\OpenGLVertexArray.cpp(65,32): warning C4312: “类型强制转换”: 从“const uint32_t”转换到更大的“const void *”
+  正在生成代码...
+  正在编译...
+  WindowsInput.cpp
+  WindowsWindow.cpp
+  stb_image.cpp
+  正在生成代码...
   GameEngineLightWeight.vcxproj -> E:\AllWorkSpace1\GameEngineLightWeight\bin\Debug-windows-x86_64\GameEngineLightWeight\GameEngineLightWeight.lib

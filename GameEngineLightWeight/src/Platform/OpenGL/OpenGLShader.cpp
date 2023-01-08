@@ -23,8 +23,19 @@ namespace Hazel {
 		HZ_CORE_ASSERT(source.size(), "GLSL读取的字符串为空");
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+		/*
+			asserts\shaders\Texture.glsl
+			asserts/shaders/Texture.glsl
+			Texture.glsl
+		*/
+		auto lastSlash = filepath.find_last_of("/\\");// 字符串中最后一个正斜杠或者反斜杠
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		m_Name = filepath.substr(lastSlash, count);
 	}
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+		:m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
@@ -34,7 +45,8 @@ namespace Hazel {
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
 		std::string result;
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);// 二进制读取？为什么还是保持字符串的形式？
+		//std::ifstream in(filepath, std::ios::in, std::ios::binary);// 二进制读取？为什么还是保持字符串的形式？
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);// 二进制读取？为什么还是保持字符串的形式？
 		if (in) {
 			in.seekg(0, std::ios::end);			// 将指针放在最后面
 			result.resize(in.tellg());			// 初始化string的大小, in.tellg()返回位置
@@ -82,7 +94,12 @@ namespace Hazel {
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> glShaderIDs(shaderSources.size());
+		/*
+			std::vector<GLenum> glShaderIDs(shaderSources.size());
+			glShaderIDs.reserve(2);
+		*/
+		std::array<GLenum, 2> glShaderIDs;
+		int glShaderIDIndex = 0;
 		for (auto &kv : shaderSources) {
 			GLenum type = kv.first;
 			const std::string& source = kv.second;
@@ -124,7 +141,8 @@ namespace Hazel {
 			// Attach our shaders to our program
 			glAttachShader(program, shader);
 
-			glShaderIDs.push_back(shader);
+			//glShaderIDs.push_back(shader);
+			glShaderIDs[glShaderIDIndex++] = shader;
 		}
 		
 		m_RendererID = program;
