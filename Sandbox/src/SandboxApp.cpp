@@ -169,42 +169,16 @@ public:
 		m_SquareTexCoordVertexArray->SetIndexBuffer(squareCoordIB);
 
 		// 4.着色器
-		std::string squareTexCoordShaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec3 v_Position;
-			out vec2 v_TexCoord;
-
-			void main(){
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}			
-		)";
-		std::string squareTexCoordShaderfragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-			
-			uniform sampler2D u_Texture; // 新
-				
-			void main(){
-				color = texture(u_Texture, v_TexCoord);	// 新
-				//color = vec4(v_TexCoord, 0.0f, 1.0f);	
-			}			
-		)";
-		m_SquareTexCoordShader.reset(Hazel::Shader::Create(squareTexCoordShaderVertexSrc, squareTexCoordShaderfragmentSrc));
+		//std::string squareTexCoordShaderVertexSrc = R"(
+		//)";
+		//std::string squareTexCoordShaderfragmentSrc = R"(
+		//)";
+		//m_SquareTexCoordShader.reset(Hazel::Shader::Create(squareTexCoordShaderVertexSrc, squareTexCoordShaderfragmentSrc));
+		m_SquareTexCoordShader.reset(Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
 		// 只需绑定和上传一次，所以放在这里
 		m_SquareTexture = Hazel::Texture2D::Create("asserts/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		m_SquareBlendTexture = Hazel::Texture2D::Create("asserts/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
-		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->Bind();
+		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->Bind();
 		/*把fragment的u_Texture要采样的纹理槽为0
 		因为下面的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
 		*/
@@ -216,7 +190,6 @@ public:
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB)) {
 			HZ_TRACE("Tab key is pressed!(POLL)");
 		}
-
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_UP)) {
 			m_CameraPosition.y += m_CameraMoveSpeed * ts;
 		}
@@ -268,7 +241,6 @@ public:
 		glm::mat4 squareTexCoordBlendtransfrom = glm::translate(glm::mat4(1.0f), { 0.25f, -0.25f, 0.0f });
 		Hazel::Renderer::Submit(m_SquareTexCoordShader, m_SquareTexCoordVertexArray, squareTexCoordBlendtransfrom);
 
-
 		// 1.带纹理颜色的正方形
 		/*glm::mat4 squaretransfrom = glm::translate(glm::mat4(1.0f), { -0.5f, 0.0f, 0.0f });
 		Hazel::Renderer::Submit(m_SquareShader, m_SquareVertexArray, squaretransfrom);*/
@@ -277,8 +249,8 @@ public:
 		glm::mat4 flattransfrom = glm::translate(glm::mat4(1.0f), m_flatPosition);
 
 		// 设置这一组正方形的颜色，通过imgui来设置
-		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->Bind();
-		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->Bind();
+		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 		// 缩放
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), {0.05f, 0.05f, 0.05f});
 		for (int i = 0; i < 20; i++) {
@@ -290,7 +262,6 @@ public:
 		}
 
 		Hazel::Renderer::EndScene();
-
 	}
 	void OnEvent(Hazel::Event& event) override {
 		// 事件

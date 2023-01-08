@@ -134,6 +134,9 @@
     <Image Include="asserts\textures\Checkerboard.png" />
     <Image Include="asserts\textures\ChernoLogo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="asserts\shaders\Texture.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
