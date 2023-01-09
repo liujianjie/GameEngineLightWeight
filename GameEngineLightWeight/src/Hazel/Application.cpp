@@ -58,7 +58,7 @@ namespace Hazel {
 	void Application::OnEvent(Event& e) {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));// OnWindowClose是本类的方法，用来取消游戏循环的
-
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		//HZ_CORE_TRACE("{0}", e);
 
 		// 从后往前
@@ -76,9 +76,11 @@ namespace Hazel {
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
-			// 每一层在update
-			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate(timestep);
+			if (!m_Minimized) {
+				// 每一层在update
+				for (Layer* layer : m_LayerStack) {
+					layer->OnUpdate(timestep);
+				}
 			}
 			// imgui在update
 			m_ImGuiLayer->Begin();
@@ -93,5 +95,15 @@ namespace Hazel {
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		m_Running = false;
 		return true;
+	}
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+			m_Minimized = true;
+			return false;
+		}
+		m_Minimized = false;
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		return false;
 	}
 }
