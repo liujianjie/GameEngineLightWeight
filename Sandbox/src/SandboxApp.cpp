@@ -1,9 +1,12 @@
 #include <Hazel.h>
 #include "imgui/imgui.h"
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Hazel/Core/EntryPoint.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.h"
 
 class ExampleLayer :public Hazel::Layer {
 public:
@@ -18,8 +21,8 @@ public:
 			-0.75f,  0.75f, 0.0f
 		};
 		// 1.创建顶点数组
-		m_FlatVertexArray.reset(Hazel::VertexArray::Create());
-
+		//m_FlatVertexArray.reset(Hazel::VertexArray::Create());
+		m_FlatVertexArray = Hazel::VertexArray::Create();
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> flatVB;
 		flatVB.reset(Hazel::VertexBuffer::Create(flatVertices, sizeof(flatVertices)));
@@ -81,7 +84,8 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 		// 1.创建顶点数组
-		m_SquareVertexArray.reset(Hazel::VertexArray::Create());
+		//m_SquareVertexArray.reset(Hazel::VertexArray::Create());
+		m_SquareVertexArray = (Hazel::VertexArray::Create());
 
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> squareVB;
@@ -147,7 +151,8 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 		// 1.创建顶点数组
-		m_SquareTexCoordVertexArray.reset(Hazel::VertexArray::Create());
+		//m_SquareTexCoordVertexArray.reset(Hazel::VertexArray::Create());
+		m_SquareTexCoordVertexArray = (Hazel::VertexArray::Create());
 
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> squareTexCoordVB;
@@ -177,12 +182,12 @@ public:
 		//std::string squareTexCoordShaderfragmentSrc = R"(
 		//)";
 		//m_SquareTexCoordShader.reset(Hazel::Shader::Create(squareTexCoordShaderVertexSrc, squareTexCoordShaderfragmentSrc));
-		//m_SquareTexCoordShader.reset(Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
-		//m_SquareTexCoordShader = (Hazel::Shader::Create("asserts/shaders/Texture.glsl"));
-		auto m_SquareTexCoordShader = m_ShaderLibrary.Load("asserts/shaders/Texture.glsl");
+		//m_SquareTexCoordShader.reset(Hazel::Shader::Create("assets/shaders/Texture.glsl"));
+		//m_SquareTexCoordShader = (Hazel::Shader::Create("assets/shaders/Texture.glsl"));
+		auto m_SquareTexCoordShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 		// 只需绑定和上传一次，所以放在这里
-		m_SquareTexture = Hazel::Texture2D::Create("asserts/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
-		m_SquareBlendTexture = Hazel::Texture2D::Create("asserts/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
+		m_SquareTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
+		m_SquareBlendTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->Bind();
 		/*把fragment的u_Texture要采样的纹理槽为0
 		因为下面的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
@@ -296,8 +301,8 @@ private:
 class Sandbox : public Hazel::Application {
 public:
 	Sandbox() {
-		PushLayer(new ExampleLayer());
-		//PushOverlay(new Hazel::ImGuiLayer());
+		//PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2D());
 	}
 	~Sandbox() {
 	}
