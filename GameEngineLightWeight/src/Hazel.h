@@ -14,6 +14,7 @@
 
 #include "Hazel/ImGui/ImGuiLayer.h"
 
+#include "Hazel/OrthographicCameraController.h"
 
 // ----------------Renderer--------------------
 #include "Hazel/Renderer/Renderer.h"

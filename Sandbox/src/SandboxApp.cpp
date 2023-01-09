@@ -7,7 +7,8 @@
 
 class ExampleLayer :public Hazel::Layer {
 public:
-	ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) ,m_CameraPosition(0.0f)
+	// , m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		// 渲染网格 flat
 		float flatVertices[3 * 4] = {
@@ -194,25 +195,7 @@ public:
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_TAB)) {
 			HZ_TRACE("Tab key is pressed!(POLL)");
 		}
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_UP)) {
-			m_CameraPosition.y += m_CameraMoveSpeed * ts;
-		}
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_DOWN)) {
-			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-		}
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_LEFT)) {
-			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-		}
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_RIGHT)) {
-			m_CameraPosition.x += m_CameraMoveSpeed * ts;
-		}
 
-		if (Hazel::Input::IsKeyPressed(HZ_KEY_A)) {
-			m_CameraRotation += m_CameraRotationSpeed * ts; // 注意是+
-		}
-		else if (Hazel::Input::IsKeyPressed(HZ_KEY_D)) {
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
-		}
 		// jkl控制物体的世界矩阵
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_I)) {
 			m_flatPosition.y += m_flatMoveSpeed * ts;
@@ -227,13 +210,12 @@ public:
 			m_flatPosition.x += m_flatMoveSpeed * ts;
 		}
 
+		m_CameraController.OnUpdate(ts);
+
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Hazel::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		Hazel::Renderer::BeginScene(m_Camera);
+		Hazel::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		// 用shader库获取shader
 		auto m_SquareTexCoordShader = m_ShaderLibrary.Get("Texture");
@@ -259,7 +241,7 @@ public:
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->Bind();
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_FlatShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 		// 缩放
-		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), {0.05f, 0.05f, 0.05f});
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), { 0.05f, 0.05f, 0.05f });
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
 				glm::vec3 pos(i * 0.08f, j * 0.08f, 0.0f);
@@ -272,18 +254,12 @@ public:
 	}
 	void OnEvent(Hazel::Event& event) override {
 		// 事件
-		//if (event.GetEventType() == Hazel::EventType::KeyPressed) {
-		//	Hazel::KeyPressedEvent& e = (Hazel::KeyPressedEvent&)event;
-		//	if (e.GetKeyCode() == HZ_KEY_TAB) {
-		//		HZ_TRACE("Tab key is pressed!(EVENT)");
-		//	}
-		//	HZ_TRACE("{0}", (char)e.GetKeyCode());
-		//}
+		m_CameraController.OnEvent(event);
 	}
 
 	virtual void OnImgGuiRender()override {
 		ImGui::Begin("Settings");
-		ImGui::ColorEdit3("Square Color",glm::value_ptr(m_SquareColor));
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
 		ImGui::End();
 	}
 private:
@@ -306,21 +282,15 @@ private:
 	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_FlatVertexArray;			// 顶点数组类 指针
 
-	Hazel::OrthographicCamera m_Camera;
+	Hazel::OrthographicCameraController m_CameraController;
 
 	// 为完成移动旋转的属性
-	glm::vec3 m_CameraPosition;
-	float m_CameraMoveSpeed = 5.0f;
-
-	float m_CameraRotation = 0.0f;
-	float m_CameraRotationSpeed = 180.0f;
-
 	// flat的世界矩阵的属性
 	glm::vec3 m_flatPosition = { 0.7f, 0.7f, 0.0f };
 	float m_flatMoveSpeed = 5.0f;
 
 	// 矩形的颜色
-	glm::vec3 m_SquareColor = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 m_SquareColor = { 1.0f, 1.0f, 0.0f };
 };
 
 class Sandbox : public Hazel::Application {
