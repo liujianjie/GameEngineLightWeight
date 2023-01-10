@@ -36,6 +36,9 @@ namespace Hazel {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINE);
 		/*告诉opengl，纹理放大时用周围颜色的平均值过滤*/
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		// 纹理坐标超过1采取的措施
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		/*指定截取子区域，将纹理图片数据给上传OpenGL。m_RendererID后一个参数是级别。。。啥东西？*/
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
 		/*设置完OpenGL后可以释放，生成的字符串*/

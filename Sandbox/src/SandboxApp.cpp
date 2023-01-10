@@ -189,8 +189,9 @@ public:
 		m_SquareTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		m_SquareBlendTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png"); // Create返回的是shared_ptr，所以只需要赋值=
 		//std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->Bind();
-		/*把fragment的u_Texture要采样的纹理槽为0
-		因为下面的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
+		/*
+			把fragment的u_Texture要采样的纹理槽为0
+			因为下面OnUpdate的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
 		*/
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_SquareTexCoordShader)->UploadUniformInt("u_Texture", 0);
 	}
