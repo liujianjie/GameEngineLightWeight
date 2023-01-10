@@ -38,7 +38,7 @@ public:
 		// 3.索引缓冲
 		uint32_t flatIndices[] = { 0, 1, 2, 2, 3, 0 };
 
-		Hazel::Ref<Hazel::IndexBuffer> flatIB;
+		::Hazel::Ref<Hazel::IndexBuffer> flatIB;
 		flatIB.reset(Hazel::IndexBuffer::Create(flatIndices, sizeof(flatIndices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
