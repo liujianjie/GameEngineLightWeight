@@ -2,9 +2,26 @@
 #include "OpenGLTexture.h"
 
 #include "stb_image.h"
-#include <glad/glad.h>
 
 namespace Hazel {
+
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+		:m_Width(width), m_Height(height)
+	{
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+		/*是纹理、要1个、生成纹理缓冲区返回id给变量*/ // 是GL_TEXTURE_2D，写错过GL_TEXTURE
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		/*告诉OpenGLm_RendererID的纹理存储的是rbg8位，宽高的缓冲区*/
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+		/*告诉opengl，纹理缩小时用线性过滤*/
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINE);
+		/*告诉opengl，纹理放大时用周围颜色的平均值过滤*/
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		// 纹理坐标超过1采取的措施
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path):
 		m_Path(path)
 	{
@@ -27,6 +44,8 @@ namespace Hazel {
 			internalFormat = GL_RGB8;
 			dataFormat = GL_RGB;
 		}
+		m_InternalFormat = internalFormat;
+		m_DataFormat = dataFormat;
 		HZ_CORE_ASSERT(internalFormat & dataFormat, "图片格式不支持");
 		/*是纹理、要1个、生成纹理缓冲区返回id给变量*/ // 是GL_TEXTURE_2D，写错过GL_TEXTURE
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
@@ -44,10 +63,20 @@ namespace Hazel {
 		/*设置完OpenGL后可以释放，生成的字符串*/
 		stbi_image_free(data);
 	}
+	/*
+	data 指向的数据为纹理的具体数据，如白色:0xffffffff,与上对应，上面的data是指向路径下的纹理数据
+	*/
+	void OpenGLTexture2D::SetData(void* data, uint32_t size)
+	{
+		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+		HZ_CORE_ASSERT(size == m_Width * m_Height * bpp, "数据大小与纹理大小不符");
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width , m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	}
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
 		glDeleteTextures(1, &m_RendererID);
 	}
+
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);

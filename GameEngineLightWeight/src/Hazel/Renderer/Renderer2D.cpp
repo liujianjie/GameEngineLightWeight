@@ -2,14 +2,15 @@
 #include "Renderer2D.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "RenderCommand.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Hazel {
 	static struct Renderer2DStorage{
 		Ref<VertexArray> QuadVertexArray;
-		Ref<Shader> FlatColorShader;
 		Ref<Shader> TextureShader;
+		Ref<Texture2D> WhiteTexture;
 	};
 	static Renderer2DStorage* s_Data;
 	void Hazel::Renderer2D::Init()
@@ -47,7 +48,7 @@ namespace Hazel {
 		// 1.2顶点数组设置索引缓冲区
 		s_Data->QuadVertexArray->SetIndexBuffer(flatIB);
 
-		s_Data->FlatColorShader = (Hazel::Shader::Create("assets/shaders/FlatColor.glsl"));
+		//s_Data->FlatColorShader = (Hazel::Shader::Create("assets/shaders/FlatColor.glsl"));
 
 		// 纹理的shader
 		s_Data->TextureShader = (Hazel::Shader::Create("assets/shaders/Texture.glsl"));
@@ -56,6 +57,11 @@ namespace Hazel {
 			因为下面DrawQuad的代码，把m_SquareTexture->Bind,设置了m_SquareTexture的m_RenderID绑定在OpenGL的0槽上！
 		*/
 		s_Data->TextureShader->SetInt("u_Texture", 0);
+
+		// 创建一个白色Texture
+		s_Data->WhiteTexture = Hazel::Texture2D::Create(1, 1);
+		uint32_t whiteTextureData = 0xffffffff;
+		s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 	}
 
 	void Hazel::Renderer2D::Shutdown()
@@ -65,12 +71,6 @@ namespace Hazel {
 
 	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
-		
-		s_Data->FlatColorShader->Bind();		// 绑定shader
-		// 上传矩阵数据给shader前，需要先绑定使用哪个shader！
-		s_Data->FlatColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
-
 		s_Data->TextureShader->Bind();		// 绑定shader
 		s_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 	}
@@ -86,13 +86,16 @@ namespace Hazel {
 
 	void Hazel::Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		// 绑定材质
+		s_Data->WhiteTexture->Bind();
 
-		s_Data->FlatColorShader->Bind();		// 绑定shader
-		s_Data->FlatColorShader->SetFloat4("u_Color", color);
 		// 设置transform
 		glm::mat4 tranform = glm::translate(glm::mat4(1.0f), position) *
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_Data->FlatColorShader->SetMat4("u_Transform", tranform);
+
+		s_Data->TextureShader->Bind();		// 绑定shader
+		s_Data->TextureShader->SetFloat4("u_Color", color);
+		s_Data->TextureShader->SetMat4("u_Transform", tranform);
 
 		s_Data->QuadVertexArray->Bind();		// 绑定顶点数组
 		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
@@ -111,6 +114,7 @@ namespace Hazel {
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 		s_Data->TextureShader->Bind();		// 绑定shader
+		s_Data->TextureShader->SetFloat4("u_Color", glm::vec4(1.0f));
 		s_Data->TextureShader->SetMat4("u_Transform", tranform);
 
 		s_Data->QuadVertexArray->Bind();		// 绑定顶点数组
