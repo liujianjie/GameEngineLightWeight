@@ -3,7 +3,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RenderCommand.h"
-#include <Platform/OpenGL/OpenGLShader.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Hazel {
 	static struct Renderer2DStorage{
@@ -56,8 +56,7 @@ namespace Hazel {
 	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		// 上传矩阵数据到glsl
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatColorShader)->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatColorShader)->UploadUniformMat4("u_Transform", glm::mat4(1.0f));
+		s_Data->FlatColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 	}
 
 	void Hazel::Renderer2D::EndScene()
@@ -73,7 +72,12 @@ namespace Hazel {
 	{
 		s_Data->QuadVertexArray->Bind();		// 绑定顶点数组
 		s_Data->FlatColorShader->Bind();		// 绑定shader
-		std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatColorShader)->UploadUniformFloat4("u_Color", color);
+		// 设置transform
+		glm::mat4 tranform = glm::translate(glm::mat4(1.0f), position) *
+			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_Data->FlatColorShader->SetMat4("u_Transform", tranform);
+
+		s_Data->FlatColorShader->SetFloat4("u_Color", color);
 		RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
 	}
 }
