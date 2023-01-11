@@ -15,6 +15,8 @@ namespace Hazel {
 	static Renderer2DStorage* s_Data;
 	void Hazel::Renderer2D::Init()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		s_Data = new Renderer2DStorage();
 		// 渲染网格 flat
 		float flatVertices[] = {
@@ -66,17 +68,23 @@ namespace Hazel {
 
 	void Hazel::Renderer2D::Shutdown()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		delete s_Data; // 手动管理内存
 	}
 
 	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		s_Data->TextureShader->Bind();		// 绑定shader
 		s_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 	}
 
 	void Hazel::Renderer2D::EndScene()
 	{
+		HZ_PROFILE_FUNCTION();
+
 	}
 
 	void Hazel::Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -86,6 +94,8 @@ namespace Hazel {
 
 	void Hazel::Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		// 绑定材质
 		s_Data->WhiteTexture->Bind();
 
@@ -106,6 +116,8 @@ namespace Hazel {
 	}
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		// 绑定材质
 		texture->Bind();
 

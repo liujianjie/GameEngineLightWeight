@@ -5,40 +5,58 @@
 #include "Hazel/Events/KeyEvent.h"
 #include "Hazel/Events/ApplicationEvent.h"
 
+#include "Hazel/Renderer/Renderer.h"
+
 #include "Platform/OpenGL/OpenGLContext.h"
 //#include <glad/glad.h>
 
 namespace Hazel {
-	static bool s_GLFWInitialized = false;
+	static uint8_t  s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* description) {
 		HZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProps& props) {
-		return new WindowsWindow(props);
+	Scope<Window> Window::Create(const WindowProps& props) {
+		return CreateScope<WindowsWindow>(props);
 	}
 	WindowsWindow::WindowsWindow(const WindowProps& props) {
+		HZ_PROFILE_FUNCTION();
+
 		Init(props);
 	}
 	WindowsWindow::~WindowsWindow() {
+		HZ_PROFILE_FUNCTION();
+
 		Shutdown();
 	}
 	void WindowsWindow::Init(const WindowProps& props) {
+		HZ_PROFILE_FUNCTION();
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
 
 		HZ_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
-		if (!s_GLFWInitialized) {
+		if (s_GLFWWindowCount == 0) {
+			HZ_PROFILE_SCOPE("glfwInit");
+
 			int success = glfwInit();
 			HZ_CORE_ASSERT(success, "Could not intialize GLFW!");
 
 			glfwSetErrorCallback(GLFWErrorCallback);
-			s_GLFWInitialized = true;
 		}
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+		{
+			HZ_PROFILE_SCOPE("glfwCreateWindow");
+
+			#if defined(HZ_DEBUG)
+				if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+					glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			#endif
+			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			++s_GLFWWindowCount;
+		}
+		
 		/*glfwMakeContextCurrent(m_Window);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		HZ_CORE_ASSERT(status, "初始化glad失败");*/
@@ -127,9 +145,18 @@ namespace Hazel {
 	}
 
 	void WindowsWindow::Shutdown() {
+		HZ_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(m_Window);
+		--s_GLFWWindowCount;
+
+		if (s_GLFWWindowCount == 0) {
+			glfwTerminate();
+		}
 	}
 	void WindowsWindow::OnUpdate() {
+		HZ_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		//glfwSwapBuffers(m_Window);
 		m_Context->SwapBuffers();// 用渲染上下文去交换buffer
@@ -137,11 +164,13 @@ namespace Hazel {
 	/*
 	　开启垂直同步,如果它设定为60Hz（60FPS），那么我们就有60FPS。刷新率可以设置还是根据屏幕来得？
 	 我们可以通过在glfwSwapInterval方法中设置高于1的数字来降低这个速率（如果设置为2，将得到30FPS）。
-	 0：关闭垂直同步 ; 1：60FPS ; 2：30FPS。
+	 0：关闭垂直同步 ; 1：144FPS ; 2：72FPS。
 	*/
 	void WindowsWindow::SetVSync(bool enabled) {
+		HZ_PROFILE_FUNCTION();
+
 		if (enabled) {
-			glfwSwapInterval(3);
+			glfwSwapInterval(2);
 		}
 		else {
 			glfwSwapInterval(0);

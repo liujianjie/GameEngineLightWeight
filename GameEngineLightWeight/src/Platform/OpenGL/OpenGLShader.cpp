@@ -19,6 +19,8 @@ namespace Hazel {
 	}
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::string source = ReadFile(filepath);
 		HZ_CORE_ASSERT(source.size(), "GLSL读取的字符串为空");
 		auto shaderSources = PreProcess(source);
@@ -37,6 +39,8 @@ namespace Hazel {
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		:m_Name(name)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -44,6 +48,8 @@ namespace Hazel {
 	}
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::string result;
 		//std::ifstream in(filepath, std::ios::in, std::ios::binary);// 二进制读取？为什么还是保持字符串的形式？
 		std::ifstream in(filepath, std::ios::in | std::ios::binary);// 二进制读取？为什么还是保持字符串的形式？
@@ -60,6 +66,8 @@ namespace Hazel {
 	}
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		std::string typeToken = "#type";
@@ -93,6 +101,8 @@ namespace Hazel {
 	}
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		GLuint program = glCreateProgram();
 		/*
 			std::vector<GLenum> glShaderIDs(shaderSources.size());
@@ -182,30 +192,44 @@ namespace Hazel {
 	}
 	OpenGLShader::~OpenGLShader()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glDeleteProgram(m_RendererID);
 	}
 	void OpenGLShader::Bind() const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glUseProgram(m_RendererID);
 	}
 	void OpenGLShader::UnBind() const
 	{
+		HZ_PROFILE_FUNCTION();
+
 		glUseProgram(0);
 	}
 	void OpenGLShader::SetInt(const std::string& name, int value)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		UploadUniformInt(name, value);
 	}
 	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		UploadUniformFloat3(name, value);
 	}
 	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		UploadUniformFloat4(name, value);
 	}
 	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		UploadUniformMat4(name, value);
 	}
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value)
