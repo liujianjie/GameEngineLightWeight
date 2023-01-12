@@ -16,6 +16,7 @@ namespace Hazel {
 		virtual void UnBind() const override;
 
 		virtual void SetInt(const std::string& name, int value)override;
+		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override;	// 纹理槽数组
 		virtual void SetFloat(const std::string& name, float value) override;
 		virtual void SetFloat3(const std::string& name, const glm::vec3& value) override;
 		virtual void SetFloat4(const std::string& name, const glm::vec4& value) override;
@@ -24,7 +25,7 @@ namespace Hazel {
 		virtual const std::string& GetName() override { return m_Name; };
 
 		void UploadUniformInt(const std::string& name, int value);
-
+		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);	// 纹理槽数组
 		void UploadUniformFloat(const std::string& name, float value);
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
