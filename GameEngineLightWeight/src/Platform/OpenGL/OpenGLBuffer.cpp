@@ -4,9 +4,18 @@
 #include <glad/glad.h>
 
 namespace Hazel {
+
 	/////////////////////////////////////////////////////////////////////////////
 	// VertexBuffer /////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	{
+		HZ_PROFILE_FUNCTION();
+
+		glCreateBuffers(1, &m_RendererID);		// 生成一个缓冲区，返回缓冲区的id
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);// OpenGl使用这个缓冲区，并声明为数组型的
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW); //  creates and initializes a buffer object's data store
+	}
 	Hazel::OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	{
 		HZ_PROFILE_FUNCTION();
@@ -35,6 +44,13 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);// OpenGl使用这个缓冲区，并声明为数组型的
+	}
+
+	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+		// 截取部分CPU的顶点数据上传OpenGL
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////

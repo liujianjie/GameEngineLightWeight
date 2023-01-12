@@ -25,7 +25,7 @@ public:
 		m_FlatVertexArray = Hazel::VertexArray::Create();
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> flatVB;
-		flatVB.reset(Hazel::VertexBuffer::Create(flatVertices, sizeof(flatVertices)));
+		flatVB = (Hazel::VertexBuffer::Create(flatVertices, sizeof(flatVertices)));
 
 		// 2.1设置顶点缓冲区布局
 		flatVB->SetLayout({
@@ -39,7 +39,7 @@ public:
 		uint32_t flatIndices[] = { 0, 1, 2, 2, 3, 0 };
 
 		::Hazel::Ref<Hazel::IndexBuffer> flatIB;
-		flatIB.reset(Hazel::IndexBuffer::Create(flatIndices, sizeof(flatIndices) / sizeof(uint32_t)));
+		flatIB = (Hazel::IndexBuffer::Create(flatIndices, sizeof(flatIndices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
 		m_FlatVertexArray->SetIndexBuffer(flatIB);
@@ -89,7 +89,7 @@ public:
 
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> squareVB;
-		squareVB.reset(Hazel::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB = (Hazel::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
 		// 2.1设置顶点缓冲区布局
 		squareVB->SetLayout({
@@ -104,7 +104,7 @@ public:
 		uint32_t squareIndices[] = { 0, 1, 2, 2, 3, 0 };
 
 		Hazel::Ref<Hazel::IndexBuffer> squareIB;
-		squareIB.reset(Hazel::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIB = (Hazel::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
 		m_SquareVertexArray->SetIndexBuffer(squareIB);
@@ -156,7 +156,7 @@ public:
 
 		// 2.创建顶点缓冲区
 		Hazel::Ref<Hazel::VertexBuffer> squareTexCoordVB;
-		squareTexCoordVB.reset(Hazel::VertexBuffer::Create(squareTexCoordVertices, sizeof(squareTexCoordVertices)));
+		squareTexCoordVB = (Hazel::VertexBuffer::Create(squareTexCoordVertices, sizeof(squareTexCoordVertices)));
 
 		// 2.1设置顶点缓冲区布局
 		squareTexCoordVB->SetLayout({
@@ -171,7 +171,7 @@ public:
 		uint32_t squareTexCoordIndices[] = { 0, 1, 2, 2, 3, 0 };
 
 		Hazel::Ref<Hazel::IndexBuffer> squareCoordIB;
-		squareCoordIB.reset(Hazel::IndexBuffer::Create(squareTexCoordIndices, sizeof(squareTexCoordIndices) / sizeof(uint32_t)));
+		squareCoordIB = (Hazel::IndexBuffer::Create(squareTexCoordIndices, sizeof(squareTexCoordIndices) / sizeof(uint32_t)));
 
 		// 1.2顶点数组设置索引缓冲区
 		m_SquareTexCoordVertexArray->SetIndexBuffer(squareCoordIB);
