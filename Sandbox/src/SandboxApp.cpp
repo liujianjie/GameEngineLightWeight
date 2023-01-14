@@ -304,6 +304,7 @@ public:
 	Sandbox() {
 		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());
+		//std::cout << (-1000 % 1000) << std::endl;
 	}
 	~Sandbox() {
 	}
