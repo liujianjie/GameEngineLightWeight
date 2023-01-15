@@ -18,12 +18,15 @@ private:
 	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_FlatVertexArray;
 	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 棋盘纹理
+	Hazel::Ref<Hazel::Framebuffer> m_Framebuffer;		// 帧缓冲
+
+
+	glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 	Hazel::Ref<Hazel::Texture2D> m_SpriteSheet;			// 纹理 sheet
 	// 子纹理
 	Hazel::Ref<Hazel::SubTexture2D> m_TextureStair, m_TextureTree, m_TextureBush;
 
-	glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 	ParticleProps m_Particle;
 	ParticleSystem m_ParticleSystem;
 
