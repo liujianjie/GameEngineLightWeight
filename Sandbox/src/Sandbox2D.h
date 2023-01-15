@@ -17,7 +17,7 @@ private:
 	Hazel::OrthographicCameraController m_CameraController;
 	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_FlatVertexArray;
-	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 纹理
+	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 棋盘纹理
 
 	Hazel::Ref<Hazel::Texture2D> m_SpriteSheet;			// 纹理 sheet
 	// 子纹理

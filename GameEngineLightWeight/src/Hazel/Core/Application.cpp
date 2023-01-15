@@ -125,4 +125,7 @@ namespace Hazel {
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		return false;
 	}
+	void Application::Close() {
+		m_Running = false;
+	}
 }

@@ -29,7 +29,7 @@ namespace Hazel {
 		inline static Application& Get() { return *s_Instance; }
 
 		//inline OrthographicCamera& GetCamera() { return m_Camera; }
-
+		void Close();
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
