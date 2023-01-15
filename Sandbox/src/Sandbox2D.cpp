@@ -19,8 +19,12 @@ void Sandbox2D::OnAttach()
 
 	//Hazel::Renderer2D::Init();
 	m_SquareTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-	m_TextureAltas = Hazel::Texture2D::Create("assets/games/textures/RPGpack_sheet_2X.png");
-
+	// 加载Texture sheet
+	m_SpriteSheet = Hazel::Texture2D::Create("assets/games/textures/RPGpack_sheet_2X.png");
+	//m_TextureStairs, m_TextureTree, m_TextureBush
+	m_TextureStair = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7, 6 }, {128, 128});
+	m_TextureBush = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2, 3 }, { 128, 128 });
+	m_TextureTree = Hazel::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 4, 1 }, { 128, 128 }, { 1,2 });
 	// Init here
 	m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
 	m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f };
@@ -103,7 +107,9 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 
 	// 绘制纹理集的一个
 	Hazel::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	Hazel::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.4f }, { 1.0f, 1.0f }, m_TextureAltas, 1.0f);
+	Hazel::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.9f }, { 1.0f, 1.0f }, m_TextureBush, 1.0f);
+	Hazel::Renderer2D::DrawQuad({ 1.0f, 0.0f, 0.9f }, { 1.0f, 1.0f }, m_TextureStair, 1.0f);
+	Hazel::Renderer2D::DrawQuad({ -1.0f, 0.0f, 0.9f }, { 1.0f, 2.0f }, m_TextureTree, 1.0f);
 	Hazel::Renderer2D::EndScene();
 }
 
