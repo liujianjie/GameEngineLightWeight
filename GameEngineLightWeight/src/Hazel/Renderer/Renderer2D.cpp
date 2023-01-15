@@ -111,8 +111,8 @@ namespace Hazel {
 
 		// 设置quad的初始位置
 		s_Data.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPosition[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPosition[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
@@ -236,6 +236,19 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
+		// 测试纹理集代码
+		constexpr float x = 2, y = 3;
+		constexpr float sheetWidth = 2560.0f, sheetHeight = 1664.0f;
+		constexpr float spriteWidth = 128.0f, spriteHeight = 128.0f;
+
+		constexpr size_t quadVertexCount = 4;
+		constexpr glm::vec2 textureCoords[] = {
+			{ x * spriteWidth / sheetWidth, y * spriteHeight / sheetHeight},
+			{ (x + 1) * spriteWidth / sheetWidth, y * spriteHeight / sheetHeight},
+			{ (x + 1) * spriteWidth / sheetWidth, (y + 1) * spriteHeight / sheetHeight},
+			{ x * spriteWidth / sheetWidth, (y + 1) * spriteHeight / sheetHeight},
+		};
+
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			FlushAndReset();
 		}
@@ -263,28 +276,28 @@ namespace Hazel {
 		// quad的左下角为起点
 		s_Data.QuadVertexBufferPtr->Position = tranform * s_Data.QuadVertexPosition[0];
 		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 0.0f };
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[0];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
 		s_Data.QuadVertexBufferPtr++;
 
 		s_Data.QuadVertexBufferPtr->Position = tranform * s_Data.QuadVertexPosition[1];
 		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 0.0f };
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[1];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
 		s_Data.QuadVertexBufferPtr++;
 
 		s_Data.QuadVertexBufferPtr->Position = tranform * s_Data.QuadVertexPosition[2];
 		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.0f, 1.0f };
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[2];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
 		s_Data.QuadVertexBufferPtr++;
 
 		s_Data.QuadVertexBufferPtr->Position = tranform * s_Data.QuadVertexPosition[3];
 		s_Data.QuadVertexBufferPtr->Color = color;
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.0f, 1.0f };
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[3];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 		s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
 		s_Data.QuadVertexBufferPtr++;
@@ -295,7 +308,7 @@ namespace Hazel {
 	}
 	void Renderer2D::DrawrRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
 	{
-		DrawrRotatedQuad({position.x, position.y, 0.0f}, size, rotation, color);
+		DrawrRotatedQuad({ position.x, position.y, 0.0f }, size, rotation, color);
 	}
 	void Renderer2D::DrawrRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color)
 	{
@@ -412,7 +425,7 @@ namespace Hazel {
 		s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
 
 		s_Data.Stats.QuadCount++;
-		
+
 #if OLD_PATH
 		s_Data.TextureShader->SetFloat4("u_Color", tintColor);
 		s_Data.TextureShader->SetFloat("u_TilingFactor", tilingFactor);
@@ -427,9 +440,9 @@ namespace Hazel {
 		s_Data.TextureShader->SetMat4("u_Transform", tranform);
 
 		s_Data.QuadVertexArray->Bind();		// 绑定顶点数组
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray); 
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
 #endif
-		
+
 	}
 	void Renderer2D::ResetStats()
 	{

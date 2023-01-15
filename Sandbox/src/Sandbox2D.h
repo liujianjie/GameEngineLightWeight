@@ -18,6 +18,7 @@ private:
 	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader类 指针
 	Hazel::Ref<Hazel::VertexArray> m_FlatVertexArray;
 	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// 纹理
+	Hazel::Ref<Hazel::Texture2D> m_TextureAltas;		// 纹理
 
 	glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 	ParticleProps m_Particle;

@@ -19,6 +19,7 @@ void Sandbox2D::OnAttach()
 
 	//Hazel::Renderer2D::Init();
 	m_SquareTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+	m_TextureAltas = Hazel::Texture2D::Create("assets/games/textures/RPGpack_sheet_2X.png");
 
 	// Init here
 	m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
@@ -55,6 +56,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		Hazel::RenderCommand::Clear();
 	}
 	{
+#if 0
 		HZ_PROFILE_SCOPE("Renderer Draw");
 
 		static float rotation = 0.0f;
@@ -78,9 +80,10 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			}
 		}
 		Hazel::Renderer2D::EndScene();
+#endif
 	}
 
-	// 鼠标位置转换成世界空间
+	// 鼠标位置转换成世界空间 绘制粒子
 	if (Hazel::Input::IsMouseButtonPressed(HZ_MOUSE_BUTTON_LEFT))
 	{
 		auto [x, y] = Hazel::Input::GetMousePosition();
@@ -97,6 +100,11 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 	}
 	m_ParticleSystem.OnUpdate(ts);
 	m_ParticleSystem.OnRender(m_CameraController.GetCamera());
+
+	// 绘制纹理集的一个
+	Hazel::Renderer2D::BeginScene(m_CameraController.GetCamera());
+	Hazel::Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.4f }, { 1.0f, 1.0f }, m_TextureAltas, 1.0f);
+	Hazel::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImgGuiRender()

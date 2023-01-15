@@ -4,7 +4,7 @@
 #include "stb_image.h"
 
 namespace Hazel {
-
+	// 创建白色纹理
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 		:m_Width(width), m_Height(height)
 	{
@@ -24,6 +24,7 @@ namespace Hazel {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
+	// 加载纹理
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path):
 		m_Path(path)
 	{
