@@ -1,9 +1,11 @@
 # Binaries
 **/bin/
 bin-int/
+游戏测试素材/
 
 # Hazel files
 *.log
+
 
 # Visual Studio files and folder
 .vs/
