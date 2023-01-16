@@ -51,7 +51,26 @@ namespace Hazel {
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}
-
+	void ImGuiLayer::OnEvent(Event& e) {
+		/*
+		m_BlockEvents：false-> 窗口不阻塞事件，viewport面板能接收滚轮事件
+		m_BlockEvents：true->  窗口  阻塞事件，viewport面板不能接收滚轮事件
+		*/
+		if (m_BlockEvents) {
+			/*
+				imgui窗口会阻塞鼠标滚轮事件，即ImGuiLayer窗口处理了鼠标滚轮事件，不会传入给下一级的OnEvent。
+				因为Application的onevent处理了窗口滚动，就会跳出
+				for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
+					if (e.Handled)
+						break;
+					(*--it)->OnEvent(e);
+				}
+			*/
+			ImGuiIO& io = ImGui::GetIO();
+			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse; // e.Handled = e.handled | true & true; 结果为true，所以上述的application 的 event会跳出
+			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
+	}
 	void ImGuiLayer::Begin()
 	{
 		HZ_PROFILE_FUNCTION();

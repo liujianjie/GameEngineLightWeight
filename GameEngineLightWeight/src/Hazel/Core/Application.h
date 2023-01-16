@@ -28,6 +28,8 @@ namespace Hazel {
 		inline Window& GetWindow() { return *m_Window; }
 		inline static Application& Get() { return *s_Instance; }
 
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
 		//inline OrthographicCamera& GetCamera() { return m_Camera; }
 		void Close();
 	private:

@@ -44,7 +44,10 @@ namespace Hazel {
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
 		HZ_PROFILE_FUNCTION();
-		m_CameraController.OnUpdate(ts);
+		// 当焦点聚焦，才能wasd
+		if (m_ViewportFocused) {
+			m_CameraController.OnUpdate(ts);
+		}
 		// 渲染信息初始化
 		Renderer2D::ResetStats();
 		{
@@ -156,6 +159,19 @@ namespace Hazel {
 		// Imgui创建新的子窗口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0,0 });
 		ImGui::Begin("Viewport");
+
+		m_ViewportFocused = ImGui::IsWindowFocused();
+		m_ViewportHovered = ImGui::IsWindowHovered();
+
+		//HZ_WARN("Focus:{0}, Hover:{1}", m_ViewportFocused, m_ViewportHovered);
+		/*
+			bool canshu = !m_ViewportFocused || !m_ViewportHovered;
+			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = false, m_BlockEvents：false-> viewport面板 能 接收滚轮事件
+			m_ViewportFocused = false, m_ViewportHovered = true;canshu = true,   m_BlockEvents：true-> viewport面板 不 能接收滚轮事件
+			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = true,  m_BlockEvents：true-> viewport面板 不 能接收滚轮事件
+		*/
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+
 		// 获取到子窗口的大小
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize)) { // 改变了窗口大小
