@@ -6,7 +6,7 @@
 #include <gl/GL.h>
 
 namespace Hazel {
-
+	//
 	Hazel::OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
 		:m_WindowHandle(windowHandle)
 	{
