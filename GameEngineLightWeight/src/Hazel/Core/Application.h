@@ -16,7 +16,7 @@ namespace Hazel {
 	class HAZEL_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Game Engine");
 		virtual ~Application();
 
 		void Run();

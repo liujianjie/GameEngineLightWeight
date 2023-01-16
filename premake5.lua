@@ -132,3 +132,52 @@ project "Sandbox"
 			defines "HZ_DIST"
 			runtime "Release"
 			symbols "on"
+
+
+project "GameEngine-Editor"
+	location "GameEngine-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"	
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs{
+		"GameEngineLightWeight/vendor/spdlog/include",
+		"GameEngineLightWeight/src",
+		"GameEngineLightWeight/vendor",
+		"%{IncludeDir.glm}"
+	}
+
+	links{
+		"GameEngineLightWeight"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines{
+			"HZ_PLATFORM_WINDOWS"
+		}
+
+		filter "configurations:Debug"
+			defines "HZ_DEBUG"
+			runtime "Debug"
+			symbols "on"
+
+		filter "configurations:Release"
+			defines "HZ_RELEASE"
+			runtime "Release"
+			symbols "on"
+
+		filter "configurations:Dist"
+			defines "HZ_DIST"
+			runtime "Release"
+			symbols "on"

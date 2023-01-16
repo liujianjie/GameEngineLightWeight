@@ -2,11 +2,11 @@
 #include "Hazel.h"
 #include "ParticleSystem.h"
 
-class Sandbox2D :public Hazel::Layer
+class EditorLayer :public Hazel::Layer
 {
 public:
-	Sandbox2D();
-	virtual ~Sandbox2D();
+	EditorLayer();
+	virtual ~EditorLayer();
 	virtual void OnAttach() override;
 	virtual void OnDetach()override;
 
@@ -18,6 +18,7 @@ private:
 	Hazel::Ref<Hazel::Shader> m_FlatShader;			// shader¿‡ ÷∏’Î
 	Hazel::Ref<Hazel::VertexArray> m_FlatVertexArray;
 	Hazel::Ref<Hazel::Texture2D> m_SquareTexture;		// ∆Â≈ÃŒ∆¿Ì
+	Hazel::Ref<Hazel::Framebuffer> m_Framebuffer;		// ÷°ª∫≥Â
 
 
 	glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };

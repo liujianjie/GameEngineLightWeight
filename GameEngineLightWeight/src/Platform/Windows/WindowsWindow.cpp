@@ -16,10 +16,10 @@ namespace Hazel {
 	static void GLFWErrorCallback(int error, const char* description) {
 		HZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 	}
-
-	Scope<Window> Window::Create(const WindowProps& props) {
-		return CreateScope<WindowsWindow>(props);
-	}
+	// 在window.cpp定义了
+	//Scope<Window> Window::Create(const WindowProps& props) {
+	//	return CreateScope<WindowsWindow>(props);
+	//}
 	WindowsWindow::WindowsWindow(const WindowProps& props) {
 		HZ_PROFILE_FUNCTION();
 

@@ -24,14 +24,14 @@ namespace Hazel {
 		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 		:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	*/
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
 		HZ_PROFILE_FUNCTION();
 		//HZ_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
 		// 创建窗口
-		m_Window = Window::Create();
+		m_Window = Window::Create(WindowProps(name));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		//m_Window->SetVSync(true);
 		//m_Window->SetVSync(false);
@@ -94,7 +94,6 @@ namespace Hazel {
 						layer->OnUpdate(timestep);
 					}
 				}
-
 			}
 			// imgui在update
 			m_ImGuiLayer->Begin();
