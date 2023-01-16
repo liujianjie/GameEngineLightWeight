@@ -180,7 +180,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 #endif
 }
 
-void Sandbox2D::OnImgGuiRender()
+void Sandbox2D::OnImGuiRender()
 {
 	HZ_PROFILE_FUNCTION();
 

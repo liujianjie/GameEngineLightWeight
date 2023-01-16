@@ -100,7 +100,7 @@ namespace Hazel {
 			{
 				HZ_PROFILE_SCOPE("LayerStack OnImGuiRender");
 				for (Layer* layer : m_LayerStack)
-					layer->OnImgGuiRender();
+					layer->OnImGuiRender();
 				m_ImGuiLayer->End();
 
 			}

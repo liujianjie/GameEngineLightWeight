@@ -11,7 +11,7 @@ public:
 	virtual void OnDetach()override;
 
 	virtual void OnUpdate(Hazel::Timestep ts) override;
-	virtual void OnImgGuiRender() override;
+	virtual void OnImGuiRender() override;
 	virtual void OnEvent(Hazel::Event& event) override;
 private:
 	Hazel::OrthographicCameraController m_CameraController;

@@ -1,6 +1,6 @@
 workspace "GameEngineLightWeight"
 	architecture "x64"
-	startproject "Sandbox"
+	startproject "GameEngine-Editor"
 	configurations{
 		"Debug",
 		"Release",

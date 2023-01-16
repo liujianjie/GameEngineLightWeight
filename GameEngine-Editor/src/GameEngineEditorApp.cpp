@@ -8,17 +8,20 @@
 
 #include "EditorLayer.h"
 
-class GameEngineEditor : public Hazel::Application {
-public:
-	GameEngineEditor()
-		: Application("GameEngine Editor")
-	{
-		PushLayer(new EditorLayer());
-	}
-	~GameEngineEditor() {
+namespace Hazel {
+	class GameEngineEditor : public Application {
+	public:
+		GameEngineEditor()
+			: Application("GameEngine Editor")
+		{
+			PushLayer(new EditorLayer());
+		}
+		~GameEngineEditor() {
+		}
+
+	};
+	Application* CreateApplication() {
+		return new GameEngineEditor();
 	}
 
-};
-Hazel::Application* Hazel::CreateApplication() {
-	return new GameEngineEditor();
 }

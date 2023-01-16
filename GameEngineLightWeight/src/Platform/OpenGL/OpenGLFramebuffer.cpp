@@ -13,10 +13,18 @@ namespace Hazel {
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteFramebuffers(1, &m_ColorAttachment);
+		glDeleteFramebuffers(1, &m_DepthAttachment);
 	}
 
 	void OpenGLFramebuffer::Invalidate()
 	{
+		// 如果已有帧缓冲，要删除
+		if (m_RendererID) {
+			glDeleteFramebuffers(1, &m_RendererID);
+			glDeleteFramebuffers(1, &m_ColorAttachment);
+			glDeleteFramebuffers(1, &m_DepthAttachment);
+		}
 		// 1.创建帧缓冲
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID); // 绑定这个帧缓冲
@@ -50,10 +58,18 @@ namespace Hazel {
 	void Hazel::OpenGLFramebuffer::Bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 	}
 
 	void Hazel::OpenGLFramebuffer::Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);// 取消绑定这个帧缓冲,以免不小心渲染到错误的帧缓冲上
+	}
+	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
+	{
+		m_Specification.Width = width;
+		m_Specification.Height = height;
+
+		Invalidate();// 重新生成
 	}
 }
