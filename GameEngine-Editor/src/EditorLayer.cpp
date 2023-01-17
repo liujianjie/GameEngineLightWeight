@@ -174,7 +174,8 @@ namespace Hazel {
 
 		// 获取到子窗口的大小
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize)) { // 改变了窗口大小
+		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize) &&
+			viewportPanelSize.x > 0 && viewportPanelSize.y > 0) { // 改变了窗口大小
 			// 调整帧缓冲区大小
 			m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
 
