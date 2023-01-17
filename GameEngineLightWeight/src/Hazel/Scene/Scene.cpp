@@ -12,6 +12,7 @@ namespace Hazel {
     }
     Scene::Scene()
     {
+        m_Registry.create(); // 让值+1
 #if ENTT_EXAMPLE_CODE
         TransformComponent transform;
         // 测试
@@ -47,9 +48,14 @@ namespace Hazel {
     Scene::~Scene()
     {
     }
-    entt::entity Scene::CreateEnitty()
-    {
-        return m_Registry.create();
+    Entity Scene::CreateEnitty(std::string name)
+    { 
+        // 添加默认组件
+        Entity entity = { m_Registry.create(),this };
+        entity.AddComponent<TransformComponent>();
+        auto& tag = entity.AddComponent<TagComponent>();
+        tag.Tag = name.empty() ? "Entity" : name;
+        return entity;
     }
     void Scene::OnUpdate(Timestep ts)
     {

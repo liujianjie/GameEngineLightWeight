@@ -17,6 +17,7 @@
 #include "Hazel/Renderer/OrthographicCameraController.h"
 
 #include "Hazel/Scene/Scene.h"
+#include "Hazel/Scene/Entity.h"
 #include "Hazel/Scene/Components.h"
 
 // ----------------Renderer--------------------

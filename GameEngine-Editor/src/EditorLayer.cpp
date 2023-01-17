@@ -32,9 +32,10 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		auto square = m_ActiveScene->CreateEnitty();
-		m_ActiveScene->Reg().emplace<TransformComponent>(square); // 先要获取注册表才能添加组件
-		m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		auto square = m_ActiveScene->CreateEnitty("Square");
+		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		//m_ActiveScene->Reg().emplace<TransformComponent>(square); // 先要获取注册表才能添加组件
+		//m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		// 保存ID
 		m_SquareEntity = square;
 	}
@@ -159,8 +160,15 @@ namespace Hazel {
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
-		auto& squareColor = m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color;
-		ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+		if (m_SquareEntity) {
+			ImGui::Separator();
+			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag);
+			auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
+			//auto& squareColor = m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color;
+
+			ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+			ImGui::Separator();
+		}
 		ImGui::End();
 
 		// Imgui创建新的子窗口

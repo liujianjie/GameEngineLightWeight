@@ -21,7 +21,7 @@ namespace Hazel {
 		Ref<Texture2D> m_SquareTexture;		// 棋盘纹理
 		Ref<Framebuffer> m_Framebuffer;		// 帧缓冲
 		Ref<Scene> m_ActiveScene;
-		entt::entity m_SquareEntity;			// 实体，由scene创建的
+		Entity m_SquareEntity;			// 实体，由scene创建的
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 

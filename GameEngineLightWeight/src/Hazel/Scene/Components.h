@@ -3,6 +3,13 @@
 #include <glm/glm.hpp>
 
 namespace Hazel {
+    struct TagComponent { // 不用继承Component
+        std::string Tag;
+        TagComponent() = default;
+        TagComponent(const TagComponent&) = default; // 复制构造函数
+        TagComponent(const std::string& tag)          // 转换构造函数
+            : Tag(tag) {}
+    };
     struct TransformComponent { // 不用继承Component
         glm::mat4 Transform{ 1.0f };
         TransformComponent() = default;
