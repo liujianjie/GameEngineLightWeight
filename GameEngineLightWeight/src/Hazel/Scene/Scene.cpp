@@ -1,31 +1,18 @@
 #include "hzpch.h"
 #include "Scene.h"
-#include "glm/glm.hpp"
+
+#include "Components.h"
+#include "Hazel/Renderer/Renderer2D.h"
+#include <glm/glm.hpp>
+
 namespace Hazel {
     static void DoMath(const glm::mat4& transform) {
-
     }
     static void OnTransformConstruct(entt::registry& registry, entt::entity entity) {
-
     }
     Scene::Scene()
     {
-        struct TransformComponent { // 不用继承Component
-            glm::mat4 Transform;
-            TransformComponent() = default;
-            TransformComponent(const TransformComponent&) = default;
-            TransformComponent(const glm::mat4& transform)
-                : Transform(transform){}
-            operator const glm::mat4& () { return Transform; }
-        };
-        struct MeshComponent {
-            glm::mat4 Transform;
-            MeshComponent() = default;
-            MeshComponent(const MeshComponent&) = default;
-            MeshComponent(const glm::mat4& transform)
-                : Transform(transform) {}
-            operator const glm::mat4& () { return Transform; }
-        };
+#if ENTT_EXAMPLE_CODE
         TransformComponent transform;
         // 测试
         DoMath(transform.Transform);
@@ -55,8 +42,21 @@ namespace Hazel {
         }
         // 7.设置当实体添加TransformComponent组件时执行OnTransformConstruct方法
         m_Registry.on_construct<TransformComponent>().connect<&OnTransformConstruct>();
+#endif
     }
     Scene::~Scene()
     {
+    }
+    entt::entity Scene::CreateEnitty()
+    {
+        return m_Registry.create();
+    }
+    void Scene::OnUpdate(Timestep ts)
+    {
+        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+        for (auto entity : group) {
+            auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            Renderer2D::DrawQuad(transform, sprite.Color);
+        }
     }
 }
