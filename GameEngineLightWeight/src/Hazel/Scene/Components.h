@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Hazel/Renderer/Camera.h"
+#include "SceneCamera.h"
 
 namespace Hazel {
     struct TagComponent { // 不用继承Component
@@ -29,13 +29,12 @@ namespace Hazel {
             : Color(color) {}
     };
     struct CameraComponent {
-        Camera camera;
+        SceneCamera camera;
         bool primary = true;
+        bool fixedAspectRatio = false; // 这个是为了在游戏中不管视口怎么变都不会变得摄像机
 
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
-        CameraComponent(const glm::mat4 & projection)
-            : camera(projection) {}
     };
 
 }

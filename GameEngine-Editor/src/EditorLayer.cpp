@@ -41,10 +41,10 @@ namespace Hazel {
 
 		// 初始化摄像机实体
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+		m_CameraEntity.AddComponent<CameraComponent>();
 		
 		m_SecondCamera = m_ActiveScene->CreateEntity("SecondCamera Entity");
-		auto& cc = m_SecondCamera.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
 		cc.primary = false; // 第二个摄像机为false
 
 	}
@@ -59,6 +59,20 @@ namespace Hazel {
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
 		HZ_PROFILE_FUNCTION();
+		// 窗口resize，在每一帧检测
+		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
+			// 调整帧缓冲区大小
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+
+			// 调整摄像机投影
+			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+			// 调整场景内的摄像机
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
+
 		// 当焦点聚焦，才能wasd
 		if (m_ViewportFocused) {
 			m_CameraController.OnUpdate(ts);
@@ -190,6 +204,13 @@ namespace Hazel {
 			m_CameraEntity.GetComponent<CameraComponent>().primary = m_PrimaryCamera;
 			m_SecondCamera.GetComponent<CameraComponent>().primary = !m_PrimaryCamera;
 		}
+		{
+			auto& camera = m_SecondCamera.GetComponent<CameraComponent>().camera;
+			float orthoSize = camera.GetOrthographicSize();
+			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize)) {
+				camera.SetOrthographicSize(orthoSize);
+			}
+		}
 		ImGui::End();
 
 		// Imgui创建新的子窗口
@@ -210,16 +231,7 @@ namespace Hazel {
 
 		// 获取到子窗口的大小
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize) &&
-			viewportPanelSize.x > 0 && viewportPanelSize.y > 0) { // 改变了窗口大小
-			// 调整帧缓冲区大小
-			m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-
-			// 调整摄像机投影
-			m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
-		}
+		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
 		// imgui渲染帧缓冲中的东西
 		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
