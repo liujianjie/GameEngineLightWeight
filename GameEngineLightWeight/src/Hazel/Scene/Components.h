@@ -48,16 +48,15 @@ namespace Hazel {
 
         template<typename T>
         void Bind() {
-            // 这里绑定的函数功能是：动态实例化Instanse
+            // 这里绑定的函数功能是：根据T动态实例化Instanse
             InstantiateFunction = [&]() {Instance = new T(); };// 引用值捕获Instance
-            DestroyInstanceFunction = [&]() {delete (T*)Instance; Instance = nullptr; };// 为什么一定要转换为T，因为是在继承的情况下
+            DestroyInstanceFunction = [&]() {delete (T*)Instance; Instance = nullptr; };// 为什么一定要转换为T，因为是在继承的情况下，起提示作用
 
             // 这里是绑定T的函数
             OnCreateFunction = [](ScriptableEntity* instance) {((T*)instance)->OnCreate(); };
             //OnCreateFunction = [&Instanse]() {((T*)Instanse)->OnCreate(); };// 也可以写成这样
             OnDestroyFunction = [](ScriptableEntity* instance) {((T*)instance)->OnDestroy(); };
             OnUpdateFunction = [](ScriptableEntity* instance, Timestep ts) {((T*)instance)->OnUpdate(ts); };
-
         }
     };
 }

@@ -59,8 +59,8 @@ namespace Hazel {
     }
     void Scene::OnUpdate(Timestep ts)
     {
-        // 运行的时候更新脚本。
-        {
+        // 引擎运行的时候更新脚本。
+        {   //  [=]是隐式值捕获，捕获ts
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
                 if (!nsc.Instance) {
                     nsc.InstantiateFunction();
