@@ -38,7 +38,7 @@ namespace Hazel {
         // 6.m_Registry获取既有Transform组件又有Mesh组件的实体
         auto group = m_Registry.group<TransformComponent>(entt::get<MeshComponent>);
         for (auto entity : group) {
-            auto&[transform, mesh] = group.get<TransformComponent, MeshComponent>(entity);
+            auto& [transform, mesh] = group.get<TransformComponent, MeshComponent>(entity);
             //Renderer::Submit(mesh, transform);
         }
         // 7.设置当实体添加TransformComponent组件时执行OnTransformConstruct方法
@@ -49,7 +49,7 @@ namespace Hazel {
     {
     }
     Entity Scene::CreateEntity(std::string name)
-    { 
+    {
         // 添加默认组件
         Entity entity = { m_Registry.create(),this };
         entity.AddComponent<TransformComponent>();
@@ -64,8 +64,8 @@ namespace Hazel {
         glm::mat4* cameraTransform = nullptr;
         {
             auto group = m_Registry.view<TransformComponent, CameraComponent>();
-            for (auto entity : group){
-                auto &[transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+            for (auto entity : group) {
+                auto& [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
 
                 if (camera.primary) {
                     mainCamera = &camera.camera;
