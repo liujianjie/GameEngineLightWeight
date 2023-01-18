@@ -22,6 +22,10 @@ namespace Hazel {
 		Ref<Framebuffer> m_Framebuffer;		// 帧缓冲
 		Ref<Scene> m_ActiveScene;
 		Entity m_SquareEntity;			// 实体，由scene创建的
+		Entity m_CameraEntity;			// 摄像机实体
+		Entity m_SecondCamera;			// 摄像机实体
+
+		bool m_PrimaryCamera = true;		
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 

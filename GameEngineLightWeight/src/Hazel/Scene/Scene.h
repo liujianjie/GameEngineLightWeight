@@ -13,7 +13,7 @@ namespace Hazel {
 		Scene();
 		~Scene();
 		
-		Entity CreateEnitty(std::string name);
+		Entity CreateEntity(std::string name);
 
 		void OnUpdate(Timestep ts);
 	private:

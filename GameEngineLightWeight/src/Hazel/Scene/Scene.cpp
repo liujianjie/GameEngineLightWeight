@@ -48,7 +48,7 @@ namespace Hazel {
     Scene::~Scene()
     {
     }
-    Entity Scene::CreateEnitty(std::string name)
+    Entity Scene::CreateEntity(std::string name)
     { 
         // 添加默认组件
         Entity entity = { m_Registry.create(),this };
@@ -59,10 +59,28 @@ namespace Hazel {
     }
     void Scene::OnUpdate(Timestep ts)
     {
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group) {
-            auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Renderer2D::DrawQuad(transform, sprite.Color);
+        // 获取到主摄像机，并且获取到摄像机的位置，用来计算投影矩阵projection
+        Camera* mainCamera = nullptr;
+        glm::mat4* cameraTransform = nullptr;
+        {
+            auto group = m_Registry.view<TransformComponent, CameraComponent>();
+            for (auto entity : group){
+                auto &[transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+
+                if (camera.primary) {
+                    mainCamera = &camera.camera;
+                    cameraTransform = &transform.Transform;
+                }
+            }
+        }
+        if (mainCamera) {
+            Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
+            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+            for (auto entity : group) {
+                auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Renderer2D::DrawQuad(transform, sprite.Color);
+            }
+            Renderer2D::EndScene();
         }
     }
 }

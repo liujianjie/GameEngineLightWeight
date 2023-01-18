@@ -127,6 +127,23 @@ namespace Hazel {
 		s_Data.TextureSlotIndex = 1;
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
+	{
+		HZ_PROFILE_FUNCTION();
+
+		// 投影矩阵projection * 视图矩阵
+		glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
+		s_Data.TextureShader->Bind();		// 绑定shader
+		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+
+		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
+		s_Data.QuadIndexCount = 0;
+		// 指针赋予
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		// 纹理信息重置
+		s_Data.TextureSlotIndex = 1;
+	}
+
 	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		HZ_PROFILE_FUNCTION();

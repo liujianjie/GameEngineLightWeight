@@ -32,12 +32,21 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		auto square = m_ActiveScene->CreateEnitty("Square");
+		auto square = m_ActiveScene->CreateEntity("Square Entity");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		//m_ActiveScene->Reg().emplace<TransformComponent>(square); // 先要获取注册表才能添加组件
 		//m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		// 保存ID
 		m_SquareEntity = square;
+
+		// 初始化摄像机实体
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+		
+		m_SecondCamera = m_ActiveScene->CreateEntity("SecondCamera Entity");
+		auto& cc = m_SecondCamera.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+		cc.primary = false; // 第二个摄像机为false
+
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -68,7 +77,7 @@ namespace Hazel {
 			//static float rotation = 0.0f;
 			//rotation += ts * 50.0f;
 
-			Renderer2D::BeginScene(m_CameraController.GetCamera());
+			//Renderer2D::BeginScene(m_CameraController.GetCamera());
 			// Scene更新
 			m_ActiveScene->OnUpdate(ts);
 			//Renderer2D::DrawrRotatedQuad({ 1.0f, 0.5f }, { 0.8f, 0.8f }, glm::radians(30.0), m_FlatColor);
@@ -87,7 +96,7 @@ namespace Hazel {
 			//		Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
 			//	}
 			//}
-			Renderer2D::EndScene();
+			//Renderer2D::EndScene();
 			// 解绑帧缓冲
 			m_Framebuffer->Unbind();
 		}
@@ -168,6 +177,18 @@ namespace Hazel {
 
 			ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
 			ImGui::Separator();
+		}
+		// 摄像机的transform
+		/*
+		一开始以为：Transform[3]好像是第四行吧。这个不太懂，为什么修改transform矩阵的第三行/列就能改变摄像机的位置，从而改变视图矩阵view
+		后面查资料才发现Transform[3]是第四列
+		*/ 
+		ImGui::DragFloat3("Camera Transform",
+			glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
+
+		if (ImGui::Checkbox("Camera A", &m_PrimaryCamera)) {
+			m_CameraEntity.GetComponent<CameraComponent>().primary = m_PrimaryCamera;
+			m_SecondCamera.GetComponent<CameraComponent>().primary = !m_PrimaryCamera;
 		}
 		ImGui::End();
 
