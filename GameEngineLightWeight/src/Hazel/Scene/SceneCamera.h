@@ -18,9 +18,9 @@ namespace Hazel {
     private:
         void RecalculateProjection();
     private:
-        float m_OrthographicSize = 10.0f;
+        float m_OrthographicSize = 10.0f;// 用来放大还是放缩
         float m_OrthographicNear = -1.0f, m_OrthographicFar = 1.0f;
-
+        // 这里初始化为0，是因为在layer层的onupdate中每帧会检测更新大小，这个值会窗口出现时计算
         float m_AspectRatio = 0.0f;
     };
 }

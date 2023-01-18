@@ -82,9 +82,10 @@ namespace Hazel {
 			WindowCloseEvent event;
 			data.EventCallback(event);
 		});
-		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int ikey, int scancode, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
+			KeyCode key = static_cast<KeyCode>(ikey);
 			switch (action) {
 				case GLFW_PRESS: {
 					//std::cout << "KeyPressedEvent before------------------" << std::endl;
@@ -110,7 +111,7 @@ namespace Hazel {
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			KeyTypedEvent event(keycode);
+			KeyTypedEvent event(static_cast<KeyCode>(keycode));
 			data.EventCallback(event);
 		});
 	

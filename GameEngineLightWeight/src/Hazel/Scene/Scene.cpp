@@ -59,6 +59,20 @@ namespace Hazel {
     }
     void Scene::OnUpdate(Timestep ts)
     {
+        // 运行的时候更新脚本。
+        {
+            m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
+                if (!nsc.Instance) {
+                    nsc.InstantiateFunction();
+                    nsc.Instance->m_Entity = Entity{ entity, this };
+                    // 执行CameraController脚本的OnCreate函数
+                    nsc.OnCreateFunction(nsc.Instance);
+                }
+                // 执行CameraController脚本的OnUpdate函数
+                nsc.OnUpdateFunction(nsc.Instance, ts);
+            });
+        }
+        
         // 获取到主摄像机，并且获取到摄像机的位置，用来计算投影矩阵projection
         Camera* mainCamera = nullptr;
         glm::mat4* cameraTransform = nullptr;

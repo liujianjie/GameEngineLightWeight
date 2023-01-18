@@ -3,6 +3,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Hazel/Core/KeyCodes.h"
 
 #include <Hazel/Renderer/Renderer2D.h>
 
@@ -47,6 +48,26 @@ namespace Hazel {
 		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
 		cc.primary = false; // 第二个摄像机为false
 
+		class CameraController : public ScriptableEntity {
+		public:
+			void OnCreate(){}
+			void OnDestroy() {}
+			void OnUpdate(Timestep ts) {
+				// 获取当前挂载CameraController脚本的实体的TransformComponent组件
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				float speed = 5.0f;
+
+				if (Input::IsKeyPressed(KeyCode::A))
+					transform[3][0] -= speed * ts;
+				if (Input::IsKeyPressed(KeyCode::D))
+					transform[3][0] += speed * ts;
+				if (Input::IsKeyPressed(KeyCode::W))
+					transform[3][1] += speed * ts;
+				if (Input::IsKeyPressed(KeyCode::S))
+					transform[3][1] -= speed * ts;
+			}
+		};
+		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -65,10 +86,8 @@ namespace Hazel {
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
 			// 调整帧缓冲区大小
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-
 			// 调整摄像机投影
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-
 			// 调整场景内的摄像机
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}

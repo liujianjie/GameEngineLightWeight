@@ -1,13 +1,13 @@
 #include "hzpch.h"
 #include "Hazel/Core/Input.h"
+#include "Hazel/Core/KeyCodes.h"
 #include "Hazel/Core/Application.h"
 
 #include <GLFW/glfw3.h>
-
 namespace Hazel {
-	bool Input::IsKeyPressed(int keycode)  {
+	bool Input::IsKeyPressed(KeyCode keycode)  {
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetKey(window, keycode);
+		auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 	bool Input::IsMouseButtonPressed(int button)
