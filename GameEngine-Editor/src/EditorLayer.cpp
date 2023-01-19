@@ -50,7 +50,10 @@ namespace Hazel {
 
 		class CameraController : public ScriptableEntity {
 		public:
-			void OnCreate(){}
+			void OnCreate(){
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				transform[3][0] = rand() % 10 - 5.0f;
+			}
 			void OnDestroy() {}
 			void OnUpdate(Timestep ts) {
 				// 获取当前挂载CameraController脚本的实体的TransformComponent组件
@@ -68,6 +71,7 @@ namespace Hazel {
 			}
 		};
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -204,7 +208,7 @@ namespace Hazel {
 
 		if (m_SquareEntity) {
 			ImGui::Separator();
-			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag);
+			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
 			auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
 			//auto& squareColor = m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color;
 
@@ -213,8 +217,8 @@ namespace Hazel {
 		}
 		// 摄像机的transform
 		/*
-		一开始以为：Transform[3]好像是第四行吧。这个不太懂，为什么修改transform矩阵的第三行/列就能改变摄像机的位置，从而改变视图矩阵view
-		后面查资料才发现Transform[3]是第四列
+			一开始以为：Transform[3]好像是第四行吧。这个不太懂，为什么修改transform矩阵的第三行/列就能改变摄像机的位置，从而改变视图矩阵view
+			后面查资料才发现Transform[3]是第四列
 		*/ 
 		ImGui::DragFloat3("Camera Transform",
 			glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));

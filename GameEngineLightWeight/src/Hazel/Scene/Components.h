@@ -38,30 +38,14 @@ namespace Hazel {
     };
     struct NativeScriptComponent {
         ScriptableEntity* Instance = nullptr;
-        // 关键地方//////////////////////////
-        std::function<void()> InstantiateFunction;
-        std::function<void()> DestroyInstanceFunction;
-
-        std::function<void(ScriptableEntity*)> OnCreateFunction;
-        std::function<void(ScriptableEntity*)> OnDestroyFunction;
-        std::function<void(ScriptableEntity*, Timestep)> OnUpdateFunction;
-
+        // 用函数指针
+        ScriptableEntity* (*InstantiateScript)();// 这函数返回ScriptableEntity指针，函数无参数，InstantiateScript的*代表为指针
+        void(*DestroyScript)(NativeScriptComponent*);
         template<typename T>
         void Bind() {
             // 这里绑定的函数功能是：根据T动态实例化Instanse
-            InstantiateFunction = [&]() {Instance = new T(); };// 引用值捕获Instance
-            DestroyInstanceFunction = [&]() {delete (T*)Instance; Instance = nullptr; };// 为什么一定要转换为T，因为是在继承的情况下，起提示作用
-
-            // 这里是绑定T的函数
-            OnCreateFunction = [](ScriptableEntity* instance) {((T*)instance)->OnCreate(); };
-            OnDestroyFunction = [](ScriptableEntity* instance) {((T*)instance)->OnDestroy(); };
-            OnUpdateFunction = [](ScriptableEntity* instance, Timestep ts) {((T*)instance)->OnUpdate(ts); };
-            /*
-            create 同等写法
-                std::function<void()> OnCreateFunction;
-                OnCreateFunction = [&]() {((T*)Instance)->OnCreate(); }; // 这里隐式捕获的是this局部变量，Instance是全局的不能捕获，Instance前的this指针省略了
-                nsc.OnCreateFunction();
-            */
+            InstantiateScript = []() {return static_cast<ScriptableEntity*>(new T()); };// 引用值捕获Instance
+            DestroyScript = [](NativeScriptComponent* nsc) {delete nsc->Instance; nsc->Instance = nullptr; };// 感觉参数放不放NativeScriptComponent无所谓，反正有this
         }
     };
 }

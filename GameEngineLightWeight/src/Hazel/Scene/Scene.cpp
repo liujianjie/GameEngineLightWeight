@@ -63,13 +63,13 @@ namespace Hazel {
         {   //  [=]是隐式值捕获，捕获ts
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
                 if (!nsc.Instance) {
-                    nsc.InstantiateFunction();
+                    nsc.Instance = nsc.InstantiateScript();
                     nsc.Instance->m_Entity = Entity{ entity, this };
-                    // 执行CameraController脚本的OnCreate函数
-                    nsc.OnCreateFunction(nsc.Instance);
+                    // 执行CameraController脚本的OnCreate函数，由虚函数指定
+                    nsc.Instance->OnCreate();
                 }
                 // 执行CameraController脚本的OnUpdate函数
-                nsc.OnUpdateFunction(nsc.Instance, ts);
+                nsc.Instance->OnUpdate(ts);
             });
         }
         
@@ -79,7 +79,7 @@ namespace Hazel {
         {
             auto group = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : group) {
-                auto& [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+                auto [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
 
                 if (camera.primary) {
                     mainCamera = &camera.camera;
@@ -91,7 +91,8 @@ namespace Hazel {
             Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group) {
-                auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                // get返回的tuple里本是引用
+                auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                 Renderer2D::DrawQuad(transform, sprite.Color);
             }
             Renderer2D::EndScene();
