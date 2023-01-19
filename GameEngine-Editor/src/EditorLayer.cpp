@@ -1,12 +1,9 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Hazel/Core/KeyCodes.h"
-
 #include <Hazel/Renderer/Renderer2D.h>
-
 #include <chrono>
 #include <string>
 
@@ -50,16 +47,15 @@ namespace Hazel {
 
 		class CameraController : public ScriptableEntity {
 		public:
-			void OnCreate(){
+			virtual void OnCreate() override{
 				auto& transform = GetComponent<TransformComponent>().Transform;
 				transform[3][0] = rand() % 10 - 5.0f;
 			}
-			void OnDestroy() {}
-			void OnUpdate(Timestep ts) {
+			virtual void OnDestroy() override {}
+			virtual void OnUpdate(Timestep ts)override {
 				// 获取当前挂载CameraController脚本的实体的TransformComponent组件
 				auto& transform = GetComponent<TransformComponent>().Transform;
 				float speed = 5.0f;
-
 				if (Input::IsKeyPressed(KeyCode::A))
 					transform[3][0] -= speed * ts;
 				if (Input::IsKeyPressed(KeyCode::D))
