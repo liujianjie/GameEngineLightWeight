@@ -1,6 +1,7 @@
 #pragma once
 #include "Hazel.h"
 #include "ParticleSystem.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace Hazel {
 	class EditorLayer :public Layer
@@ -32,5 +33,8 @@ namespace Hazel {
 		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
+
+		// 
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 }
