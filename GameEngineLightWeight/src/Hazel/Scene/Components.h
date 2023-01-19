@@ -54,9 +54,14 @@ namespace Hazel {
 
             // 这里是绑定T的函数
             OnCreateFunction = [](ScriptableEntity* instance) {((T*)instance)->OnCreate(); };
-            //OnCreateFunction = [&Instanse]() {((T*)Instanse)->OnCreate(); };// 也可以写成这样
             OnDestroyFunction = [](ScriptableEntity* instance) {((T*)instance)->OnDestroy(); };
             OnUpdateFunction = [](ScriptableEntity* instance, Timestep ts) {((T*)instance)->OnUpdate(ts); };
+            /*
+            create 同等写法
+                std::function<void()> OnCreateFunction;
+                OnCreateFunction = [&]() {((T*)Instance)->OnCreate(); }; // 这里隐式捕获的是this局部变量，Instance是全局的不能捕获，Instance前的this指针省略了
+                nsc.OnCreateFunction();
+            */
         }
     };
 }
