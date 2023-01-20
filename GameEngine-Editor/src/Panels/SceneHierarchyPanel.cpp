@@ -136,5 +136,14 @@ namespace Hazel {
 				ImGui::TreePop();
 			}
 		}
+		// 实体transform组件
+		if (entity.HasComponent<SpriteRendererComponent>()) {
+			if (ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+				auto& src = entity.GetComponent<SpriteRendererComponent>();
+				ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
+				// 展开树节点
+				ImGui::TreePop();
+			}
+		}
 	}
 }

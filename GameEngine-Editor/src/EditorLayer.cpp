@@ -30,19 +30,19 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		auto square = m_ActiveScene->CreateEntity("Square Entity");
+		auto square = m_ActiveScene->CreateEntity("Blue Square Entity");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-		auto redsquare = m_ActiveScene->CreateEntity("red Square Entity");
+		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
 		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色
 		// 保存ID
 		m_SquareEntity = square;
 
 		// 初始化摄像机实体
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera A");
 		m_CameraEntity.AddComponent<CameraComponent>();
 		
-		m_SecondCamera = m_ActiveScene->CreateEntity("SecondCamera Entity");
+		m_SecondCamera = m_ActiveScene->CreateEntity("Camera B");
 		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
 		cc.primary = false; // 第二个摄像机为false
 
@@ -199,42 +199,13 @@ namespace Hazel {
 		// 渲染
 		m_SceneHierarchyPanel.OnImGuiRender();
 
-		ImGui::Begin("Settings");
+		ImGui::Begin("Stats");
 		auto stats = Renderer2D::GetStats();
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-
-		if (m_SquareEntity) {
-			ImGui::Separator();
-			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
-			auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-			//auto& squareColor = m_ActiveScene->Reg().get<SpriteRendererComponent>(m_SquareEntity).Color;
-
-			ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
-			ImGui::Separator();
-		}
-		// 摄像机的transform
-		/*
-			一开始以为：Transform[3]好像是第四行吧。这个不太懂，为什么修改transform矩阵的第三行/列就能改变摄像机的位置，从而改变视图矩阵view
-			后面查资料才发现Transform[3]是第四列
-		*/ 
-		ImGui::DragFloat3("Camera Transform",
-			glm::value_ptr(m_CameraEntity.GetComponent<TransformComponent>().Transform[3]));
-
-		if (ImGui::Checkbox("Camera A", &m_PrimaryCamera)) {
-			m_CameraEntity.GetComponent<CameraComponent>().primary = m_PrimaryCamera;
-			m_SecondCamera.GetComponent<CameraComponent>().primary = !m_PrimaryCamera;
-		}
-		{
-			auto& camera = m_SecondCamera.GetComponent<CameraComponent>().camera;
-			float orthoSize = camera.GetOrthographicSize();
-			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize)) {
-				camera.SetOrthographicSize(orthoSize);
-			}
-		}
 		ImGui::End();
 
 		// Imgui创建新的子窗口
