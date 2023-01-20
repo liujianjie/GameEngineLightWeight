@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "SceneCamera.h"
 #include "Hazel/Scene/ScriptableEntity.h"
 namespace Hazel {
@@ -14,13 +15,23 @@ namespace Hazel {
     struct TransformComponent { // 不用继承Component
         // 这个transform是矩阵啊，不是实体的xyz位置，Transform[3]才是xyz位置。
         // 不能设为0，设为0，代表缩放为0，就不显示了
-        glm::mat4 Transform{ 1.0f }; 
+        //glm::mat4 Transform{ 1.0f }; 
+        glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
+        glm::vec3 Rotation = { 0.0f, 0.0f,0.0f };
+        glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default; // 复制构造函数
-        TransformComponent(const glm::mat4& transform)          // 转换构造函数
-            : Transform(transform) {}
-        operator const glm::mat4& () { return Transform; }      // 类型转换构造函数
-        operator const glm::mat4& () const { return Transform; }
+        TransformComponent(const glm::vec3& translation)          // 转换构造函数
+            : Translation(translation) {}
+        glm::mat4 GetTransform()const {
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1,0,0 })
+                * glm::rotate(glm::mat4(1.0f), Rotation.y, { 0, 1, 0 })
+                * glm::rotate(glm::mat4(1.0f), Rotation.z, { 0, 0, 1 });
+
+            return glm::translate(glm::mat4(1.0f), Translation)
+                * rotation
+                * glm::scale(glm::mat4(1.0f), Scale);
+        }
     };
 
     struct SpriteRendererComponent {

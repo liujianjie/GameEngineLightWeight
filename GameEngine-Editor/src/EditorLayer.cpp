@@ -41,6 +41,7 @@ namespace Hazel {
 		// 初始化摄像机实体
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera A");
 		m_CameraEntity.AddComponent<CameraComponent>();
+		m_CameraEntity.GetComponent<TransformComponent>().Translation = glm::vec3{ 0,0,10.0f };
 		
 		m_SecondCamera = m_ActiveScene->CreateEntity("Camera B");
 		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
@@ -49,22 +50,22 @@ namespace Hazel {
 		class CameraController : public ScriptableEntity {
 		public:
 			virtual void OnCreate() override{
-				auto& transform = GetComponent<TransformComponent>().Transform;
-				transform[3][0] = rand() % 10 - 5.0f;
+				//auto& tfc = GetComponent<TransformComponent>();
+				//tfc.Translation.x = rand() % 10 - 5.0f;
 			}
 			virtual void OnDestroy() override {}
 			virtual void OnUpdate(Timestep ts)override {
 				// 获取当前挂载CameraController脚本的实体的TransformComponent组件
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& tfc = GetComponent<TransformComponent>();
 				float speed = 5.0f;
 				if (Input::IsKeyPressed(KeyCode::A))
-					transform[3][0] -= speed * ts;
+					tfc.Translation.x -= speed * ts;
 				if (Input::IsKeyPressed(KeyCode::D))
-					transform[3][0] += speed * ts;
+					tfc.Translation.x += speed * ts;
 				if (Input::IsKeyPressed(KeyCode::W))
-					transform[3][1] += speed * ts;
+					tfc.Translation.y += speed * ts;
 				if (Input::IsKeyPressed(KeyCode::S))
-					transform[3][1] -= speed * ts;
+					tfc.Translation.y -= speed * ts;
 			}
 		};
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();

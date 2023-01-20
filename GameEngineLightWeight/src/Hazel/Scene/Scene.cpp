@@ -43,25 +43,25 @@ namespace Hazel {
         
         // 获取到主摄像机，并且获取到摄像机的位置，用来计算投影矩阵projection
         Camera* mainCamera = nullptr;
-        glm::mat4* cameraTransform = nullptr;
+        glm::mat4 cameraTransform;
         {
             auto group = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : group) {
-                auto [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+                auto [tfc, camera] = group.get<TransformComponent, CameraComponent>(entity);
 
                 if (camera.primary) {
                     mainCamera = &camera.camera;
-                    cameraTransform = &transform.Transform;
+                    cameraTransform = tfc.GetTransform();
                 }
             }
         }
         if (mainCamera) {
-            Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
+            Renderer2D::BeginScene(*mainCamera, cameraTransform);
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group) {
                 // get返回的tuple里本是引用
-                auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                Renderer2D::DrawQuad(transform, sprite.Color);
+                auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
             }
             Renderer2D::EndScene();
         }
