@@ -32,8 +32,9 @@ namespace Hazel {
 
 		auto square = m_ActiveScene->CreateEntity("Square Entity");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		//m_ActiveScene->Reg().emplace<TransformComponent>(square); // 先要获取注册表才能添加组件
-		//m_ActiveScene->Reg().emplace<SpriteRendererComponent>(square, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+		auto redsquare = m_ActiveScene->CreateEntity("red Square Entity");
+		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色
 		// 保存ID
 		m_SquareEntity = square;
 
