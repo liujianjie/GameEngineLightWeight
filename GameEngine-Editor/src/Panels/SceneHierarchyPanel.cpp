@@ -95,11 +95,33 @@ namespace Hazel {
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
 			m_SelectionContext = {};
 		}
+
+		// 右击空白面板-弹出菜单。0是ID 1是右键
+		if (ImGui::BeginPopupContextWindow(0, 1, false)) {
+			if (ImGui::MenuItem("Create Empty Entity")) {
+				m_Context->CreateEntity("Empty Entity");
+			}
+			ImGui::EndPopup();
+		}
 		ImGui::End();
 		// 判断当前点击的实体是否存在
 		ImGui::Begin("Properties");
 		if (m_SelectionContext) { // operator uint32_t() 的是const，不然不会调用operator bool(),而是调用uint32_t()
 			DrawComponents(m_SelectionContext);
+			// 在属性面板显示添加组件按钮，点击弹出菜单
+			if (ImGui::Button("Add Component")) {
+				ImGui::OpenPopup("AddComponent");// AddComponent只是id
+			}
+			if (ImGui::BeginPopup("AddComponent")) {
+				if (ImGui::MenuItem("Camera")) {
+					m_SelectionContext.AddComponent<CameraComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Sprite Renderer")) {
+					m_SelectionContext.AddComponent<SpriteRendererComponent>();
+				}
+				ImGui::EndPopup();
+			}
 		}
 		ImGui::End();
 	}
@@ -114,6 +136,14 @@ namespace Hazel {
 		if (ImGui::IsItemClicked()) {
 			m_SelectionContext = entity; // 记录当前点击的实体
 		}
+		// 右键实体-弹出菜单
+		bool entityDeleted = false;
+		if (ImGui::BeginPopupContextItem()) {
+			if (ImGui::MenuItem("Delete Entity")) {
+				entityDeleted = true;
+			}
+			ImGui::EndPopup();
+		}
 		if (opened) {
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 			bool opened = ImGui::TreeNodeEx((void*)98476565, flags, tag.c_str());
@@ -121,6 +151,13 @@ namespace Hazel {
 				ImGui::TreePop();
 			}
 			ImGui::TreePop();
+		}
+		// 延后删除
+		if (entityDeleted) {
+			m_Context->DestroyEntity(entity);
+			if (m_SelectionContext == entity) {
+				m_SelectionContext = {};
+			}
 		}
 	}
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
@@ -139,8 +176,9 @@ namespace Hazel {
 			}
 		}
 		// 实体transform组件
+		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
 		if (entity.HasComponent<TransformComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform")) {
+			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), treeNodeFlags, "Transform")) {
 				auto& tfc = entity.GetComponent<TransformComponent>();
 				DrawVec3Control("Translation", tfc.Translation);
 				glm::vec3 rotation = glm::degrees(tfc.Rotation);
@@ -154,7 +192,7 @@ namespace Hazel {
 		}
 		// 摄像机组件
 		if (entity.HasComponent<CameraComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera")) {
+			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), treeNodeFlags, "Camera")) {
 				auto& cameraComponent = entity.GetComponent<CameraComponent>();
 				auto& camera = cameraComponent.camera;
 
@@ -213,11 +251,33 @@ namespace Hazel {
 		}
 		// 实体SpriteRendererComponent组件
 		if (entity.HasComponent<SpriteRendererComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite Renderer")) {
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4,4 });
+			// 先绘制下三角
+			bool open = ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), treeNodeFlags, "Sprite Renderer");
+			// 再绘制按钮
+			ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
+			// 点击按钮-弹出菜单
+			if (ImGui::Button("+", ImVec2{20, 20})) {
+				ImGui::OpenPopup("ComponentSettings");
+			}
+			ImGui::PopStyleVar();
+
+			bool removeComponent = false;
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				if (ImGui::MenuItem("Remove component")) {
+					removeComponent = true;
+				}
+				ImGui::EndPopup();
+			}
+			if (open) {
 				auto& src = entity.GetComponent<SpriteRendererComponent>();
 				ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
 				// 展开树节点
 				ImGui::TreePop();
+			}
+			// 延迟删除
+			if (removeComponent) {
+				entity.RemoveComponent<SpriteRendererComponent>();
 			}
 		}
 	}

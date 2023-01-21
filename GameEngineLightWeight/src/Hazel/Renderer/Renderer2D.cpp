@@ -125,6 +125,9 @@ namespace Hazel {
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
+
+		// Çå¿Õ£¿
+		RenderCommand::Clear();
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)

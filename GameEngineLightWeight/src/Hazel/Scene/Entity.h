@@ -14,7 +14,10 @@ namespace Hazel {
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args) {
 			HZ_CORE_ASSERT(!HasComponent<T>(), "实体已经存在这个组件");
-			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			// 调用添加组件时执行的方法
+			m_Scene->OnComponentAdded<T>(*this, component);
+			return component;
 		}
 		template<typename T>
 		T& GetComponent() {
@@ -34,6 +37,7 @@ namespace Hazel {
 			return m_EntityHandle != entt::null; 
 		}
 		operator uint32_t() const{ return (uint32_t)m_EntityHandle; }
+		operator entt::entity() const { return m_EntityHandle; }
 		bool operator==(const Entity& other)const {
 			return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 		}

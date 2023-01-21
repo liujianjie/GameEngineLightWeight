@@ -25,6 +25,9 @@ namespace Hazel {
         tag.Tag = name.empty() ? "Entity" : name;
         return entity;
     }
+    void Scene::DestroyEntity(Entity entity) {
+        m_Registry.destroy(entity);
+    }
     void Scene::OnUpdate(Timestep ts)
     {
         // 引擎运行的时候更新脚本。
@@ -63,6 +66,9 @@ namespace Hazel {
                 auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                 Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
             }
+            if (group.size() <= 0) {
+                Renderer2D::Shutdown();
+            }
             Renderer2D::EndScene();
         }
     }
@@ -78,5 +84,35 @@ namespace Hazel {
                 cameraComponent.camera.SetViewportSize(width, height);
             }
         }
+    }
+    // 模板类定义在cpp中
+    template<typename T>
+    void Scene::OnComponentAdded(Entity entity, T& component)
+    {
+        // 静态断言：false，代表在编译前就会执行， 但是编译器这里不会报错，说明这段代码不会编译吧。。
+        // 而且打了断点，也不行，证明这段代码只是声明作用吧。
+        static_assert(false);
+    }
+    template<>
+    void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+    {
+        entity.GetComponent<TransformComponent>().Translation = { 0, 0, 5.0f };
+        component.camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+    }
+    template<>
+    void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+    {
     }
 }
