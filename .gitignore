@@ -2,12 +2,15 @@
 **/bin/
 bin-int/
 游戏测试素材/
+需要的东西/
+小笔记/
 
 # Hazel files
 *.log
 *.ini
 
 # Visual Studio files and folder
+遇到过的问题.docx
 .vs/
 **.sln
 **.vcxproj
