@@ -4,3 +4,8 @@ $(SolutionDir)bin-init\$(Configuration)-$(Platform)\$(ProjectName)\
 >git submodule add https://github.com/TheCherno/glfw GameEngineLightWeight/vendor/GLFW
 
 git submodule add https://github.com/glfw/glfw GameEngineLightWeight/vendor/GLFW 
+
+git submodule add https://github.com/liujianjie/yaml-cpp GameEngineLightWeight/vendor/yaml-cpp
+
+git submodule add https://github.com/TheCherno/yaml-cpp GameEngineLightWeight/vendor/yaml-cpp
+

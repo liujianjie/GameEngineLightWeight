@@ -5,6 +5,8 @@
 #include "Hazel/Renderer/Renderer2D.h"
 #include <glm/glm.hpp>
 
+//#include "SceneCamera.h"
+
 namespace Hazel {
     static void DoMath(const glm::mat4& transform) {
     }
@@ -66,9 +68,9 @@ namespace Hazel {
                 auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
                 Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
             }
-            if (group.size() <= 0) {
-                Renderer2D::Shutdown();
-            }
+            //if (group.size() <= 0) {
+            //    Renderer2D::Shutdown();
+            //}
             Renderer2D::EndScene();
         }
     }
@@ -100,7 +102,11 @@ namespace Hazel {
     template<>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
     {
-        entity.GetComponent<TransformComponent>().Translation = { 0, 0, 5.0f };
+        // 如果是透视摄像机，并且z=0，就重新设置
+        if (component.camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective
+            && entity.GetComponent<TransformComponent>().Translation.z == 0.0f) {
+            entity.GetComponent<TransformComponent>().Translation = { 0, 0, 5.0f };
+        }
         component.camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
     template<>

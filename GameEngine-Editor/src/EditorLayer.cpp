@@ -6,6 +6,7 @@
 #include <Hazel/Renderer/Renderer2D.h>
 #include <chrono>
 #include <string>
+#include "Hazel/Scene/SceneSerializer.h"
 
 namespace Hazel {
 
@@ -16,6 +17,7 @@ namespace Hazel {
 	void EditorLayer::OnAttach()
 	{
 		HZ_PROFILE_FUNCTION();
+
 
 		//Renderer2D::Init();
 		m_SquareTexture = Texture2D::Create("assets/textures/Checkerboard.png");
@@ -30,11 +32,13 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		auto square = m_ActiveScene->CreateEntity("Blue Square Entity");
-		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
+#if 0
 		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
 		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色
+		redsquare.GetComponent<TransformComponent>().Translation = glm::vec3(2.0f, 0.0f, 0.0f);
+
+		auto square = m_ActiveScene->CreateEntity("Green Square Entity");
+		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		// 保存ID
 		m_SquareEntity = square;
 
@@ -70,8 +74,13 @@ namespace Hazel {
 		};
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
+#endif
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		// 序列化
+		//SceneSerializer serializer(m_ActiveScene);
+		//serializer.Serialize("assets/scenes/Examples.scene");
+		//serializer.DeSerialize("assets/scenes/Examples.scene");
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -111,29 +120,10 @@ namespace Hazel {
 		}
 		{
 			HZ_PROFILE_SCOPE("Renderer Draw");
-			//static float rotation = 0.0f;
-			//rotation += ts * 50.0f;
 
-			//Renderer2D::BeginScene(m_CameraController.GetCamera());
 			// Scene更新
 			m_ActiveScene->OnUpdate(ts);
-			//Renderer2D::DrawrRotatedQuad({ 1.0f, 0.5f }, { 0.8f, 0.8f }, glm::radians(30.0), m_FlatColor);
-			//Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, m_FlatColor);
-			//Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.8f }, { 0.2f, 0.8f, 0.9f, 1.0f });
-			//Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, m_SquareTexture, 10.0f);
-			//Renderer2D::DrawRotatedQuad({ -0.5f, -1.5f, 0.0f }, { 1.0f, 1.0f }, glm::radians(rotation), m_SquareTexture, 20.0f);
-			//Renderer2D::EndScene();
 
-			//// 开启新的绘制，会重置绘制内存
-			//Renderer2D::BeginScene(m_CameraController.GetCamera());
-			//for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-			//	for (float x = -5.0f; x < 5.0f; x += 0.5f)
-			//	{
-			//		glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f , (y + 5.0f) / 10.0f , 0.7f };
-			//		Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-			//	}
-			//}
-			//Renderer2D::EndScene();
 			// 解绑帧缓冲
 			m_Framebuffer->Unbind();
 		}
@@ -197,6 +187,14 @@ namespace Hazel {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("Serialize")) {
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.Serialize("assets/scenes/Examples.scene");
+				}
+				if (ImGui::MenuItem("Deserialize")) {
+					SceneSerializer serializer(m_ActiveScene);
+					serializer.DeSerialize("assets/scenes/Examples.scene");
+				}
 				if (ImGui::MenuItem("Exit")) Application::Get().Close();
 				ImGui::EndMenu();
 			}

@@ -17,10 +17,14 @@ IncludeDir["ImGui"] = "GameEngineLightWeight/vendor/imgui"
 IncludeDir["glm"] = "GameEngineLightWeight/vendor/glm"
 IncludeDir["stb_image"] = "GameEngineLightWeight/vendor/stb_image"
 IncludeDir["entt"] = "GameEngineLightWeight/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "GameEngineLightWeight/vendor/yaml-cpp/include" -- 用yaml_cpp下划线是因为"%{IncludeDir.yaml_cpp}"只认识_ 不认识-
 
-include "GameEngineLightWeight/vendor/GLFW"
-include "GameEngineLightWeight/vendor/Glad"
-include "GameEngineLightWeight/vendor/imgui"
+group "Dependencies"
+	include "GameEngineLightWeight/vendor/GLFW"
+	include "GameEngineLightWeight/vendor/Glad"
+	include "GameEngineLightWeight/vendor/imgui"
+	include "GameEngineLightWeight/vendor/yaml-cpp"
+group ""
 
 project "GameEngineLightWeight"
 	location "GameEngineLightWeight"
@@ -55,12 +59,14 @@ project "GameEngineLightWeight"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 	links{
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"yaml-cpp",
 		"opengl32.lib"
 	}
 	filter "system:windows"
