@@ -7,6 +7,7 @@
 #include <chrono>
 #include <string>
 #include "Hazel/Scene/SceneSerializer.h"
+#include "Hazel/Utils/PlatformUtils.h"
 
 namespace Hazel {
 
@@ -85,7 +86,6 @@ namespace Hazel {
 	void EditorLayer::OnDetach()
 	{
 		HZ_PROFILE_FUNCTION();
-
 	}
 	EditorLayer::~EditorLayer()
 	{
@@ -187,13 +187,14 @@ namespace Hazel {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Serialize")) {
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Serialize("assets/scenes/Examples.scene");
+				if (ImGui::MenuItem("New", "Ctrl+N")) {
+					NewScene();
 				}
-				if (ImGui::MenuItem("Deserialize")) {
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.DeSerialize("assets/scenes/Examples.scene");
+				if (ImGui::MenuItem("Open...", "Ctrl+O")) {
+					OpenScene();
+				}
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+					SaveSceneAs();
 				}
 				if (ImGui::MenuItem("Exit")) Application::Get().Close();
 				ImGui::EndMenu();
@@ -248,10 +249,75 @@ namespace Hazel {
 		ImGui::End();
 	}
 
-	void EditorLayer::OnEvent(Event& event)
+	void EditorLayer::OnEvent(Event& e)
 	{
 		// 事件
-		m_CameraController.OnEvent(event);
+		m_CameraController.OnEvent(e);
+
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 	}
 
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetRepeatCount() > 0) {
+			return false;
+		}
+		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		switch (e.GetKeyCode()) {
+			case Key::N: {
+				if (control) {
+					NewScene();
+				}
+				break;
+			}
+			case Key::O: {
+				if (control) {
+					OpenScene();
+				}
+				break;
+			}
+			case Key::S: {
+				if (control && shift) {
+					SaveSceneAs();
+				}
+				// 保存当前场景:要有一个记录当前场景的路径。
+				if (control) {
+
+				}
+				break;
+			}
+		}
+		return false;
+	}
+
+	void EditorLayer::NewScene()
+	{
+		// 创建新场景 ，这段代码可解决 多次加载场景，会将新场景的实体和当前场景的实体一起呈现的bug
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Game Scene (*.scene)\0*.scene\0");
+		if (!filepath.empty()) {
+			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene); 
+
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.DeSerialize(filepath);
+		}
+	}
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filepath = FileDialogs::SaveFile("Game Scene (*.scene)\0*.scene\0");
+		if (!filepath.empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filepath);
+		}
+	}
 }
