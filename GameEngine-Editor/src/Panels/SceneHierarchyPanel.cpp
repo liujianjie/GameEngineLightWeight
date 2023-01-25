@@ -176,7 +176,7 @@ namespace Hazel {
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 			ImGui::Separator(); // 水平风格线，测试放上面也行
 			// 先绘制下三角
-			bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "Sprite Renderer");
+			bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
 			ImGui::PopStyleVar();
 
 			// 再绘制按钮

@@ -128,6 +128,7 @@ namespace Hazel {
 
 		// 清空？
 		RenderCommand::Clear();
+		delete[] s_Data.QuadVertexBufferBase;
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
@@ -139,12 +140,18 @@ namespace Hazel {
 		s_Data.TextureShader->Bind();		// 绑定shader
 		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
 
-		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
-		s_Data.QuadIndexCount = 0;
-		// 指针赋予
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		// 纹理信息重置
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		HZ_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+		StartBatch();
 	}
 
 	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
@@ -154,28 +161,26 @@ namespace Hazel {
 		s_Data.TextureShader->Bind();		// 绑定shader
 		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
-		s_Data.QuadIndexCount = 0;
-		// 指针赋予
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		// 纹理信息重置
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
 	void Hazel::Renderer2D::EndScene()
 	{
 		HZ_PROFILE_FUNCTION();
 
-		// 计算当前绘制需要多少个顶点数据
-		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-		// 截取部分CPU的顶点数据上传OpenGL
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
 		Flush();
 	}
 
 	void Renderer2D::Flush()
 	{
+		if (s_Data.QuadIndexCount == 0) { // 没东西要绘制
+			return;
+		}
+		// 计算当前绘制需要多少个顶点数据
+		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
+		// 截取部分CPU的顶点数据上传OpenGL
+		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
 		// 对应i的texture绑定到i号纹理槽
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
 			s_Data.TextureSlots[i]->Bind(i);
@@ -184,17 +189,19 @@ namespace Hazel {
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 		s_Data.Stats.DrawCalls++;
 	}
-	// 内存不够为了分批渲染要做的drawcall绘制和重置
-	void Renderer2D::FlushAndReset()
+	void Renderer2D::StartBatch()
 	{
-		EndScene();
-
 		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
 		s_Data.QuadIndexCount = 0;
 		// 指针赋予
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 		// 纹理信息重置
 		s_Data.TextureSlotIndex = 1;
+	}
+	void Renderer2D::NextBatch()
+	{
+		Flush();
+		StartBatch();
 	}
 	void Hazel::Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
@@ -222,7 +229,7 @@ namespace Hazel {
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) *
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuad(transform, texture);
+		DrawQuad(transform, texture, tilingFactor, tintColor);
 	}
 	// 子纹理
 	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float tilingFactor, const glm::vec4& tintColor)
@@ -238,7 +245,7 @@ namespace Hazel {
 		const Ref<Texture2D> texture = subtexture->GetTexture();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 
 		float textureIndex = 0.0f;
@@ -299,7 +306,7 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 		constexpr size_t quadVertexCount = 4;
 		const float textureIndex = 0.0f; // 白色纹理
@@ -322,7 +329,7 @@ namespace Hazel {
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
 		constexpr size_t quadVertexCount = 4;
@@ -336,7 +343,12 @@ namespace Hazel {
 				break;
 			}
 		}
+		// 不在纹理槽就要设置到纹理槽中
 		if (textureIndex == 0.0f) {
+			// 如果已经超过当前的最大纹理槽就渲染当前批次，并执行开启下一次批次
+			if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots) {
+				NextBatch();
+			}
 			textureIndex = (float)s_Data.TextureSlotIndex;
 			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 			s_Data.TextureSlotIndex++;// 记得++
@@ -367,7 +379,7 @@ namespace Hazel {
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 
 		const float textureIndex = 0.0f; // 白色纹理
@@ -379,19 +391,6 @@ namespace Hazel {
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 		DrawQuad(transform, color);
-		//for (uint32_t i = 0; i < quadVertexCount; i++) {
-		//	// quad的左下角为起点
-		//	s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPosition[i];
-		//	s_Data.QuadVertexBufferPtr->Color = color;
-		//	s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-		//	s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		//	s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-		//	s_Data.QuadVertexBufferPtr++;
-		//}
-
-		//s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
-
-		//s_Data.Stats.QuadCount++;
 	}
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
 	{
@@ -405,7 +404,7 @@ namespace Hazel {
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 
 		float textureIndex = 0.0f;
@@ -473,7 +472,7 @@ namespace Hazel {
 		const Ref<Texture2D> texture = subtexture->GetTexture();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-			FlushAndReset();
+			NextBatch();
 		}
 
 		float textureIndex = 0.0f;

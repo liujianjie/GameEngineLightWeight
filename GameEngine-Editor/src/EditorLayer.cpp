@@ -22,7 +22,6 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-
 		//Renderer2D::Init();
 		m_SquareTexture = Texture2D::Create("assets/textures/Checkerboard.png");
 
@@ -35,7 +34,7 @@ namespace Hazel {
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
 		m_ActiveScene = CreateRef<Scene>();
-
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 #if 0
 		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
 		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色
@@ -97,9 +96,11 @@ namespace Hazel {
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
 			// 调整帧缓冲区大小
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			// 调整摄像机投影
+			// 调整正交摄像机投影
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-			// 调整场景内的摄像机
+			// 调整编辑摄像机宽高比，重新计算投影矩阵
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+			// 调整场景内的摄像机宽高比，重新计算投影矩阵
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
@@ -107,6 +108,9 @@ namespace Hazel {
 		if (m_ViewportFocused) {
 			m_CameraController.OnUpdate(ts);
 		}
+		// 不需要焦点，每一帧都需要刷新
+		m_EditorCamera.OnUpdate(ts);
+
 		// 渲染信息初始化
 		Renderer2D::ResetStats();
 		{
@@ -120,7 +124,8 @@ namespace Hazel {
 			HZ_PROFILE_SCOPE("Renderer Draw");
 
 			// Scene更新
-			m_ActiveScene->OnUpdate(ts);
+			//m_ActiveScene->OnUpdateRuntime(ts);
+			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 			// 解绑帧缓冲
 			m_Framebuffer->Unbind();
@@ -260,11 +265,15 @@ namespace Hazel {
 			float windowHeight = (float)ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			// Camera
-			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			const auto& camera = cameraEntity.GetComponent<CameraComponent>().camera;
-			const glm::mat4& cameraProjection = camera.GetProjection();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+			// Camera-runtime
+			//auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			//const auto& camera = cameraEntity.GetComponent<CameraComponent>().camera;
+			//const glm::mat4& cameraProjection = camera.GetProjection();
+			//glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+			// Camera - editor 编辑时的摄像机矩阵
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 			// Entity transform
 			auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -305,6 +314,7 @@ namespace Hazel {
 	{
 		// 事件
 		m_CameraController.OnEvent(e);
+		m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));

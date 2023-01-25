@@ -4,6 +4,7 @@
 #include "Hazel/Renderer/Texture.h"
 #include "SubTexture2D.h"
 #include "Hazel/Renderer/Camera.h"
+#include "Hazel/Renderer/EditorCamera.h"
 namespace Hazel {
 	class Renderer2D
 	{
@@ -12,7 +13,8 @@ namespace Hazel {
 		static void Shutdown();
 
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
-		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const OrthographicCamera& camera);// TODO:REMOVE
 		static void EndScene();
 		static void Flush();
 
@@ -23,7 +25,8 @@ namespace Hazel {
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture2D>& subtexture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
-		// 添加
+
+		// 真正绘制的方法- 上面4个 下面4个都得调用这两个
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 		// 不需要size，是因为size包含在transform中
 		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
@@ -47,6 +50,9 @@ namespace Hazel {
 		static void ResetStats();
 		static Statistics GetStats();
 	private:
-		static void FlushAndReset();// 内存不够为了分批渲染要做的drawcall绘制和重置
+		// 开始初始化批渲染
+		static void StartBatch();
+		// 内存不够为了分批渲染要做的drawcall绘制和重置
+		static void NextBatch();// 1.先drawcall渲染当前 2.重置内存指针
 	};
 }

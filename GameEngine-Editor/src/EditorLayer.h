@@ -2,6 +2,7 @@
 #include "Hazel.h"
 #include "ParticleSystem.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Hazel/Renderer/EditorCamera.h"
 
 namespace Hazel {
 	class EditorLayer :public Layer
@@ -32,6 +33,8 @@ namespace Hazel {
 		Entity m_SecondCamera;			// ÉãÏñ»úÊµÌå
 
 		bool m_PrimaryCamera = true;		
+
+		EditorCamera m_EditorCamera;
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 
