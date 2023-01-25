@@ -9,6 +9,9 @@
 #include "Hazel/Scene/SceneSerializer.h"
 #include "Hazel/Utils/PlatformUtils.h"
 
+#include "ImGuizmo.h"
+#include "Hazel/Math/Math.h"
+
 namespace Hazel {
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f, true)
@@ -77,11 +80,6 @@ namespace Hazel {
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 #endif
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
-		// 序列化
-		//SceneSerializer serializer(m_ActiveScene);
-		//serializer.Serialize("assets/scenes/Examples.scene");
-		//serializer.DeSerialize("assets/scenes/Examples.scene");
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -222,12 +220,21 @@ namespace Hazel {
 
 		//HZ_WARN("Focus:{0}, Hover:{1}", m_ViewportFocused, m_ViewportHovered);
 		/*
+			修改之前：意思是当鼠标点击面板并且悬停在面板上，才能接受事件，其它情况均不能接收事件
 			bool canshu = !m_ViewportFocused || !m_ViewportHovered;
-			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = false, m_BlockEvents：false-> viewport面板 能 接收滚轮事件
-			m_ViewportFocused = false, m_ViewportHovered = true;canshu = true,   m_BlockEvents：true-> viewport面板 不 能接收滚轮事件
-			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = true,  m_BlockEvents：true-> viewport面板 不 能接收滚轮事件
+			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = false, m_BlockEvents：false-> viewport面板 能 接收事件
+			m_ViewportFocused = true,  m_ViewportHovered = false;canshu = true,  m_BlockEvents：true-> viewport面板 不 能接收事件
+			m_ViewportFocused = false, m_ViewportHovered = true; canshu = true,  m_BlockEvents：true-> viewport面板 不 能接收事件
+			m_ViewportFocused = false, m_ViewportHovered = false;canshu = true,  m_BlockEvents：true-> viewport面板 不 能接收事件
+
+			修改之后：意思是当鼠标没有点击面板并且没有悬停在面板上，就不接受事件，其它情况均可接收事件
+			bool canshu = !m_ViewportFocused && !m_ViewportHovered;
+			m_ViewportFocused = true,  m_ViewportHovered = true; canshu = false, m_BlockEvents：false-> viewport面板 能 接收事件
+			m_ViewportFocused = true,  m_ViewportHovered = false;canshu = false,  m_BlockEvents：true-> viewport面板 能 接收事件
+			m_ViewportFocused = false, m_ViewportHovered = true; canshu = false,  m_BlockEvents：true-> viewport面板 能 接收事件
+			m_ViewportFocused = false, m_ViewportHovered = false;canshu = true,  m_BlockEvents：true->  viewport面板 不 能接收事件
 		*/
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		// 获取到子窗口的大小
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -243,6 +250,51 @@ namespace Hazel {
 			因为我们绘制的quad的uv是左下角为00，右下角10，左上角01，右上角11。
 		*/
 		ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		// ImGuizmos
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1) {
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float windowWidth = (float)ImGui::GetWindowWidth();
+			float windowHeight = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+			// Camera
+			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			const auto& camera = cameraEntity.GetComponent<CameraComponent>().camera;
+			const glm::mat4& cameraProjection = camera.GetProjection();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+			// Entity transform
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 transform = tc.GetTransform();
+
+			// Snapping
+			bool snap = Input::IsKeyPressed(Key::LeftControl);
+			float snapValue = 0.5f; // 平移的snap
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE) {// rotate的度数
+				snapValue = 45.0f;
+			}
+			float snapValues[3] = { snapValue, snapValue,snapValue };
+
+			// 这里可以说是传入相应参数，得到绘画出来的gizmos
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, snap ? snapValues : nullptr);
+
+			// 如果gizmos被使用 或者 说被移动
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				// 用增量旋转，解决矩阵可能会造成万向锁。
+				glm::vec3 deltaRotation = rotation - tc.Rotation;
+				tc.Translation = translation;
+				tc.Rotation += deltaRotation; // 每一帧增加没有限制角度，而不是固定在360度数。
+				tc.Scale = scale;
+			}
+		}
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -283,11 +335,24 @@ namespace Hazel {
 					SaveSceneAs();
 				}
 				// 保存当前场景:要有一个记录当前场景的路径。
-				if (control) {
+				//if (control) {
 
-				}
+				//}
 				break;
 			}
+			// Gizmos
+			case Key::Q:
+				m_GizmoType = -1;
+				break;
+			case Key::W:
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			case Key::E:
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			case Key::R:
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
 		}
 		return false;
 	}

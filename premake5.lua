@@ -18,6 +18,7 @@ IncludeDir["glm"] = "GameEngineLightWeight/vendor/glm"
 IncludeDir["stb_image"] = "GameEngineLightWeight/vendor/stb_image"
 IncludeDir["entt"] = "GameEngineLightWeight/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "GameEngineLightWeight/vendor/yaml-cpp/include" -- 用yaml_cpp下划线是因为"%{IncludeDir.yaml_cpp}"只认识_ 不认识-
+IncludeDir["ImGuizmo"] = "GameEngineLightWeight/vendor/ImGuizmo" 
 
 group "Dependencies"
 	include "GameEngineLightWeight/vendor/GLFW"
@@ -45,12 +46,14 @@ project "GameEngineLightWeight"
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 	defines{
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
 	}
-
 	includedirs{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
@@ -60,7 +63,8 @@ project "GameEngineLightWeight"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 	links{
 		"GLFW",
@@ -69,6 +73,10 @@ project "GameEngineLightWeight"
 		"yaml-cpp",
 		"opengl32.lib"
 	}
+	-- imguizmo不使用编译头？ 没用 这句
+	filter "files:%{prj.name}/vendor/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
+
 	filter "system:windows"
 		systemversion "latest"
 
@@ -162,7 +170,8 @@ project "GameEngine-Editor"
 		"GameEngineLightWeight/src",
 		"GameEngineLightWeight/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links{

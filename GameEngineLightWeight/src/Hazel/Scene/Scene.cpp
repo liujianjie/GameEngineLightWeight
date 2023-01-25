@@ -8,10 +8,6 @@
 //#include "SceneCamera.h"
 
 namespace Hazel {
-    static void DoMath(const glm::mat4& transform) {
-    }
-    static void OnTransformConstruct(entt::registry& registry, entt::entity entity) {
-    }
     Scene::Scene()
     {
     }
@@ -86,6 +82,17 @@ namespace Hazel {
                 cameraComponent.camera.SetViewportSize(width, height);
             }
         }
+    }
+    Entity Scene::GetPrimaryCameraEntity()
+    {
+        auto view = m_Registry.view<CameraComponent>();
+        for (auto entity : view) {
+            const auto& camera = view.get<CameraComponent>(entity);
+            if (camera.primary) {
+                return Entity{ entity, this };
+            }
+        }
+        return {};
     }
     // 模板类定义在cpp中
     template<typename T>

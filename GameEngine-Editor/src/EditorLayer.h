@@ -41,5 +41,8 @@ namespace Hazel {
 
 		// 
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+
+		// imguizmoªÊª≠µƒ¿‡–Õ
+		int m_GizmoType = 0;
 	};
 }
