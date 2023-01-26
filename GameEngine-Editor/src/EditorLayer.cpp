@@ -29,6 +29,7 @@ namespace Hazel {
 		m_CameraController.SetZoomLevel(3.0f);
 
 		FramebufferSpecification fbSpec;
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -245,8 +246,9 @@ namespace Hazel {
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-		// imgui渲染帧缓冲中的东西
-		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+		// imgui渲染帧缓冲中的东西。
+		// textureID是缓冲区ID
+		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(1);
 		/*
 			imgui的uv默认是左下角为01，右下角为11，左上角为00，右上角是10
 
