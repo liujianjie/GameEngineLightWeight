@@ -150,6 +150,7 @@ namespace Hazel {
 				// 4.读取帧缓冲第二个缓冲区的数据
 				int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
 				HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 			}
 
 			// 解绑帧缓冲
@@ -233,6 +234,13 @@ namespace Hazel {
 		m_SceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
+		
+		std::string name = "None";
+		if (m_HoveredEntity) {
+			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+		}
+		ImGui::Text("Hovered Entity: %s", name.c_str());
+
 		auto stats = Renderer2D::GetStats();
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);

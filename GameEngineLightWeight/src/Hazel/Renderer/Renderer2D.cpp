@@ -15,6 +15,8 @@ namespace Hazel {
 		glm::vec2 TexCoord;
 		float TexIndex;
 		float TilingFactor;
+		// Editor-only;
+		int EntityID;
 	};
 	struct Renderer2DData {
 		static const uint32_t MaxQuads = 10000;
@@ -39,7 +41,7 @@ namespace Hazel {
 		Renderer2D::Statistics Stats;
 	};
 	static Renderer2DData s_Data;
-	void Hazel::Renderer2D::Init()
+	void Renderer2D::Init()
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -55,14 +57,15 @@ namespace Hazel {
 
 		// 2.1设置顶点缓冲区布局
 		s_Data.QuadVertexBuffer->SetLayout({
-			{Hazel::ShaderDataType::Float3, "a_Position"},
-			{Hazel::ShaderDataType::Float4, "a_Color"},
-			{Hazel::ShaderDataType::Float2, "a_TexCoord"},
-			{Hazel::ShaderDataType::Float, "a_TexIndex"},
-			{Hazel::ShaderDataType::Float, "a_TilingFactor"}
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float2, "a_TexCoord"},
+			{ShaderDataType::Float, "a_TexIndex"},
+			{ShaderDataType::Float, "a_TilingFactor"},
+			{ShaderDataType::Int, "a_EntityID"}
 			});
 
-		// 1.1顶点数组添加顶点缓冲区，并且在这个缓冲区中设置布局
+		// 1.1设置使用的顶点数组缓冲区，并且在这个缓冲区中设置布局
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
 		// 3.索引缓冲
@@ -116,7 +119,7 @@ namespace Hazel {
 		s_Data.QuadVertexPosition[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 	}
 
-	void Hazel::Renderer2D::Shutdown()
+	void Renderer2D::Shutdown()
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -154,7 +157,7 @@ namespace Hazel {
 		StartBatch();
 	}
 
-	void Hazel::Renderer2D::BeginScene(const OrthographicCamera& camera)
+	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -164,7 +167,7 @@ namespace Hazel {
 		StartBatch();
 	}
 
-	void Hazel::Renderer2D::EndScene()
+	void Renderer2D::EndScene()
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -203,12 +206,12 @@ namespace Hazel {
 		Flush();
 		StartBatch();
 	}
-	void Hazel::Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
 	{
 		DrawQuad({ position.x, position.y, 0.0f }, size, color);
 	}
 
-	void Hazel::Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
 		HZ_PROFILE_FUNCTION();
 	
@@ -302,7 +305,7 @@ namespace Hazel {
 	///////////////////////////////////////////////////////////////////////
 	// 核心方法////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
 	{
 		HZ_PROFILE_FUNCTION();
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
@@ -319,14 +322,14 @@ namespace Hazel {
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
-		
 		s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
 
 		s_Data.Stats.QuadCount++;
 	}
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID)
 	{
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			NextBatch();
@@ -360,6 +363,7 @@ namespace Hazel {
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 		s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
@@ -507,6 +511,10 @@ namespace Hazel {
 		s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
 
 		s_Data.Stats.QuadCount++;
+	}
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
+	{
+		DrawQuad(transform, src.Color, entityID);
 	}
 	void Renderer2D::ResetStats()
 	{

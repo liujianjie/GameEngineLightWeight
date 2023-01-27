@@ -31,6 +31,8 @@ namespace Hazel {
 		Entity m_SquareEntity;			// 实体，由scene创建的
 		Entity m_CameraEntity;			// 摄像机实体
 		Entity m_SecondCamera;			// 摄像机实体
+		
+		Entity m_HoveredEntity;			// 鼠标当前位置的实体
 
 		bool m_PrimaryCamera = true;		
 
