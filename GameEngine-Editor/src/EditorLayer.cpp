@@ -252,6 +252,13 @@ namespace Hazel {
 		// Imgui创建新的子窗口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0,0 });
 		ImGui::Begin("Viewport");
+		// 不用这么复杂，imgui提供了api：每帧获取视口的大小，不包括标题栏
+		//auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		//auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		//auto viewportOffset = ImGui::GetWindowPos();
+		//m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		//m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 		// 1.先获取Viewport视口左上角与viewport视口标题栏距离的偏移位置（0,24)- 必须放这，因为标题栏后就是视口的左上角
 		auto viewportOffset = ImGui::GetCursorPos();
 
@@ -314,6 +321,7 @@ namespace Hazel {
 			float windowWidth = (float)ImGui::GetWindowWidth();
 			float windowHeight = (float)ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+			//ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			// Camera-runtime
 			//auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
@@ -368,6 +376,7 @@ namespace Hazel {
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -413,6 +422,22 @@ namespace Hazel {
 			case Key::R:
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
+		}
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == Mouse::ButtonLeft) {
+			/*
+				m_ViewportHovered 是为了在别的视口点击不会关闭当前显示的gizmo
+				后面两个&&是解决下面
+				1. 拖动gizmo移动一个实体与另一个实体重叠时停下，且另一个实体在当前实体上面，再点击gizmo想移动原先实体，那么会获取在上面另一个实体的实体ID，即另一个实体会被选中，会切换gizmo。
+				2. 显示了gizmo，但是若按下leftalt拖动旋转摄像机，则gizmo会消失
+			*/
+			if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
+				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
 		}
 		return false;
 	}

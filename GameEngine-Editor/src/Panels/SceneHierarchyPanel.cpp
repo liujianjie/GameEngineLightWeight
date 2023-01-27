@@ -124,6 +124,10 @@ namespace Hazel {
 		}
 		ImGui::End();
 	}
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	{
+		m_SelectionContext = entity;
+	}
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		// 要引入 Log头文件
