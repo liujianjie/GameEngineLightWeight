@@ -29,7 +29,7 @@ namespace Hazel {
 		m_CameraController.SetZoomLevel(3.0f);
 
 		FramebufferSpecification fbSpec;
-		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
+		fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth};
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -128,6 +128,27 @@ namespace Hazel {
 			//m_ActiveScene->OnUpdateRuntime(ts);
 			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
+			// 绝对位置是：当前位置距离屏幕左上角(0,0)的位置
+			// 1.获取当前鼠标距离整个屏幕左上角(0,0)的位置
+			auto [mx, my] = ImGui::GetMousePos();
+			// 2.鼠标绝对位置减去viewport窗口的左上角绝对位置=鼠标相对于viewport窗口左上角的位置
+			mx -= m_ViewportBounds[0].x;
+			my -= m_ViewportBounds[0].y;
+
+			// 3.viewport窗口的右下角绝对位置-左上角的绝对位置=viewport窗口的位置
+			glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+			// 翻转y,使其左下角开始才是(0,0)
+			my = viewportSize.y - my;
+			int mouseX = (int)mx;
+			int mouseY = (int)my;
+
+			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+				//HZ_CORE_WARN("Mouse xy = {0} {1}", mouseX, mouseY);
+				// 4.读取帧缓冲第二个缓冲区的数据
+				int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+				HZ_CORE_WARN("Pixel data = {0}", pixelData);
+			}
+
 			// 解绑帧缓冲
 			m_Framebuffer->Unbind();
 		}
@@ -220,6 +241,8 @@ namespace Hazel {
 		// Imgui创建新的子窗口
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0,0 });
 		ImGui::Begin("Viewport");
+		// 1.先获取Viewport视口左上角与viewport视口标题栏距离的偏移位置（0,24)- 必须放这，因为标题栏后就是视口的左上角
+		auto viewportOffset = ImGui::GetCursorPos();
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -248,7 +271,7 @@ namespace Hazel {
 
 		// imgui渲染帧缓冲中的东西。
 		// textureID是缓冲区ID
-		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(1);
+		uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID(0);
 		/*
 			imgui的uv默认是左下角为01，右下角为11，左上角为00，右上角是10
 
@@ -257,6 +280,20 @@ namespace Hazel {
 			因为我们绘制的quad的uv是左下角为00，右下角10，左上角01，右上角11。
 		*/
 		ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+		// 2.获取vieport视口大小 - 包含标题栏的高
+		auto windowSize = ImGui::GetWindowSize();
+		// 3.获取当前vieport视口标题栏左上角距离当前整个屏幕左上角（0,0）的位置
+		ImVec2 minBound = ImGui::GetWindowPos();
+		// 4.计算viewport视口的左上角距离当前整个屏幕左上角（0,0）的位置
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+		// 5. 计算viewport视口的右下角距离当前整个屏幕左上角（0,0）的位置
+		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y - viewportOffset.y };
+		// 6. 保存左上角和右下角距离整个屏幕左上角的位置
+		m_ViewportBounds[0] = { minBound.x, minBound.y };
+		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
+
 		// ImGuizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1) {

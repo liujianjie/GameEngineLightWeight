@@ -38,7 +38,6 @@ namespace Hazel {
 
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 
-		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 
@@ -47,5 +46,10 @@ namespace Hazel {
 
 		// imguizmo绘画的类型
 		int m_GizmoType = 0;
+
+		// 为了获取鼠标位置-得到窗口的边界
+		glm::vec2 m_ViewportBounds[2]; // [0]是左上角的坐标，[1]是右下角的坐标
+
+		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 	};
 }
