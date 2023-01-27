@@ -120,6 +120,9 @@ namespace Hazel {
 			m_Framebuffer->Bind();
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			RenderCommand::Clear();
+
+			// 用-1填充帧缓冲的第二个颜色缓冲区
+			m_Framebuffer->ClearAttachment(1, -1);
 		}
 		{
 			HZ_PROFILE_SCOPE("Renderer Draw");
