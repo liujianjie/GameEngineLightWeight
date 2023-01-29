@@ -19,8 +19,13 @@ bin-int/
 **.vcxproj.user
 **.csproj
 
+# vulkan
+*.exe
+bfg.jar
+
 # Directories
 GameEngineLightWeight/vendor/VulkanSDK
 GameEngine-Editor/assets/cache
+scripts/GameEngineLightWeight/vendor/VulkanSDK
 scripts/__pycache__
 scripts/.idea
