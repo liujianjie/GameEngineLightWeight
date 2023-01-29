@@ -17,9 +17,9 @@ namespace Hazel {
 		/*告诉OpenGLm_RendererID的纹理存储的是rbg8位，宽高的缓冲区*/
 		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 		/*告诉opengl，纹理缩小时用线性过滤*/
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINE);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		/*告诉opengl，纹理放大时用周围颜色的平均值过滤*/
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		// 纹理坐标超过1采取的措施
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -57,9 +57,9 @@ namespace Hazel {
 		/*告诉OpenGLm_RendererID的纹理存储的是rbg8位，宽高的缓冲区*/
 		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 		/*告诉opengl，纹理缩小时用线性过滤*/
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINE);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		/*告诉opengl，纹理放大时用周围颜色的平均值过滤*/
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		// 纹理坐标超过1采取的措施
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);

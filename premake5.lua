@@ -9,6 +9,8 @@ workspace "GameEngineLightWeight"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+VULKAN_SDK = os.getenv("VULKAN_SDK")
+
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "GameEngineLightWeight/vendor/GLFW/include"
@@ -19,6 +21,25 @@ IncludeDir["stb_image"] = "GameEngineLightWeight/vendor/stb_image"
 IncludeDir["entt"] = "GameEngineLightWeight/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "GameEngineLightWeight/vendor/yaml-cpp/include" -- 用yaml_cpp下划线是因为"%{IncludeDir.yaml_cpp}"只认识_ 不认识-
 IncludeDir["ImGuizmo"] = "GameEngineLightWeight/vendor/ImGuizmo" 
+IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+
+LibraryDir = {}
+
+LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+LibraryDir["VulkanSDK_Debug"] = "%{wks.location}/GameEngineLightWeight/vendor/VulkanSDK/Lib"
+
+Library = {}
+Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
+Library["VulkanUtils"] = "%{LibraryDir.VulkanSDK}/VkLayer_utils.lib"
+
+Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/shaderc_sharedd.lib"
+Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/spirv-cross-cored.lib"
+Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/spirv-cross-glsld.lib"
+Library["SPIRV_Tools_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/SPIRV-Toolsd.lib"
+
+Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
+Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
+Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
 group "Dependencies"
 	include "GameEngineLightWeight/vendor/GLFW"
@@ -32,7 +53,7 @@ project "GameEngineLightWeight"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"	
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -64,7 +85,8 @@ project "GameEngineLightWeight"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.VulkanSDK}"
 	}
 	links{
 		"GLFW",
@@ -91,22 +113,44 @@ project "GameEngineLightWeight"
 			runtime "Debug"
 			symbols "on"
 
+			links
+			{
+				"%{Library.ShaderC_Debug}",
+				"%{Library.SPIRV_Cross_Debug}",
+				"%{Library.SPIRV_Cross_GLSL_Debug}",
+				"%{Library.SPIRV_Tools_Debug}"
+			}
+
 		filter "configurations:Release"
 			defines "HZ_RELEASE"
 			runtime "Release"
 			symbols "on"
+
+			links
+			{
+				"%{Library.ShaderC_Release}",
+				"%{Library.SPIRV_Cross_Release}",
+				"%{Library.SPIRV_Cross_GLSL_Release}"
+			}
 
 		filter "configurations:Dist"
 			defines "HZ_DIST"
 			runtime "Release"
 			symbols "on"
 
+			links
+			{
+				"%{Library.ShaderC_Release}",
+				"%{Library.SPIRV_Cross_Release}",
+				"%{Library.SPIRV_Cross_GLSL_Release}"
+			}
+
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"	
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -155,7 +199,7 @@ project "GameEngine-Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"	
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")

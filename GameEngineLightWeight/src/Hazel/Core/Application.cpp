@@ -24,7 +24,8 @@ namespace Hazel {
 		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 		:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	*/
-	Application::Application(const std::string& name)
+	Application::Application(const std::string& name, ApplicationCommandLineArgs args)
+		: m_CommandLineArgs(args)
 	{
 		HZ_PROFILE_FUNCTION();
 		//HZ_CORE_ASSERT(!s_Instance, "Application already exists!");

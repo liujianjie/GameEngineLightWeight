@@ -10,7 +10,7 @@
 
 namespace Hazel {
 	std::string FileDialogs::OpenFile(const char* filter) {
-		OPENFILENAME ofn;
+		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
@@ -27,7 +27,7 @@ namespace Hazel {
 		return std::string();
 	}
 	std::string FileDialogs::SaveFile(const char* filter) {
-		OPENFILENAME ofn;
+		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);

@@ -36,6 +36,15 @@ namespace Hazel {
 
 		m_ActiveScene = CreateRef<Scene>();
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+		 
+		// 设置默认打开场景 E:\AllWorkSpace1\GameEngineLightWeight\GameEngine-Editor\assets\scenes\PinkCube.scene
+		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		if (commandLineArgs.Count > 1) {
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.DeSerialize(sceneFilePath);
+		}
+
 #if 0
 		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
 		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色

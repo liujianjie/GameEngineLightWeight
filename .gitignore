@@ -8,6 +8,7 @@ bin-int/
 # Hazel files
 *.log
 *.ini
+提交到GitHub.bat
 
 # Visual Studio files and folder
 遇到过的问题.docx
@@ -20,5 +21,6 @@ bin-int/
 
 # Directories
 GameEngineLightWeight/vendor/VulkanSDK
-Hazelnut/assets/cache
+GameEngine-Editor/assets/cache
 scripts/__pycache__
+scripts/.idea

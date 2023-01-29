@@ -11,8 +11,8 @@
 namespace Hazel {
 	class GameEngineEditor : public Application {
 	public:
-		GameEngineEditor()
-			: Application("GameEngine Editor")
+		GameEngineEditor(ApplicationCommandLineArgs args)
+			: Application("GameEngine Editor", args)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -20,8 +20,9 @@ namespace Hazel {
 		}
 
 	};
-	Application* CreateApplication() {
-		return new GameEngineEditor();
+	// ´Ómain´«Èë
+	Application* CreateApplication(ApplicationCommandLineArgs args) {
+		return new GameEngineEditor(args);
 	}
 
 }

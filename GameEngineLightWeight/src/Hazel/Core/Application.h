@@ -13,10 +13,20 @@
 #include "Hazel/Core/Timestep.h"
 
 namespace Hazel {
+	struct ApplicationCommandLineArgs {
+		int Count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			HZ_CORE_ASSERT(index < Count);
+			return Args[index];
+		}
+	};
 	class HAZEL_API Application
 	{
 	public:
-		Application(const std::string& name = "Game Engine");
+		Application(const std::string& name = "Game Engine", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void Run();
@@ -32,6 +42,8 @@ namespace Hazel {
 
 		//inline OrthographicCamera& GetCamera() { return m_Camera; }
 		void Close();
+
+		ApplicationCommandLineArgs GetCommandLineArgs()const { return m_CommandLineArgs; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -44,10 +56,11 @@ namespace Hazel {
 		// 计算deltatime,每一帧的间隔时间
 		float m_LastFrameTime = 0.0f;
 	private:
+		ApplicationCommandLineArgs m_CommandLineArgs;
 		static Application* s_Instance;
 	};
 
 	// 将在客户端被定义
-	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 }
 
