@@ -24,7 +24,7 @@ bin-int/
 bfg.jar
 
 # Directories
-GameEngineLightWeight/vendor/VulkanSDK
+# GameEngineLightWeight/vendor/VulkanSDK
 GameEngine-Editor/assets/cache
 scripts/GameEngineLightWeight/vendor/VulkanSDK
 scripts/__pycache__
