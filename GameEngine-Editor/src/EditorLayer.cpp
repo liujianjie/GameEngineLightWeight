@@ -14,6 +14,8 @@
 
 namespace Hazel {
 
+	extern const std::filesystem::path g_AssetPath;
+
 	EditorLayer::EditorLayer() : Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f, true)
 	{
 	}
@@ -308,6 +310,15 @@ namespace Hazel {
 			因为我们绘制的quad的uv是左下角为00，右下角10，左上角01，右上角11。
 		*/
 		ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		// 接收在此视口拖放过来的值，On target candidates，拖放目标
+		if (ImGui::BeginDragDropTarget()) {
+			// 因为接收内容可能为空，需要if判断
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				OpenScene(std::filesystem::path(g_AssetPath) / path);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		// 2.获取vieport视口大小 - 包含标题栏的高
 		auto windowSize = ImGui::GetWindowSize();
@@ -464,13 +475,17 @@ namespace Hazel {
 	{
 		std::string filepath = FileDialogs::OpenFile("Game Scene (*.scene)\0*.scene\0");
 		if (!filepath.empty()) {
-			m_ActiveScene = CreateRef<Scene>();
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_ActiveScene); 
-
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.DeSerialize(filepath);
+			OpenScene(filepath);
 		}
+	}
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		SceneSerializer serializer(m_ActiveScene);
+		serializer.DeSerialize(path.string());
 	}
 	void EditorLayer::SaveSceneAs()
 	{
