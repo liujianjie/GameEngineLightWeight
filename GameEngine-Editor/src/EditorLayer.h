@@ -2,6 +2,7 @@
 #include "Hazel.h"
 #include "ParticleSystem.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Hazel/Renderer/EditorCamera.h"
 
 namespace Hazel {
@@ -46,6 +47,7 @@ namespace Hazel {
 
 		// 
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 
 		// imguizmoªÊª≠µƒ¿‡–Õ
 		int m_GizmoType = 0;
