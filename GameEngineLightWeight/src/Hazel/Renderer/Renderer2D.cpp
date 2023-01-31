@@ -111,8 +111,8 @@ namespace Hazel {
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 		// 纹理的shader
-		//s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl"); 
-		s_Data.TextureShader = Shader::Create("assets/shaders/Texture - Vulkan自己写的.glsl");
+		s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl"); 
+		//s_Data.TextureShader = Shader::Create("assets/shaders/Texture - Vulkan自己写的.glsl");
 
 		int32_t samplers[s_Data.MaxTextureSlots];
 		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++) {
@@ -524,7 +524,12 @@ namespace Hazel {
 	}
 	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID)
 	{
-		DrawQuad(transform, src.Color, entityID);
+		if (src.Texture) {
+			DrawQuad(transform, src.Texture, src.TilingFactor, src.Color, entityID);
+		}
+		else {
+			DrawQuad(transform, src.Color, entityID);
+		}
 	}
 	void Renderer2D::ResetStats()
 	{

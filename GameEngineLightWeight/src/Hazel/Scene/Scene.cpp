@@ -62,7 +62,8 @@ namespace Hazel {
             for (auto entity : group) {
                 // get返回的tuple里本是引用
                 auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
+                //Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
+                Renderer2D::DrawSprite(tfc.GetTransform(), sprite, (int)entity);
             }
             //if (group.size() <= 0) {
             //}
@@ -75,7 +76,8 @@ namespace Hazel {
         auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
         for (auto entity : group) {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
+            //Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
+            Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
         }
         Renderer2D::EndScene();
     }

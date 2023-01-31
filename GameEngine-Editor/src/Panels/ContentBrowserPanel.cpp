@@ -49,7 +49,7 @@ namespace Hazel {
 
 			// On source items 拖动
 			ImGui::PushID(filenameString.c_str());
-			//ImGui::PushID(path.c_str());// 不知道为什么放入path.c_str()却没用！
+			//ImGui::PushID(path.c_str());// 不知道为什么放入path.c_str()却没用！好像说啥会一直调用同一个地址
 
 			// Icon
 			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
