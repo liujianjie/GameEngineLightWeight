@@ -26,6 +26,8 @@ namespace Hazel {
 
 		//Renderer2D::Init();
 		m_SquareTexture = Texture2D::Create("assets/textures/Checkerboard.png");
+		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
+		m_IconStop = Texture2D::Create("Resources/Icons/StopButton.png");
 
 		// 拉远摄像机
 		m_CameraController.SetZoomLevel(3.0f);
@@ -116,13 +118,6 @@ namespace Hazel {
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
-		// 当焦点聚焦，才能wasd
-		if (m_ViewportFocused) {
-			m_CameraController.OnUpdate(ts);
-		}
-		// 不需要焦点，每一帧都需要刷新
-		m_EditorCamera.OnUpdate(ts);
-
 		// 渲染信息初始化
 		Renderer2D::ResetStats();
 		{
@@ -139,8 +134,22 @@ namespace Hazel {
 			HZ_PROFILE_SCOPE("Renderer Draw");
 
 			// Scene更新
-			//m_ActiveScene->OnUpdateRuntime(ts);
-			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+			switch (m_SceneState) {
+				case SceneState::Edit: {
+					// 当焦点聚焦，才能wasd
+					if (m_ViewportFocused) {
+						m_CameraController.OnUpdate(ts);
+					}
+					// 不需要焦点，每一帧都需要刷新
+					m_EditorCamera.OnUpdate(ts);
+					m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+					break;
+				}
+				case SceneState::Play: {
+					m_ActiveScene->OnUpdateRuntime(ts);
+					break;
+				}
+			}
 
 			// 绝对位置是：当前位置距离屏幕左上角(0,0)的位置
 			// 1.获取当前鼠标距离整个屏幕左上角(0,0)的位置
@@ -386,9 +395,43 @@ namespace Hazel {
 		ImGui::End();
 		ImGui::PopStyleVar();
 
+		UI_Toolbar();
+
 		ImGui::End();
 	}
 
+	void EditorLayer::UI_Toolbar() {
+		// padding
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		// 按钮图片透明背景
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colors = ImGui::GetStyle().Colors;
+		// 按钮针对hover、click有不同效果
+		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		// 按钮适应窗口大小、放大时应使用线性插值保证不那么模糊
+		float size = ImGui::GetWindowHeight() - 4.0f;
+		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+		// 按钮应该在中间
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));// 设置按钮的x位置
+		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) { // padding为0，好像没有区别
+		//if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size))) {
+			if (m_SceneState == SceneState::Edit) {
+				OnScenePlay();
+			}
+			else if (m_SceneState == SceneState::Play) {
+				OnSceneStop();
+			}
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
+	}
 	void EditorLayer::OnEvent(Event& e)
 	{
 		// 事件
@@ -494,5 +537,13 @@ namespace Hazel {
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Serialize(filepath);
 		}
+	}
+	void EditorLayer::OnScenePlay()
+	{
+		m_SceneState = SceneState::Play;
+	}
+	void EditorLayer::OnSceneStop()
+	{
+		m_SceneState = SceneState::Edit;
 	}
 }

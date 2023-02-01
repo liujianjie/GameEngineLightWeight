@@ -22,7 +22,6 @@ struct VertexOutput
 	//float TexIndex;
 	float TilingFactor;
 };
-
 layout(location = 0) out VertexOutput Output;
 layout(location = 3) out flat float v_TexIndex;
 layout(location = 4) out flat int v_EntityID;

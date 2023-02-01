@@ -24,6 +24,12 @@ namespace Hazel {
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
+
+		void OnScenePlay();
+		void OnSceneStop();
+
+		// UI Panels
+		void UI_Toolbar();
 	private:
 		OrthographicCameraController m_CameraController;
 		Ref<Shader> m_FlatShader;			// shader类 指针
@@ -57,5 +63,12 @@ namespace Hazel {
 		glm::vec2 m_ViewportBounds[2]; // [0]是左上角的坐标，[1]是右下角的坐标
 
 		glm::vec4 m_FlatColor = { 0.2f, 0.3f, 0.8f, 1.0f };
+
+		// 播放暂停按钮
+		enum class SceneState {
+			Edit = 0, Play = 1
+		};
+		SceneState m_SceneState = SceneState::Edit;
+		Ref<Texture2D> m_IconPlay, m_IconStop;
 	};
 }
