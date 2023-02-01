@@ -24,6 +24,7 @@ namespace Hazel {
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
+		void SaveCurScene();// 保存当前场景
 
 		void OnScenePlay();
 		void OnSceneStop();

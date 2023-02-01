@@ -72,4 +72,31 @@ namespace Hazel {
             DestroyScript = [](NativeScriptComponent* nsc) {delete nsc->Instance; nsc->Instance = nullptr; };// 感觉参数放不放NativeScriptComponent无所谓，反正有this
         }
     };
+    // 物理
+    struct Rigidbody2DComponent {
+        enum class BodyType{Static = 0, Dynamic, Kinematic};
+        BodyType Type = BodyType::Static;
+        bool FixedRotation = false;
+
+        // 运行时候物体的物理对象
+        void* RuntimeBody = nullptr;
+        Rigidbody2DComponent() = default;
+        Rigidbody2DComponent(const Rigidbody2DComponent&) = default;
+    };
+    struct BoxCollider2DComponent {
+        glm::vec2 Offset = { 0.0f, 0.0f };
+        glm::vec2 Size = { 0.5f,0.5f };
+
+        // TODO:移到物理材质
+        float Density = 1.0f;           // 密度,0是静态的物理
+        float Friction = 0.5f;          // 摩擦力
+        float Restitution = 0.0f;       // 弹力，0不会弹跳，1无限弹跳
+        float RestitutionThreshold = 0.5f;// 复原速度阈值，超过这个速度的碰撞就会被恢复原状（会反弹）。
+
+        // 运行时候由于物理，每一帧的上述参数可能会变，所以保存为对象,但未使用
+        void* RuntimeFixture = nullptr;
+
+        BoxCollider2DComponent() = default;
+        BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
+    };
 }

@@ -13,7 +13,7 @@ Entities:
     TagComponent:
       Tag: Red Square
     TransformComponent:
-      Translation: [0, 1.10000002, 0]
+      Translation: [-1.33900476, -1.00623965, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
@@ -22,7 +22,7 @@ Entities:
     TagComponent:
       Tag: Camera A
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [0, 0, 5]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:

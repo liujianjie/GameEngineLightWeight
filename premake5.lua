@@ -22,6 +22,7 @@ IncludeDir["entt"] = "GameEngineLightWeight/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "GameEngineLightWeight/vendor/yaml-cpp/include" -- 用yaml_cpp下划线是因为"%{IncludeDir.yaml_cpp}"只认识_ 不认识-
 IncludeDir["ImGuizmo"] = "GameEngineLightWeight/vendor/ImGuizmo" 
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+IncludeDir["Box2D"] = "GameEngineLightWeight/vendor/Box2D/include"
 
 LibraryDir = {}
 
@@ -46,6 +47,7 @@ group "Dependencies"
 	include "GameEngineLightWeight/vendor/Glad"
 	include "GameEngineLightWeight/vendor/imgui"
 	include "GameEngineLightWeight/vendor/yaml-cpp"
+	include "GameEngineLightWeight/vendor/Box2D"
 group ""
 
 project "GameEngineLightWeight"
@@ -86,14 +88,16 @@ project "GameEngineLightWeight"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.VulkanSDK}"
+		"%{IncludeDir.VulkanSDK}",
+		"%{IncludeDir.Box2D}"
 	}
 	links{
 		"GLFW",
 		"Glad",
 		"ImGui",
 		"yaml-cpp",
-		"opengl32.lib"
+		"opengl32.lib",
+		"Box2D"
 	}
 	-- imguizmo不使用编译头？ 没用 这句
 	filter "files:%{prj.name}/vendor/ImGuizmo/**.cpp"

@@ -242,6 +242,9 @@ namespace Hazel {
 				if (ImGui::MenuItem("Open...", "Ctrl+O")) {
 					OpenScene();
 				}
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+					SaveCurScene();
+				}
 				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
 					SaveSceneAs();
 				}
@@ -468,9 +471,9 @@ namespace Hazel {
 					SaveSceneAs();
 				}
 				// 保存当前场景:要有一个记录当前场景的路径。
-				//if (control) {
-
-				//}
+				if (control) {
+					SaveCurScene();
+				}
 				break;
 			}
 			// Gizmos
@@ -528,6 +531,12 @@ namespace Hazel {
 			HZ_WARN("Could not load {0} - not a scene file", path.filename().string());
 			return;
 		}
+		// 如果当前有场景，先保存
+		if (!m_ActiveScene->GetCurFilePath().empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(m_ActiveScene->GetCurFilePath());
+		}
+
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -539,16 +548,31 @@ namespace Hazel {
 	{
 		std::string filepath = FileDialogs::SaveFile("Game Scene (*.scene)\0*.scene\0");
 		if (!filepath.empty()) {
+			if (filepath.find(".scene") == std::string::npos) {
+				filepath.append(".scene");
+			}
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Serialize(filepath);
+		}
+	}
+	void EditorLayer::SaveCurScene()
+	{
+		if (!m_ActiveScene->GetCurFilePath().empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(m_ActiveScene->GetCurFilePath());
+		}
+		else {
+			SaveSceneAs();
 		}
 	}
 	void EditorLayer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;
+		m_ActiveScene->OnRuntimeStart();
 	}
 	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;
+		m_ActiveScene->OnRuntimeStop();
 	}
 }
