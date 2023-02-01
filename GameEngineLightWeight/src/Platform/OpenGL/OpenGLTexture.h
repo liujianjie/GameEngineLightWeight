@@ -17,6 +17,7 @@ namespace Hazel {
 		virtual uint32_t GetRendererID() const override { return m_RendererID; };
 		virtual void Bind(uint32_t slot = 0) const override;
 
+		virtual bool IsLoaded() const override { return m_IsLoaded; }
 
 		virtual bool operator==(const Texture& other) const override {
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
@@ -27,6 +28,8 @@ namespace Hazel {
 		uint32_t m_RendererID;
 		// 创建纹理的格式
 		GLenum m_InternalFormat, m_DataFormat;
+
+		bool m_IsLoaded = false;
 	};
 
 }

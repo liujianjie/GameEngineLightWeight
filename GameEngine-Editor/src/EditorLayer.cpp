@@ -523,6 +523,11 @@ namespace Hazel {
 	}
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
+		// 判断是否为scene文件
+		if (path.extension().string() != ".scene") {
+			HZ_WARN("Could not load {0} - not a scene file", path.filename().string());
+			return;
+		}
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);

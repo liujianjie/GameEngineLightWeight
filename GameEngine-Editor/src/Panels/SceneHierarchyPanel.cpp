@@ -1,3 +1,4 @@
+#include "hzpch.h"
 #include "SceneHierarchyPanel.h"
 
 #include <imgui/imgui.h>
@@ -321,7 +322,13 @@ namespace Hazel {
 					const wchar_t* path = (const wchar_t*)payload->Data;
 					std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
 					// 判断是不是纹理？或者创建好后。创建的时候会有断言
-					component.Texture = Texture2D::Create(texturePath.string());
+					Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
+					if (texture->IsLoaded()) {
+						component.Texture = texture;
+					}
+					else {
+						HZ_WARN("Could not load texture {0}", texturePath.filename().string());
+					}
 				}
 			}
 			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
