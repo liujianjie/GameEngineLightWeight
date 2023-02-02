@@ -2,6 +2,8 @@
 #include "Scene.h"
 
 #include "Components.h"
+#include "ScriptableEntity.h"
+
 #include "Hazel/Renderer/Renderer2D.h"
 #include <glm/glm.hpp>
 
@@ -34,9 +36,15 @@ namespace Hazel {
     }
     Entity Scene::CreateEntity(std::string name)
     {
+        // 创建新的uuid
+        return CreateEntityWithUUID(UUID(), name);
+    }
+    Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string name)
+    {
         // 添加默认组件
         Entity entity = { m_Registry.create(),this };
         entity.AddComponent<TransformComponent>();
+        entity.AddComponent<IDComponent>(uuid); // 使用存在的uuid，不创建新的
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "Entity" : name;
         return entity;
@@ -198,6 +206,10 @@ namespace Hazel {
         // 静态断言：false，代表在编译前就会执行， 但是编译器这里不会报错，说明这段代码不会编译吧。。
         // 而且打了断点，也不行，证明这段代码只是声明作用吧。
         static_assert(false);
+    }
+    template<>
+    void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
+    {
     }
     template<>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)

@@ -16,6 +16,7 @@ namespace Hazel {
 		~Scene();
 		
 		Entity CreateEntity(std::string name);
+		Entity CreateEntityWithUUID(UUID uuid, const std::string name = std::string());
 		void DestroyEntity(Entity entity);
 
 		// 创建物理世界环境

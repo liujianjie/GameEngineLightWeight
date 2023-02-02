@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Hazel/Core/UUID.h"
+#include "Components.h"
 #include "Scene.h"
 #include "entt.hpp"
 namespace Hazel {
@@ -33,6 +35,9 @@ namespace Hazel {
 			HZ_CORE_ASSERT(HasComponent<T>(), "实体不存在这个组件");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
+		// 获取uuid
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+
 		operator bool() const { 
 			return m_EntityHandle != entt::null; 
 		}
