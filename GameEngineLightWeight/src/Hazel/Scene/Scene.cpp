@@ -83,6 +83,7 @@ namespace Hazel {
         // 拷贝组件，除了IDcomponent与tagcomponent，因CreateEntityWithUUID创建了
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -99,6 +100,7 @@ namespace Hazel {
         // 2.复制组件
         CopyComponentIfExists<TransformComponent>(newEntity, entity);
         CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
         CopyComponentIfExists<CameraComponent>(newEntity, entity);
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -222,26 +224,47 @@ namespace Hazel {
         }
         if (mainCamera) {
             Renderer2D::BeginScene(*mainCamera, cameraTransform);
-            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-            for (auto entity : group) {
-                // get返回的tuple里本是引用
-                auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-                //Renderer2D::DrawQuad(tfc.GetTransform(), sprite.Color);
-                Renderer2D::DrawSprite(tfc.GetTransform(), sprite, (int)entity);
+            // 绘画sprite
+            {
+                auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+                for (auto entity : group) {
+                    // get返回的tuple里本是引用
+                    auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                    Renderer2D::DrawSprite(tfc.GetTransform(), sprite, (int)entity);
+                }
             }
-            //if (group.size() <= 0) {
-            //}
+            // 绘画circles
+            {
+                auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
+                for (auto entity : view) {
+                    // get返回的tuple里本是引用
+                    auto [tfc, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+                    Renderer2D::DrawCircle(tfc.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
+                }
+            }
             Renderer2D::EndScene();
         }
     }
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
     {
         Renderer2D::BeginScene(camera);
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group) {
-            auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-            //Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
-            Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+        // 绘画sprite
+        {
+            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+            for (auto entity : group) {
+                // get返回的tuple里本是引用
+                auto [tfc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                Renderer2D::DrawSprite(tfc.GetTransform(), sprite, (int)entity);
+            }
+        }
+        // 绘画circles
+        {
+            auto view = m_Registry.view<TransformComponent, CircleRendererComponent>();
+            for (auto entity : view) {
+                // get返回的tuple里本是引用
+                auto [tfc, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+                Renderer2D::DrawCircle(tfc.GetTransform(), circle.Color, circle.Thickness, circle.Fade, (int)entity);
+            }
         }
         Renderer2D::EndScene();
     }
@@ -276,6 +299,10 @@ namespace Hazel {
         // 静态断言：false，代表在编译前就会执行， 但是编译器这里不会报错，说明这段代码不会编译吧。。
         // 而且打了断点，也不行，证明这段代码只是声明作用吧。
         static_assert(false);
+    }
+    template<>
+    void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
+    {
     }
     template<>
     void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)

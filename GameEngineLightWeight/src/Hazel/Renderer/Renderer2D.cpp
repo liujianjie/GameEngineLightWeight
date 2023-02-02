@@ -21,20 +21,41 @@ namespace Hazel {
 		// Editor-only;
 		int EntityID;
 	};
+	struct CircleVertex {
+		glm::vec3 WorldPosition;
+		glm::vec3 LocalPosition;
+		glm::vec4 Color;
+		float Thickness;
+		float Fade;
+		// Editor-only;
+		int EntityID;
+	};
 	struct Renderer2DData {
-		static const uint32_t MaxQuads = 10000;
+		static const uint32_t MaxQuads = 20000;
 		static const uint32_t MaxVertices = MaxQuads * 4;
 		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32; // 最大的纹理槽数
 
+		// quad
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
-		Ref<Shader> TextureShader;
+		Ref<Shader> QuadShader;
 		Ref<Texture2D> WhiteTexture;
 
+		// circle
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
+
+		// quad
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		// circle
+		uint32_t CircleIndexCount = 0;
+		CircleVertex* CircleVertexBufferBase = nullptr;
+		CircleVertex* CircleVertexBufferPtr = nullptr;
 
 		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;// 0 号给白色纹理
@@ -56,7 +77,7 @@ namespace Hazel {
 
 		// 0.在CPU开辟存储s_Data.MaxVertices个的QuadVertex的内存
 		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
-
+		// quad//////////////////////////////////////////////////////////
 		// 1.创建顶点数组
 		s_Data.QuadVertexArray = VertexArray::Create();
 
@@ -74,7 +95,7 @@ namespace Hazel {
 			{ShaderDataType::Int, "a_EntityID"}
 			});
 
-		// 1.1设置使用的顶点数组缓冲区，并且在这个缓冲区中设置布局
+		// 1.1设置顶点数组使用的缓冲区，并且在这个缓冲区中设置布局
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
 		// 3.索引缓冲
@@ -95,13 +116,43 @@ namespace Hazel {
 			offset += 4;
 		}
 
-		Ref<IndexBuffer> flatIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
+		// 3.1创建索引缓冲区
+		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
 
 		// 1.2顶点数组设置索引缓冲区
-		s_Data.QuadVertexArray->SetIndexBuffer(flatIB);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		// cpu上传到gpu上了可以删除cpu的索引数据块了
 		delete[] quadIndices;
 
+		// circle//////////////////////////////////////////////////////////
+		// 0.在CPU开辟存储s_Data.MaxVertices个的QuadVertex的内存
+		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
+		// 1.创建顶点数组
+		s_Data.CircleVertexArray = VertexArray::Create();
+
+		// 2.创建顶点缓冲区,先在GPU开辟一块s_Data.MaxVertices * sizeof(QuadVertex)大小的内存
+		// 与cpu对应大，是为了传输顶点数据
+		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(CircleVertex));
+
+		// 2.1设置顶点缓冲区布局
+		s_Data.CircleVertexBuffer->SetLayout({
+			{ShaderDataType::Float3, "a_WorldPosition"},
+			{ShaderDataType::Float3, "a_LocalPosition"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float, "a_Thickness"},
+			{ShaderDataType::Float, "a_Fade"},
+			{ShaderDataType::Int, "a_EntityID"}
+			});
+
+		// 1.1设置顶点数组使用的缓冲区，并且在这个缓冲区中设置布局
+		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+
+		// 3.索引缓冲-和quad使用的是同一个，不需要重新建
+
+		// 1.2顶点数组设置索引缓冲区
+		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // 这里写错过，s_Data.QuadVertexArray，即没有给circle的顶点数组设置索引
+
+		// 纹理////////////////////////////////////////
 		// 创建一个白色Texture
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
@@ -110,18 +161,16 @@ namespace Hazel {
 		// 0号给白色纹理
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
-		// 纹理的shader
-		s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl"); 
-		//s_Data.TextureShader = Shader::Create("assets/shaders/Texture - Vulkan自己写的.glsl");
-
 		int32_t samplers[s_Data.MaxTextureSlots];
 		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++) {
 			samplers[i] = i;
 		}
-		s_Data.TextureShader->Bind();// 上传数据前要先绑定shader
-		// 为TextureShader上传一个默认的大小为32的采样数组，u_Textures[i] = j，其中i = j,u_Textures[1] = 1表示采样纹理槽1号上的纹理
-		//s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
+		// shader ////////////////////////////////////////////////
+		s_Data.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
+		s_Data.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
+		
+		// 初始化///////////////////////////////////////////
 		// 设置quad的初始位置
 		s_Data.QuadVertexPosition[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPosition[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
@@ -145,8 +194,8 @@ namespace Hazel {
 
 		// 投影矩阵projection * 视图矩阵
 		//glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
-		//s_Data.TextureShader->Bind();		// 绑定shader
-		//s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+		//s_Data.QuadShader->Bind();		// 绑定shader
+		//s_Data.QuadShader->SetMat4("u_ViewProjection", viewProj);
 
 		s_Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
 		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
@@ -158,8 +207,8 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		//glm::mat4 viewProj = camera.GetViewProjection();
-		//s_Data.TextureShader->Bind();
-		//s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+		//s_Data.QuadShader->Bind();
+		//s_Data.QuadShader->SetMat4("u_ViewProjection", viewProj);
 		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
@@ -170,8 +219,8 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 		// 已经更换vulkan的glsl，这个方法是错的
-		s_Data.TextureShader->Bind();		// 绑定shader
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		s_Data.QuadShader->Bind();		// 绑定shader
+		s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -185,29 +234,42 @@ namespace Hazel {
 
 	void Renderer2D::Flush()
 	{
-		if (s_Data.QuadIndexCount == 0) { // 没东西要绘制
-			return;
-		}
-		// 计算当前绘制需要多少个顶点数据
-		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-		// 截取部分CPU的顶点数据上传OpenGL
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+		if (s_Data.QuadIndexCount) {
+			// 计算当前绘制需要多少个顶点数据
+			uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
+			// 截取部分CPU的顶点数据上传OpenGL
+			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
-		// 对应i的texture绑定到i号纹理槽
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
-			s_Data.TextureSlots[i]->Bind(i);
+			// 对应i的texture绑定到i号纹理槽
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
+				s_Data.TextureSlots[i]->Bind(i);
+			}
+			s_Data.QuadShader->Bind();
+			// 调用绘画命令
+			RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Data.Stats.DrawCalls++;
 		}
-		s_Data.TextureShader->Bind();
-		// 调用绘画命令
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
-		s_Data.Stats.DrawCalls++;
+		if (s_Data.CircleIndexCount) {
+			// 计算当前绘制需要多少个顶点数据
+			uint32_t dataSize = (uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase;
+			// 截取部分CPU的顶点数据上传OpenGL
+			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
+
+			s_Data.CircleShader->Bind();
+			// 调用绘画命令
+			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
 	}
 	void Renderer2D::StartBatch()
 	{
 		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
 		s_Data.QuadIndexCount = 0;
+		s_Data.CircleIndexCount = 0;
 		// 指针赋予
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
+
 		// 纹理信息重置
 		s_Data.TextureSlotIndex = 1;
 	}
@@ -341,6 +403,7 @@ namespace Hazel {
 	}
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID)
 	{
+		HZ_PROFILE_FUNCTION();
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 			NextBatch();
 		}
@@ -377,6 +440,30 @@ namespace Hazel {
 			s_Data.QuadVertexBufferPtr++;
 		}
 		s_Data.QuadIndexCount += 6;// 每一个quad用6个索引
+
+		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityID)
+	{
+		HZ_PROFILE_FUNCTION();
+		// 这里注释是因为，circle一般不会超。。。
+		//if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+		//	NextBatch();
+		//}
+		constexpr size_t quadVertexCount = 4;
+		// quad的左下角为起点
+		// 使用的是quad顶点信息
+		for (size_t i = 0; i < quadVertexCount; i++) {
+			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPosition[i]; 
+			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPosition[i] * 2.0f; // 2 * 0.5 = 1
+			s_Data.CircleVertexBufferPtr->Color = color;
+			s_Data.CircleVertexBufferPtr->Thickness = thickness;
+			s_Data.CircleVertexBufferPtr->Fade = fade;
+			s_Data.CircleVertexBufferPtr->EntityID = entityID;
+			s_Data.CircleVertexBufferPtr++;
+		}
+		s_Data.CircleIndexCount += 6;// 每一个quad用6个索引
 
 		s_Data.Stats.QuadCount++;
 	}
@@ -456,8 +543,8 @@ namespace Hazel {
 		//s_Data.Stats.QuadCount++;
 		
 #if OLD_PATH
-		s_Data.TextureShader->SetFloat4("u_Color", tintColor);
-		s_Data.TextureShader->SetFloat("u_TilingFactor", tilingFactor);
+		s_Data.QuadShader->SetFloat4("u_Color", tintColor);
+		s_Data.QuadShader->SetFloat("u_TilingFactor", tilingFactor);
 		// 绑定材质
 		texture->Bind();
 
@@ -466,7 +553,7 @@ namespace Hazel {
 			glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f }) *
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		s_Data.TextureShader->SetMat4("u_Transform", transform);
+		s_Data.QuadShader->SetMat4("u_Transform", transform);
 
 		s_Data.QuadVertexArray->Bind();		// 绑定顶点数组
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray); 
