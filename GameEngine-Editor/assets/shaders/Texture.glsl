@@ -99,6 +99,6 @@ void main()
 	case 31: texColor *= texture(u_Textures[31], Input.TexCoord * Input.TilingFactor); break;
 	}
 	color = texColor;
-
+	//color = texture(u_Textures[int(v_TexIndex)], Input.TexCoord * Input.TilingFactor) * Input.Color;	// ÐÂ
 	color2 = v_EntityID;
 }

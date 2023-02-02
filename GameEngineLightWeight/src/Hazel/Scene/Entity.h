@@ -21,6 +21,12 @@ namespace Hazel {
 			m_Scene->OnComponentAdded<T>(*this, component);
 			return component;
 		}
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args) {
+			T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded<T>(*this, component);// 调用添加组件时执行的方法
+			return component;
+		}
 		template<typename T>
 		T& GetComponent() {
 			HZ_CORE_ASSERT(HasComponent<T>(), "实体不存在这个组件");
@@ -37,6 +43,8 @@ namespace Hazel {
 		}
 		// 获取uuid
 		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		// 获取tag名称
+		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 
 		operator bool() const { 
 			return m_EntityHandle != entt::null; 

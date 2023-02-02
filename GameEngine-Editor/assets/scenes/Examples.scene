@@ -40,7 +40,7 @@ Entities:
     TagComponent:
       Tag: Green Square Entity
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [-3.5922823, 0.0111881495, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:

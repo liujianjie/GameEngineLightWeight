@@ -34,12 +34,82 @@ namespace Hazel {
     Scene::~Scene()
     {
     }
-    Entity Scene::CreateEntity(std::string name)
+    // 为复制场景的实体的组件的辅助方法
+    template<typename Component>
+    static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
+        auto view = src.view<Component>();
+        // 2.1遍历旧场景所有uuid组件的旧实体
+        for (auto e : view) {
+            UUID uuid = src.get<IDComponent>(e).ID;
+            HZ_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
+            // 2.2用** 旧实体的uuid - map - 对应新实体 * *
+            entt::entity dstEnttID = enttMap.at(uuid);
+            // 3.1获取旧实体的组件
+            auto& component = src.get<Component>(e);
+            // 3.2然后用API，** 复制旧实体的组件给新实体**
+            dst.emplace_or_replace<Component>(dstEnttID, component);// 添加或替换，保险
+        }
+    }
+    // 为复制实体的辅助方法
+    template<typename Component>
+    static void CopyComponentIfExists(Entity dst, Entity src) {
+        if (src.HasComponent<Component>()) {
+            dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+        }
+    }
+
+    Ref<Scene> Scene::Copy(Ref<Scene> other)
+    {
+        // 1.1创建新场景
+        Ref<Scene> newScene = CreateRef<Scene>();
+
+        newScene->m_ViewportWidth = other->m_ViewportWidth;
+        newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+        auto& srcSceneRegistry = other->m_Registry;
+        auto& dstSceneRegistry = newScene->m_Registry;
+        std::unordered_map<UUID, entt::entity> enttMap;
+
+        auto idView = srcSceneRegistry.view<IDComponent>();
+        for (auto e : idView) {
+            UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+            const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+            // 1.2为新场景创建和旧场景同名和uuid的实体
+            Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+            // 1.3并用**map存入（旧实体的uuid对应新实体）的关系**
+            enttMap[uuid] = (entt::entity)newEntity;// UUID类需要哈希
+        }
+
+        // 拷贝组件，除了IDcomponent与tagcomponent，因CreateEntityWithUUID创建了
+        CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+
+        return newScene;
+    }
+
+    void Scene::DuplicateEntity(Entity entity)
+    {
+        // 1.创建旧实体同名的新实体
+        std::string name = entity.GetName();
+        Entity newEntity = CreateEntity(name);
+        // 2.复制组件
+        CopyComponentIfExists<TransformComponent>(newEntity, entity);
+        CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<CameraComponent>(newEntity, entity);
+        CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+        CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+        CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+    }
+    Entity Scene::CreateEntity(const std::string& name)
     {
         // 创建新的uuid
         return CreateEntityWithUUID(UUID(), name);
     }
-    Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string name)
+    Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
     {
         // 添加默认组件
         Entity entity = { m_Registry.create(),this };

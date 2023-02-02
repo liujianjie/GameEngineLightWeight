@@ -319,7 +319,7 @@ namespace Hazel {
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 	bool SceneSerializer::DeSerializeRuntim(const std::string& filepath)
 	{

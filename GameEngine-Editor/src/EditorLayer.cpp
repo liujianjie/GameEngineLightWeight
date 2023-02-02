@@ -45,9 +45,12 @@ namespace Hazel {
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1) {
 			auto sceneFilePath = commandLineArgs[1];
-			SceneSerializer serializer(m_ActiveScene);
+			SceneSerializer serializer(m_EditorScene);
 			serializer.DeSerialize(sceneFilePath);
+			m_ActiveScene = m_EditorScene;
 		}
+		// 当前上下文是活动场景
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 #if 0
 		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
@@ -92,7 +95,6 @@ namespace Hazel {
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 #endif
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -454,6 +456,7 @@ namespace Hazel {
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 		switch (e.GetKeyCode()) {
+			// Scene 命令
 			case Key::N: {
 				if (control) {
 					NewScene();
@@ -476,6 +479,12 @@ namespace Hazel {
 				}
 				break;
 			}
+			// 复制实体
+			case Key::D:
+				if (control) {
+					OnDuplicateEntity();
+				}
+				break;
 			// Gizmos
 			case Key::Q:
 				m_GizmoType = -1;
@@ -526,6 +535,10 @@ namespace Hazel {
 	}
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
+		// 运行的时候打开新场景，需停止当前场景
+		if (m_SceneState != SceneState::Edit) {
+			OnSceneStop();
+		}
 		// 判断是否为scene文件
 		if (path.extension().string() != ".scene") {
 			HZ_WARN("Could not load {0} - not a scene file", path.filename().string());
@@ -533,16 +546,20 @@ namespace Hazel {
 		}
 		// 如果当前有场景，先保存
 		if (!m_ActiveScene->GetCurFilePath().empty()) {
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(m_ActiveScene->GetCurFilePath());
+			SerializeScene(m_ActiveScene, m_ActiveScene->GetCurFilePath());
 		}
 
-		m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer(newScene);
+		if (serializer.DeSerialize(path.string())) {
+			m_EditorScene = newScene;		
+			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
-		SceneSerializer serializer(m_ActiveScene);
-		serializer.DeSerialize(path.string());
+			// 当前活动场景是编辑场景
+			m_ActiveScene = m_EditorScene;
+			// 当前上下文是编辑场景----------------------------
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		}
 	}
 	void EditorLayer::SaveSceneAs()
 	{
@@ -551,28 +568,57 @@ namespace Hazel {
 			if (filepath.find(".scene") == std::string::npos) {
 				filepath.append(".scene");
 			}
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(filepath);
+			SerializeScene(m_ActiveScene, filepath);
 		}
 	}
 	void EditorLayer::SaveCurScene()
 	{
 		if (!m_ActiveScene->GetCurFilePath().empty()) {
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(m_ActiveScene->GetCurFilePath());
+			SerializeScene(m_ActiveScene, m_ActiveScene->GetCurFilePath());
 		}
 		else {
 			SaveSceneAs();
 		}
 	}
+	void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path)
+	{
+		SceneSerializer serializer(scene);
+		serializer.Serialize(path.string());
+	}
 	void EditorLayer::OnScenePlay()
 	{
+		if (!m_EditorScene) {
+			HZ_CORE_WARN("editorscene is null");
+			return;
+		}
 		m_SceneState = SceneState::Play;
-		m_ActiveScene->OnRuntimeStart();
+
+		// 复制新场景给活动场景
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnRuntimeStart(); // 复制完新场景就开始运行
+		// 当前上下文是新场景----------------------------
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;
+
+		// 先停止,销毁
 		m_ActiveScene->OnRuntimeStop();
+		// 当前活动场景是编辑场景
+		m_ActiveScene = m_EditorScene;
+		// 当前上下文是编辑场景----------------------------
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+	void EditorLayer::OnDuplicateEntity()
+	{
+		// 编辑场景时 可以复制实体
+		if (m_SceneState != SceneState::Edit) {
+			return;
+		}
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity) {
+			m_EditorScene->DuplicateEntity(selectedEntity);
+		}
 	}
 }

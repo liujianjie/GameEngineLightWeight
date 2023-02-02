@@ -15,8 +15,14 @@ namespace Hazel {
 		Scene();
 		~Scene();
 		
-		Entity CreateEntity(std::string name);
-		Entity CreateEntityWithUUID(UUID uuid, const std::string name = std::string());
+		// 复制场景
+		static Ref<Scene> Copy(Ref<Scene> other);
+
+		// 复制实体
+		void DuplicateEntity(Entity entity);
+
+		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
 		// 创建物理世界环境

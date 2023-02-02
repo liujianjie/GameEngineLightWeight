@@ -26,8 +26,12 @@ namespace Hazel {
 		void SaveSceneAs();
 		void SaveCurScene();// 保存当前场景
 
+		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
+
 		void OnScenePlay();
 		void OnSceneStop();
+		// 复制实体
+		void OnDuplicateEntity();
 
 		// UI Panels
 		void UI_Toolbar();
@@ -37,7 +41,10 @@ namespace Hazel {
 		Ref<VertexArray> m_FlatVertexArray;
 		Ref<Texture2D> m_SquareTexture;		// 棋盘纹理
 		Ref<Framebuffer> m_Framebuffer;		// 帧缓冲
+		// 当前活动场景
 		Ref<Scene> m_ActiveScene;
+		// 当前编辑场景
+		Ref<Scene> m_EditorScene;
 		Entity m_SquareEntity;			// 实体，由scene创建的
 		Entity m_CameraEntity;			// 摄像机实体
 		Entity m_SecondCamera;			// 摄像机实体
