@@ -36,6 +36,11 @@ namespace Hazel {
 
 		Entity GetPrimaryCameraEntity();
 
+		template<typename... Components>
+		auto GetAllEntitiesWith() {
+			return m_Registry.view<Components...>();
+		}
+
 		std::string GetCurFilePath() { return filepath; }
 		void SetCurFilePath(const std::string& path) { filepath = path; }
 	private:

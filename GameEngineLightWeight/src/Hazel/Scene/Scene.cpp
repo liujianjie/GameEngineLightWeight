@@ -168,7 +168,7 @@ namespace Hazel {
                 // 3.1定义圆形包围盒
                 b2CircleShape circleShape;
                 circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-                circleShape.m_radius = cc2d.Radius;
+                circleShape.m_radius = transform.Scale.x * cc2d.Radius;// 参与物理计算的范围跟随物体的scale变化
                 // 3.2定义fixture，fixture包含定义的包围盒
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &circleShape;

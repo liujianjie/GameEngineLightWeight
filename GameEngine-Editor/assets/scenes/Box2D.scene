@@ -8,7 +8,7 @@ Entities:
       Rotation: [0, 0, -0.53370136]
       Scale: [10.4613113, 0.57320106, 1]
     SpriteRendererComponent:
-      Color: [0.401544333, 1, 0, 1]
+      Color: [1, 0.903474927, 0, 1]
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false
@@ -123,7 +123,7 @@ Entities:
       Rotation: [0, 0, 0.5666399]
       Scale: [10.4613161, 0.57320112, 1]
     SpriteRendererComponent:
-      Color: [0.401544333, 1, 0, 1]
+      Color: [0.926640928, 0.762837291, 0.0608219802, 1]
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false

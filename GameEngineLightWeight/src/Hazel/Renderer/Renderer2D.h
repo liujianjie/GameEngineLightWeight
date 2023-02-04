@@ -13,8 +13,8 @@ namespace Hazel {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const Camera& camera, const glm::mat4& transform);
-		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform);// Caemra类没有视图矩阵，所以需传入transform计算视图矩阵
+		static void BeginScene(const EditorCamera& camera);						// EditorCamera，可以直接获取投影视图矩阵，所以不需要transform
 		static void BeginScene(const OrthographicCamera& camera);// TODO:REMOVE
 		static void EndScene();
 		static void Flush();

@@ -175,10 +175,70 @@ namespace Hazel {
 				HZ_CORE_WARN("Pixel data = {0}", pixelData);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 			}
+			// Debug的绘画层
+			OnOverlayRender();
 
 			// 解绑帧缓冲
 			m_Framebuffer->Unbind();
 		}
+	}
+	void EditorLayer::OnOverlayRender()
+	{	// 两个不同摄像机
+		if (m_SceneState == SceneState::Play) {
+			Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().camera, camera.GetComponent<TransformComponent>().GetTransform());
+		}
+		else {
+			Renderer2D::BeginScene(m_EditorCamera);
+		}
+
+		if (m_ShowPhysicsColliders) {
+			// Box Colliders
+			{
+				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+				for (auto entity : view) {
+					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+					
+					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+
+					// Cherno的代码
+					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					//	* glm::rotate(glm::mat4(1.0f), tc.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))// 围绕z旋转的角度
+					//	* glm::scale(glm::mat4(1.0f), scale);
+
+					// 应改成
+					// 第一种rotation计算方式，有bug，旋转相反，待解决
+					//glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), tc.Rotation.x, { 1,0,0 })
+					//    * glm::rotate(glm::mat4(1.0f), tc.Rotation.y, { 0, 1, 0 })
+					//    * glm::rotate(glm::mat4(1.0f), tc.Rotation.z, { 0, 0, 1 });
+					// 第二种rotation计算方式 用四元数获得矩阵
+					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* rotation
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));// 绿色的包围盒
+				}
+			}
+			// Circle Colliders
+			{
+				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+				for (auto entity : view) {
+					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+					glm::vec3 translation = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2);// 注意：需*2
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.01f);// 绿色的包围盒, 第三个参数控制呈现圆环
+				}
+			}
+		}
+		Renderer2D::EndScene();
 	}
 	void EditorLayer::OnImGuiRender()
 	{
@@ -274,6 +334,11 @@ namespace Hazel {
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+		ImGui::End();
+
+		// 设置窗口
+		ImGui::Begin("Settings");
+		ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
 		ImGui::End();
 
 		// Imgui创建新的子窗口
