@@ -127,6 +127,7 @@ namespace Hazel {
 			// 将渲染的东西放到帧缓冲中
 			m_Framebuffer->Bind();
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			//RenderCommand::SetClearColor({ 1.0f, 1.0f, 1.0f, 1 });
 			RenderCommand::Clear();
 
 			// 用-1填充帧缓冲的第二个颜色缓冲区

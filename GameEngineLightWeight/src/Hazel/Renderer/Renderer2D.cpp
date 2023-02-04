@@ -30,6 +30,12 @@ namespace Hazel {
 		// Editor-only;
 		int EntityID;
 	};
+	struct LineVertex {
+		glm::vec3 Position;
+		glm::vec4 Color;
+		// Editor-only;
+		int EntityID;
+	};
 	struct Renderer2DData {
 		static const uint32_t MaxQuads = 20000;
 		static const uint32_t MaxVertices = MaxQuads * 4;
@@ -47,6 +53,11 @@ namespace Hazel {
 		Ref<VertexBuffer> CircleVertexBuffer;
 		Ref<Shader> CircleShader;
 
+		// Line
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Shader> LineShader;
+
 		// quad
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -56,6 +67,13 @@ namespace Hazel {
 		uint32_t CircleIndexCount = 0;
 		CircleVertex* CircleVertexBufferBase = nullptr;
 		CircleVertex* CircleVertexBufferPtr = nullptr;
+
+		// Line
+		uint32_t LineVertexCount = 0;// 只需要提供顶点数量
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
+
+		float LineWidth = 2.0f;
 
 		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;// 0 号给白色纹理
@@ -152,6 +170,28 @@ namespace Hazel {
 		// 1.2顶点数组设置索引缓冲区
 		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // 这里写错过，s_Data.QuadVertexArray，即没有给circle的顶点数组设置索引
 
+		// Line//////////////////////////////////////////////////////////
+		// 0.在CPU开辟存储s_Data.MaxVertices个的QuadVertex的内存
+		s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
+		// 1.创建顶点数组
+		s_Data.LineVertexArray = VertexArray::Create();
+
+		// 2.创建顶点缓冲区,先在GPU开辟一块s_Data.MaxVertices * sizeof(QuadVertex)大小的内存
+		// 与cpu对应大，是为了传输顶点数据
+		s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex));
+
+		// 2.1设置顶点缓冲区布局
+		s_Data.LineVertexBuffer->SetLayout({
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Int, "a_EntityID"}
+			});
+
+		// 1.1设置顶点数组使用的缓冲区，并且在这个缓冲区中设置布局
+		s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+
+		// 3.索引缓冲-Line不需要索引缓冲区
+
 		// 纹理////////////////////////////////////////
 		// 创建一个白色Texture
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
@@ -169,6 +209,7 @@ namespace Hazel {
 		// shader ////////////////////////////////////////////////
 		s_Data.QuadShader = Shader::Create("assets/shaders/Renderer2D_Quad.glsl");
 		s_Data.CircleShader = Shader::Create("assets/shaders/Renderer2D_Circle.glsl");
+		s_Data.LineShader = Shader::Create("assets/shaders/Renderer2D_Line.glsl");
 		
 		// 初始化///////////////////////////////////////////
 		// 设置quad的初始位置
@@ -260,15 +301,32 @@ namespace Hazel {
 			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 			s_Data.Stats.DrawCalls++;
 		}
+		if (s_Data.LineVertexCount) {
+			// 计算当前绘制需要多少个顶点数据
+			uint32_t dataSize = (uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase;
+			// 截取部分CPU的顶点数据上传OpenGL
+			s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
+
+			s_Data.LineShader->Bind();
+			// 新增的：设置线条宽度
+			RenderCommand::SetLineWidth(s_Data.LineWidth);
+			// 调用绘画命令
+			RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+			s_Data.Stats.DrawCalls++;
+		}
 	}
 	void Renderer2D::StartBatch()
 	{
 		// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
 		s_Data.QuadIndexCount = 0;
-		s_Data.CircleIndexCount = 0;
 		// 指针赋予
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
+
+		s_Data.CircleIndexCount = 0;// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
+		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;// 指针赋予
+
+		s_Data.LineVertexCount = 0;// 相当于初始化此帧要绘制的索引数量，上传的顶点数据
+		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;// 指针赋予
 
 		// 纹理信息重置
 		s_Data.TextureSlotIndex = 1;
@@ -466,6 +524,58 @@ namespace Hazel {
 		s_Data.CircleIndexCount += 6;// 每一个quad用6个索引
 
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawLine(const glm::vec3& p0, glm::vec3& p1, const glm::vec4& color, int entityID)
+	{
+		s_Data.LineVertexBufferPtr->Position = p0;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexBufferPtr->Position = p1;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr->EntityID = entityID;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexCount += 2;
+	}
+
+	void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
+	{
+		// position是中心位置
+		glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);// 左下角
+		glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);// 右下角
+		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);// 右上角
+		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);// 左上角
+
+		DrawLine(p0, p1, color);
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p0, color);
+	}
+
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID)
+	{
+		glm::vec3 lineVertices[4];
+		for (size_t i = 0; i < 4; i++)
+		{
+			lineVertices[i] = transform * s_Data.QuadVertexPosition[i]; // quad的顶点位置正好是rect的顶点位置
+		}
+		DrawLine(lineVertices[0], lineVertices[1], color);
+		DrawLine(lineVertices[1], lineVertices[2], color);
+		DrawLine(lineVertices[2], lineVertices[3], color);
+		DrawLine(lineVertices[3], lineVertices[0], color);
+	}
+
+	float Renderer2D::GetLineWidth()
+	{
+		return s_Data.LineWidth;
+	}
+
+	void Renderer2D::SetLineWidth(float width)
+	{
+		s_Data.LineWidth = width;
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color)
