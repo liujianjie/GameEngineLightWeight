@@ -13,6 +13,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Hazel {
 
@@ -88,6 +89,7 @@ namespace Hazel {
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -105,6 +107,7 @@ namespace Hazel {
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
         CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+        CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
     }
     Entity Scene::CreateEntity(const std::string& name)
     {
@@ -147,7 +150,7 @@ namespace Hazel {
 
             if (entity.HasComponent<BoxCollider2DComponent>()) {
                 auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-                // 3.1定义包围盒
+                // 3.1定义Box包围盒
                 b2PolygonShape boxShape;
                 boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);// 包围盒跟随物体的size而变化
                 // 3.2定义fixture，fixture包含定义的包围盒
@@ -157,6 +160,22 @@ namespace Hazel {
                 fixtureDef.friction = bc2d.Friction;
                 fixtureDef.restitution = bc2d.Restitution;
                 fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
+                // 3.3定义主体的fixture
+                body->CreateFixture(&fixtureDef);
+            }
+            if (entity.HasComponent<CircleCollider2DComponent>()) {
+                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+                // 3.1定义圆形包围盒
+                b2CircleShape circleShape;
+                circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
+                circleShape.m_radius = cc2d.Radius;
+                // 3.2定义fixture，fixture包含定义的包围盒
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &circleShape;
+                fixtureDef.density = cc2d.Density;
+                fixtureDef.friction = cc2d.Friction;
+                fixtureDef.restitution = cc2d.Restitution;
+                fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
                 // 3.3定义主体的fixture
                 body->CreateFixture(&fixtureDef);
             }
@@ -201,7 +220,7 @@ namespace Hazel {
             // 先script脚本影响Physics变化再当前帧渲染出来
             // 迭代速度：使用更少的迭代可以提高性能，但准确性会受到影响。使用更多迭代会降低性能但会提高模拟质量
             // 有点不董。。。。说啥：时间步长和迭代次数完全无关。迭代不是子步骤
-            // Cherno说迭代速度，多久进行一次计算模拟。好奇这个6，是时间单位吗，毫秒？
+            // Cherno说迭代速度，多久进行一次计算模拟。好奇这个6，是多少毫秒计算6次吗？
             const int32_t velocityIterations = 6;// 这些参数应该移到编辑器
             const int32_t positionIterations = 2;
             m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
@@ -343,6 +362,10 @@ namespace Hazel {
     }
     template<>
     void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
     {
     }
 }

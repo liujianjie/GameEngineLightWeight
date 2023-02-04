@@ -55,6 +55,7 @@ namespace Hazel {
 		// 根据实体的transform确定顶点位置再绘制
 		static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
+		// 辅助函数
 		static float GetLineWidth();
 		static void SetLineWidth(float width);
 		// 当前渲染的信息
