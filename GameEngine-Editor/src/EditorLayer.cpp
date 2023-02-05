@@ -27,6 +27,7 @@ namespace Hazel {
 		//Renderer2D::Init();
 		m_SquareTexture = Texture2D::Create("assets/textures/Checkerboard.png");
 		m_IconPlay = Texture2D::Create("Resources/Icons/PlayButton.png");
+		m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
 		m_IconStop = Texture2D::Create("Resources/Icons/StopButton.png");
 
 		// 拉远摄像机
@@ -38,7 +39,8 @@ namespace Hazel {
 		fbSpec.Height = 720;
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
-		m_ActiveScene = CreateRef<Scene>();
+		m_EditorScene = CreateRef<Scene>();
+		m_ActiveScene = m_EditorScene;
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 		 
 		// 设置默认打开场景 E:\AllWorkSpace1\GameEngineLightWeight\GameEngine-Editor\assets\scenes\PinkCube.scene
@@ -148,6 +150,12 @@ namespace Hazel {
 					m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 					break;
 				}
+				case SceneState::Simulate: {
+					// 摄像机要更新
+					m_EditorCamera.OnUpdate(ts);
+					m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+					break;
+				}
 				case SceneState::Play: {
 					m_ActiveScene->OnUpdateRuntime(ts);
 					break;
@@ -184,25 +192,28 @@ namespace Hazel {
 	}
 	void EditorLayer::OnOverlayRender()
 	{	// 两个不同摄像机
-		if (m_SceneState == SceneState::Play) {
+		if (m_SceneState == SceneState::Play) {// Play模式下找主摄像机
 			Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+			if (!camera) {
+				return;	// 找不到就退出
+			}
 			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().camera, camera.GetComponent<TransformComponent>().GetTransform());
 		}
 		else {
 			Renderer2D::BeginScene(m_EditorCamera);
 		}
-
 		if (m_ShowPhysicsColliders) {
+			// 包围盒需跟随对应的物体,包围盒的transform需基于物体的平移、旋转、缩放。
 			// Box Colliders
 			{
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
 				for (auto entity : view) {
 					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
-					
+					// 0.001fZ轴偏移量
 					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
-					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f); // 注意bc2d.Size需乘以2，以免缩小一半
 
-					// Cherno的代码
+					// Cherno的代码 有BUG
 					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
 					//	* glm::rotate(glm::mat4(1.0f), tc.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))// 围绕z旋转的角度
 					//	* glm::scale(glm::mat4(1.0f), scale);
@@ -227,9 +238,9 @@ namespace Hazel {
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
 				for (auto entity : view) {
 					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
-
+					// 0.001fZ轴偏移量
 					glm::vec3 translation = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
-					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2);// 注意：需*2
+					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2);// 注意cc2d.Radius需乘以2，以免缩小一半
 
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
 						* glm::scale(glm::mat4(1.0f), scale);
@@ -485,18 +496,41 @@ namespace Hazel {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
 
 		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		
+		// 没啥用！m_ActiveScene总是true。实现不了空场景不能Play和Simulation
+		bool toolbarEnabled = (bool)m_ActiveScene;
+		ImVec4 tintColor = ImVec4(1, 1, 1, 1);
+		if (!toolbarEnabled)
+			tintColor.w = 0.5;
+
 		// 按钮适应窗口大小、放大时应使用线性插值保证不那么模糊
 		float size = ImGui::GetWindowHeight() - 4.0f;
-		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
-		// 按钮应该在中间
-		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));// 设置按钮的x位置
-		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0)) { // padding为0，好像没有区别
-		//if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size))) {
-			if (m_SceneState == SceneState::Edit) {
-				OnScenePlay();
+		{
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
+			// 按钮应该在中间
+			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));// 设置按钮的x位置
+			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor)
+				&& toolbarEnabled) { // 图标可以换，但是下面的代码不会执行。第5个参数是padding为0，好像没区别
+			//if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size))) {
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) {
+					OnScenePlay();
+				}
+				else if (m_SceneState == SceneState::Play) {
+					OnSceneStop();
+				}
 			}
-			else if (m_SceneState == SceneState::Play) {
-				OnSceneStop();
+		}
+		ImGui::SameLine();
+		{
+			Ref<Texture2D> icon = ( m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)? m_IconSimulate : m_IconStop;
+			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0, ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor) 
+					&& toolbarEnabled) { // 图标可以换，但是下面的代码不会执行
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) {
+					OnSceneSimulate();
+				}
+				else if (m_SceneState == SceneState::Simulate) {
+					OnSceneStop();
+				}
 			}
 		}
 		ImGui::PopStyleVar(2);
@@ -653,9 +687,8 @@ namespace Hazel {
 	}
 	void EditorLayer::OnScenePlay()
 	{
-		if (!m_EditorScene) {
-			HZ_CORE_WARN("editorscene is null");
-			return;
+		if (m_SceneState == SceneState::Simulate) {
+			OnSceneStop();// 停止物理,销毁
 		}
 		m_SceneState = SceneState::Play;
 
@@ -665,12 +698,29 @@ namespace Hazel {
 		// 当前上下文是新场景----------------------------
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
+	void EditorLayer::OnSceneSimulate()
+	{
+		if (m_SceneState == SceneState::Play) {
+			OnSceneStop(); // 停止物理
+		}
+		m_SceneState = SceneState::Simulate;
+
+		// 复制新场景给活动场景
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnSimulationStart(); // 复制完新场景就开始运行
+		// 当前上下文是新场景----------------------------
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
 	void EditorLayer::OnSceneStop()
 	{
+		if (m_SceneState == SceneState::Play) {
+			m_ActiveScene->OnRuntimeStop();// 停止物理,销毁
+		}
+		else if (m_SceneState == SceneState::Simulate) {
+			m_ActiveScene->OnSimulationStop();// 停止物理,销毁
+		}
 		m_SceneState = SceneState::Edit;
 
-		// 先停止,销毁
-		m_ActiveScene->OnRuntimeStop();
 		// 当前活动场景是编辑场景
 		m_ActiveScene = m_EditorScene;
 		// 当前上下文是编辑场景----------------------------

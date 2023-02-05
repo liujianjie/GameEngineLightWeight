@@ -27,12 +27,10 @@ private:
 std::mt19937 Random::s_RandomEngine;
 std::uniform_int_distribution<std::mt19937::result_type> Random::s_Distribution;
 
-
 ParticleSystem::ParticleSystem()
 {
 	m_ParticlePool.resize(1000);
 }
-
 // 更新一个个粒子的信息，控制粒子销毁
 void ParticleSystem::OnUpdate(Hazel::Timestep ts)
 {

@@ -5,8 +5,8 @@ namespace Hazel {
 	class OpenGLVertexBuffer:public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size);
-		OpenGLVertexBuffer(float* vertices, uint32_t size);
+		OpenGLVertexBuffer(uint32_t size);					// 声明缓冲区为动态的数据：在批处理中被使用，似乎是说会经常上传数据给显卡（因调用了setdata函数)
+		OpenGLVertexBuffer(float* vertices, uint32_t size);// 声明缓冲区为静态的数据，在sandbox的examplelayer中被使用
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
