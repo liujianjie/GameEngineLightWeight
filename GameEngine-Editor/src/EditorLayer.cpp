@@ -44,7 +44,7 @@ namespace Hazel {
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 		 
 		// 设置默认打开场景 E:\AllWorkSpace1\GameEngineLightWeight\GameEngine-Editor\assets\scenes\PinkCube.scene
-		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
 		if (commandLineArgs.Count > 1) {
 			auto sceneFilePath = commandLineArgs[1];
 			SceneSerializer serializer(m_EditorScene);
@@ -54,49 +54,9 @@ namespace Hazel {
 		// 当前上下文是活动场景
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-#if 0
-		auto redsquare = m_ActiveScene->CreateEntity("Red Square Entity");
-		redsquare.AddComponent<SpriteRendererComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 这是颜色
-		redsquare.GetComponent<TransformComponent>().Translation = glm::vec3(2.0f, 0.0f, 0.0f);
+		// 设置绘画线的宽度
+		Renderer2D::SetLineWidth(4.0f);
 
-		auto square = m_ActiveScene->CreateEntity("Green Square Entity");
-		square.AddComponent<SpriteRendererComponent>(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		// 保存ID
-		m_SquareEntity = square;
-
-		// 初始化摄像机实体
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera A");
-		m_CameraEntity.AddComponent<CameraComponent>();
-		m_CameraEntity.GetComponent<TransformComponent>().Translation = glm::vec3{ 0,0,10.0f };
-		
-		m_SecondCamera = m_ActiveScene->CreateEntity("Camera B");
-		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
-		cc.primary = false; // 第二个摄像机为false
-
-		class CameraController : public ScriptableEntity {
-		public:
-			virtual void OnCreate() override{
-				//auto& tfc = GetComponent<TransformComponent>();
-				//tfc.Translation.x = rand() % 10 - 5.0f;
-			}
-			virtual void OnDestroy() override {}
-			virtual void OnUpdate(Timestep ts)override {
-				// 获取当前挂载CameraController脚本的实体的TransformComponent组件
-				auto& tfc = GetComponent<TransformComponent>();
-				float speed = 5.0f;
-				if (Input::IsKeyPressed(KeyCode::A))
-					tfc.Translation.x -= speed * ts;
-				if (Input::IsKeyPressed(KeyCode::D))
-					tfc.Translation.x += speed * ts;
-				if (Input::IsKeyPressed(KeyCode::W))
-					tfc.Translation.y += speed * ts;
-				if (Input::IsKeyPressed(KeyCode::S))
-					tfc.Translation.y -= speed * ts;
-			}
-		};
-		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-#endif
 	}
 	void EditorLayer::OnDetach()
 	{
@@ -215,7 +175,7 @@ namespace Hazel {
 
 					// Cherno的代码 有BUG
 					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
-					//	* glm::rotate(glm::mat4(1.0f), tc.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))// 围绕z旋转的角度
+					//	* glm::rotate(glm::mat4(1.0f), tc.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))// 围绕z旋转的角度，导致包围盒不能实时跟随物体的位置
 					//	* glm::scale(glm::mat4(1.0f), scale);
 
 					// 应改成
@@ -241,13 +201,22 @@ namespace Hazel {
 					// 0.001fZ轴偏移量
 					glm::vec3 translation = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
 					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2);// 注意cc2d.Radius需乘以2，以免缩小一半
+					// 第二种rotation计算方式 用四元数获得矩阵
+					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
 
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* rotation
 						* glm::scale(glm::mat4(1.0f), scale);
 
 					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.01f);// 绿色的包围盒, 第三个参数控制呈现圆环
 				}
 			}
+		}
+		// 绘画选择实体的轮廓
+		if (Entity selectEntity = m_SceneHierarchyPanel.GetSelectedEntity()) {
+			const TransformComponent& transform = selectEntity.GetComponent<TransformComponent>();
+
+			Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1, 0.5, 0, 1));
 		}
 		Renderer2D::EndScene();
 	}
@@ -541,7 +510,7 @@ namespace Hazel {
 	{
 		// 事件
 		m_CameraController.OnEvent(e);
-		if (m_SceneState == SceneState::Edit) {
+		if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) {
 			m_EditorCamera.OnEvent(e);
 		}
 

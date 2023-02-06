@@ -25,15 +25,19 @@ namespace Hazel {
 		:m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 		:m_Camera(-1.0f, 1.0f, -1.0f, 1.0f)
 	*/
-	Application::Application(const std::string& name, ApplicationCommandLineArgs args)
-		: m_CommandLineArgs(args)
+	Application::Application(const ApplicationSpecification& specification)
+		: m_Specification(specification)
 	{
 		HZ_PROFILE_FUNCTION();
 		//HZ_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		// 设置工作目录
+		if (!m_Specification.WorkingDirectory.empty()) {
+			std::filesystem::current_path(m_Specification.WorkingDirectory);
+		}
 		// 创建窗口
-		m_Window = Window::Create(WindowProps(name));
+		m_Window = Window::Create(WindowProps(m_Specification.Name));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		//m_Window->SetVSync(true);
 		//m_Window->SetVSync(false);

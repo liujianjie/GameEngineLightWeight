@@ -30,7 +30,8 @@ std::uniform_int_distribution<std::mt19937::result_type> Random::s_Distribution;
 
 ParticleSystem::ParticleSystem()
 {
-	m_ParticlePool.resize(1000);
+	//m_ParticlePool.resize(1000);
+	m_ParticlePool.resize(m_ParticlePoolMaxSize);
 }
 
 // 更新一个个粒子的信息，控制粒子销毁
@@ -71,7 +72,7 @@ void ParticleSystem::OnRender(Hazel::OrthographicCamera& camera)
 
 		glm::vec3 position = { particle.Position.x, particle.Position.y, 0.2f };
 		// 渲染 Rotation is radius
-		Hazel::Renderer2D::DrawrRotatedQuad(position, { size, size }, particle.Rotation, color);
+		Hazel::Renderer2D::DrawRotatedQuad(position, { size, size }, particle.Rotation, color);
 	}
 	Hazel::Renderer2D::EndScene();
 }
@@ -98,8 +99,8 @@ void ParticleSystem::Emit(const ParticleProps& particleProps)
 	particle.SizeBegin = particleProps.SizeBegin + particleProps.SizeVariation * (Random::Float() - 0.5f);
 	particle.SizeEnd = particleProps.SizeEnd;
 
-	//m_PoolIndex = m_PoolIndex == 0 ? (m_ParticlePool.size() / 2) : --m_PoolIndex % m_ParticlePool.size();
+	m_PoolIndex = m_PoolIndex == 0 ? (m_ParticlePool.size() - 1) : --m_PoolIndex % m_ParticlePool.size();
 	// 这里：由于m_ParticlePool.size();返回无符号整形，所以，-1 % 无符号整形为正数，但是不会回到999下标，只回到小于999的下标
-	m_PoolIndex = --m_PoolIndex % m_ParticlePool.size();
+	//m_PoolIndex = --m_PoolIndex % m_ParticlePool.size();
 	//std::cout << m_PoolIndex << std::endl;
 }

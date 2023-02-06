@@ -8,6 +8,7 @@
 #include <yaml-cpp/yaml.h>
 
 namespace YAML {
+	// 在YAML命名空间定义新的序列化和反序列化函数
 	template<>
 	struct convert<glm::vec2>
 	{
@@ -171,7 +172,11 @@ namespace Hazel {
 
 			auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
-
+			// 存储纹理路径
+			if (spriteRendererComponent.Texture) {
+				out << YAML::Key << "TexturePath" << YAML::Value << spriteRendererComponent.Texture->GetPath();
+			}
+			out << YAML::Key << "TilingFactor" << YAML::Value << spriteRendererComponent.TilingFactor;
 			out << YAML::EndMap;
 		}
 		if (entity.HasComponent<CircleRendererComponent>()) {
@@ -324,6 +329,12 @@ namespace Hazel {
 				if (spriteRendererComponent) {
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 					src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+					if (spriteRendererComponent["TexturePath"]) {
+						src.Texture = Texture2D::Create(spriteRendererComponent["TexturePath"].as<std::string>());
+					}
+					if (spriteRendererComponent["TilingFactor"]) {
+						src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
+					}
 				}
 
 				auto circleRendererComponent = entity["CircleRendererComponent"];

@@ -301,7 +301,9 @@ private:
 
 class Sandbox : public Hazel::Application {
 public:
-	Sandbox() {
+	Sandbox(const Hazel::ApplicationSpecification& specification)
+		: Hazel::Application(specification)
+	{
 		//PushLayer(new ExampleLayer());
 		PushLayer(new Sandbox2D());
 		//std::cout << (-1000 % 1000) << std::endl;
@@ -310,6 +312,10 @@ public:
 	}
 
 };
-Hazel::Application* Hazel::CreateApplication() {
-	return new Sandbox();
+Hazel::Application* Hazel::CreateApplication(ApplicationCommandLineArgs args) {
+	ApplicationSpecification spec;
+	spec.Name = "Sandbox";
+	spec.WorkingDirectory = "../GameEngine-Editor";
+	spec.CommandLineArgs = args;
+	return new Sandbox(spec);
 }

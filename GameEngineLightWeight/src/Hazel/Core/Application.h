@@ -23,10 +23,16 @@ namespace Hazel {
 			return Args[index];
 		}
 	};
+	struct ApplicationSpecification {
+		std::string Name = "Game Engine Application";
+		std::string WorkingDirectory;
+		ApplicationCommandLineArgs CommandLineArgs;
+	};
 	class HAZEL_API Application
 	{
 	public:
-		Application(const std::string& name = "Game Engine", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+		//Application(const std::string& name = "Game Engine", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+		Application(const ApplicationSpecification& specification);
 		virtual ~Application();
 
 		void Run();
@@ -43,7 +49,7 @@ namespace Hazel {
 		//inline OrthographicCamera& GetCamera() { return m_Camera; }
 		void Close();
 
-		ApplicationCommandLineArgs GetCommandLineArgs()const { return m_CommandLineArgs; }
+		const ApplicationSpecification GetSpecification()const { return m_Specification; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -56,7 +62,8 @@ namespace Hazel {
 		// 计算deltatime,每一帧的间隔时间
 		float m_LastFrameTime = 0.0f;
 	private:
-		ApplicationCommandLineArgs m_CommandLineArgs;
+		ApplicationSpecification m_Specification;
+		//ApplicationCommandLineArgs m_CommandLineArgs;
 		static Application* s_Instance;
 	};
 

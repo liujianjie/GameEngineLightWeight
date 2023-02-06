@@ -11,8 +11,10 @@
 namespace Hazel {
 	class GameEngineEditor : public Application {
 	public:
-		GameEngineEditor(ApplicationCommandLineArgs args)
-			: Application("GameEngine Editor", args)
+		//GameEngineEditor(ApplicationCommandLineArgs args)
+		//	: Application("GameEngine Editor", args)
+		GameEngineEditor(const ApplicationSpecification& spec)
+			: Application(spec)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -20,9 +22,12 @@ namespace Hazel {
 		}
 
 	};
-	// 从main传入
+	// 定义entryPoint的main函数
 	Application* CreateApplication(ApplicationCommandLineArgs args) {
-		return new GameEngineEditor(args);
-	}
+		ApplicationSpecification spec;
+		spec.Name = "GameEngine Editor";
+		spec.CommandLineArgs = args;
 
+		return new GameEngineEditor(spec);
+	}
 }

@@ -38,4 +38,5 @@ private:
 	};
 	std::vector<Particle> m_ParticlePool;// Á£×Ó³Ø
 	uint32_t m_PoolIndex = 999;
+	uint32_t m_ParticlePoolMaxSize = 50000;
 };

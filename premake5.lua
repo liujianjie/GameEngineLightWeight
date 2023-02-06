@@ -167,6 +167,7 @@ project "Sandbox"
 		"GameEngineLightWeight/vendor/spdlog/include",
 		"GameEngineLightWeight/src",
 		"GameEngineLightWeight/vendor",
+		"%{IncludeDir.entt}",
 		"%{IncludeDir.glm}"
 	}
 

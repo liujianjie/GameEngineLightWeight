@@ -1,9 +1,9 @@
 #pragma once
 
-#include "entt.hpp"
-#include "Entity.h"
 #include "Hazel/Core/Timestep.h"
 #include "Hazel/Renderer/EditorCamera.h"
+#include "entt.hpp"
+#include "Entity.h"
 
 // 不包含box2d的头文件，以便编辑器项目也包含
 class b2World;
