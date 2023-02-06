@@ -180,7 +180,7 @@ namespace Hazel {
 				//HZ_CORE_WARN("Mouse xy = {0} {1}", mouseX, mouseY);
 				// 4.读取帧缓冲第二个缓冲区的数据
 				int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-				HZ_CORE_WARN("Pixel data = {0}", pixelData);
+				//HZ_CORE_WARN("Pixel data = {0}", pixelData);
 				m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 			}
 			// Debug的绘画层

@@ -37,8 +37,23 @@ namespace Hazel {
         delete m_PhysicsWorld;
     }
     // 为复制场景的实体的组件的辅助方法
-    template<typename Component>
+    template<typename... Component>
     static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
+        // 循环复制所有组件
+        // 隐式引用捕获
+        ([&]() {
+            auto view = src.view<Component>();
+            // 2.1遍历旧场景所有uuid组件的旧实体
+            for (auto srcEntity : view) {
+                // 2.2用** 旧实体的uuid - map - 对应新实体 * *
+                entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+                // 3.1获取旧实体的组件
+                auto& srcComponent = src.get<Component>(srcEntity);
+                // 3.2然后用API，** 复制旧实体的组件给新实体**
+                dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+            }
+        }(), ...);
+#if OLD_PATH
         auto view = src.view<Component>();
         // 2.1遍历旧场景所有uuid组件的旧实体
         for (auto e : view) {
@@ -51,13 +66,26 @@ namespace Hazel {
             // 3.2然后用API，** 复制旧实体的组件给新实体**
             dst.emplace_or_replace<Component>(dstEnttID, component);// 添加或替换，保险。组件里面的数据自然会被拷贝
         }
+#endif
     }
+    template<typename... Component>
+    static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
+        CopyComponent<Component...>(dst, src, enttMap);
+    }
+
     // 为复制实体的辅助方法
-    template<typename Component>
+    template<typename... Component>
     static void CopyComponentIfExists(Entity dst, Entity src) {
-        if (src.HasComponent<Component>()) {
-            dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
-        }
+        ([&]() {
+            //std::cout << sizeof...(Component) << std::endl;
+            if (src.HasComponent<Component>()) {
+                dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+            }
+        }(), ...);
+    }    
+    template<typename... Component>
+    static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {
+        CopyComponentIfExists<Component...>(dst, src);
     }
 
     Ref<Scene> Scene::Copy(Ref<Scene> other)
@@ -83,14 +111,15 @@ namespace Hazel {
         }
 
         // 拷贝组件，除了IDcomponent与tagcomponent，因CreateEntityWithUUID创建了
-        CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        //CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -101,14 +130,16 @@ namespace Hazel {
         std::string name = entity.GetName();
         Entity newEntity = CreateEntity(name);
         // 2.复制组件
-        CopyComponentIfExists<TransformComponent>(newEntity, entity);
-        CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
-        CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-        CopyComponentIfExists<CameraComponent>(newEntity, entity);
-        CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-        CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-        CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-        CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+        // Copy components (except IDComponent and TagComponent)
+        CopyComponentIfExists(AllComponents{}, newEntity, entity);
+        //CopyComponentIfExists<TransformComponent>(newEntity, entity);
+        //CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+        //CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
+        //CopyComponentIfExists<CameraComponent>(newEntity, entity);
+        //CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+        //CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+        //CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+        //CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
     }
     Entity Scene::CreateEntity(const std::string& name)
     {
@@ -307,6 +338,7 @@ namespace Hazel {
                 auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
                 // 3.1定义Box包围盒
                 b2PolygonShape boxShape;
+                // TODO:待完善！
                 boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);// 包围盒跟随物体的size而变化
                 // 3.2定义fixture，fixture包含定义的包围盒
                 b2FixtureDef fixtureDef;
