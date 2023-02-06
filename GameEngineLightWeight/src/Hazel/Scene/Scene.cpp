@@ -36,11 +36,12 @@ namespace Hazel {
     {
         delete m_PhysicsWorld;
     }
+    // TODO:理解运作原理
     // 为复制场景的实体的组件的辅助方法
     template<typename... Component>
     static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
-        // 循环复制所有组件
-        // 隐式引用捕获
+        // 这个lambda会递归调用
+        // 隐式引用捕获"解开的Component包引用"，下面的Component是指具体的单个组件
         ([&]() {
             auto view = src.view<Component>();
             // 2.1遍历旧场景所有uuid组件的旧实体
@@ -52,7 +53,7 @@ namespace Hazel {
                 // 3.2然后用API，** 复制旧实体的组件给新实体**
                 dst.emplace_or_replace<Component>(dstEntity, srcComponent);
             }
-        }(), ...);
+        }(), ...);// 这三个点应该是解Component包
 #if OLD_PATH
         auto view = src.view<Component>();
         // 2.1遍历旧场景所有uuid组件的旧实体
@@ -76,12 +77,14 @@ namespace Hazel {
     // 为复制实体的辅助方法
     template<typename... Component>
     static void CopyComponentIfExists(Entity dst, Entity src) {
+        // 这个lambda会递归调用
+        // 隐式引用捕获"解开的Component包引用"，下面的Component是指具体的单个组件
         ([&]() {
             //std::cout << sizeof...(Component) << std::endl;
             if (src.HasComponent<Component>()) {
                 dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
             }
-        }(), ...);
+        }(), ...);// 这三个点应该是解Component包
     }    
     template<typename... Component>
     static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {

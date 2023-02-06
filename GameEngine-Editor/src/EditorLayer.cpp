@@ -550,7 +550,10 @@ namespace Hazel {
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	{
-		if (e.GetRepeatCount() > 0) {
+		//if (e.GetRepeatCount() > 0) {
+		//	return false;
+		//}
+		if (e.IsRepeat()) {
 			return false;
 		}
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
