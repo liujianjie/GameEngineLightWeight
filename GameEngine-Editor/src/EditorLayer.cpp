@@ -541,7 +541,9 @@ namespace Hazel {
 	{
 		// 事件
 		m_CameraController.OnEvent(e);
-		m_EditorCamera.OnEvent(e);
+		if (m_SceneState == SceneState::Edit) {
+			m_EditorCamera.OnEvent(e);
+		}
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(HZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -623,6 +625,10 @@ namespace Hazel {
 
 	void EditorLayer::NewScene()
 	{
+		// 先让m_EditorScene指向新场景内存，**旧的编辑场景内存会被销毁**，再让m_ActiveScene也指向新场景内存，它指向的旧的运行场景内存也会被销毁。
+		m_EditorScene = CreateRef<Scene>();
+		m_ActiveScene = m_EditorScene;
+
 		// 创建新场景 ，这段代码可解决 多次加载场景，会将新场景的实体和当前场景的实体一起呈现的bug
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);

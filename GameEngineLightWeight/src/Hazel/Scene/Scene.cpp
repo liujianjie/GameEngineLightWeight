@@ -408,7 +408,8 @@ namespace Hazel {
     {
         // 静态断言：false，代表在编译前就会执行， 但是编译器这里不会报错，说明这段代码不会编译吧。。
         // 而且打了断点，也不行，证明这段代码只是声明作用吧。
-        static_assert(false);
+        //static_assert(false);
+        static_assert(sizeof(T) == 0);// 不懂什么意思
     }
     template<>
     void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)

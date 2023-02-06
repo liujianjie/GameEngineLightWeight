@@ -43,9 +43,10 @@ namespace Hazel {
 			// 1.得到子文件夹或文件path类。					比如：path = assets\cache\shader
 			const auto& path = directoryEntry.path();
 			// 2.得到子文件与的assets文件夹的相对位置path。	relativePath = cache\shader
-			auto relativePath = std::filesystem::relative(path, g_AssetPath);
+			//auto relativePath = std::filesystem::relative(path, g_AssetPath);
 			// 3.获取子文件的文件名。						filenameString = shader
-			std::string filenameString = relativePath.filename().string();
+			//std::string filenameString = relativePath.filename().string();
+			std::string filenameString = path.filename().string();// 改为获取绝对路径，因相对路径计算相对来说消耗大
 
 			// On source items 拖动
 			ImGui::PushID(filenameString.c_str());
@@ -58,6 +59,7 @@ namespace Hazel {
 			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbnailSize, thumbnailSize }, { 0,1 }, { 1,0 });// 1:ID，2：大小，3、4：左上角和右下角的uv坐标
 			if (ImGui::BeginDragDropSource()) {
 				// 这里设置拖动
+				auto relativePath = std::filesystem::relative(path, g_AssetPath);
 				const wchar_t* itemPath = relativePath.c_str();
 				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 				ImGui::EndDragDropSource();
