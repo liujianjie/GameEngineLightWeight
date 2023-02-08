@@ -4,6 +4,7 @@
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/object.h"
+#include <glm/gtc/matrix_transform.hpp>
 namespace Hazel {
 
 	struct ScriptEngineData {
@@ -83,7 +84,25 @@ namespace Hazel {
 			HZ_CORE_TRACE("{}.{}", nameSpace, name);// 命名空间和类名
 		}
 	}
-
+	static void CppFunc() {
+		std::cout << "来自C++内部函数" << std::endl;
+	}
+	static void NativeLog(MonoString* string, int parameter) {
+		char* cStr = mono_string_to_utf8(string);
+		std::string str(cStr);// 复制数据给str
+		mono_free(cStr);
+		std::cout << str << "," << parameter << std::endl;
+	}
+	static void NativeLogVec3(glm::vec3* vec, glm::vec3* out) {
+		//HZ_CORE_WARN("Value: {0}", *vec); // 这会错的，并不支持输出向量
+		std::cout << vec->x << "," << vec->y <<","<<vec->z << std::endl;
+		*out = glm::cross(*vec, glm::vec3(vec->x, vec->y, -vec->z)); // 通过out返回指针
+	}
+	static glm::vec3* TestNativeLogVec3(glm::vec3* vec) {
+		std::cout <<"TestNativeLogVec3" << std::endl;
+		glm::vec3 result = glm::cross(*vec, glm::vec3(vec->x, vec->y, -vec->z)); // 通过out返回指针
+		return new glm::vec3(result);
+	}
 	void ScriptEngine::InitMono()
 	{
 		// 设置程序集装配路径(复制的4.5版本的路径)
@@ -99,6 +118,12 @@ namespace Hazel {
 		s_Data->AppDomain = mono_domain_create_appdomain("HazelScriptRuntime", nullptr);
 		mono_domain_set(s_Data->AppDomain, true);
 
+		// 添加内部调用
+		mono_add_internal_call("Hazel.Main::CppFunction", CppFunc);
+		mono_add_internal_call("Hazel.Main::NativeLog", NativeLog); 
+		mono_add_internal_call("Hazel.Main::NativeLogVec3", NativeLogVec3);
+		mono_add_internal_call("Hazel.Main::TestNativeLogVec3", TestNativeLogVec3);
+		
 		// 加载c#项目导出的dll
 		s_Data->CoreAssembly = LoadCSharpAssembly("Resources/Scripts/GameEngine-ScriptCore.dll");
 		PrintAssemblyTypes(s_Data->CoreAssembly);// 打印dll的基本信息
