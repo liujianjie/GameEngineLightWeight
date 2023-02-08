@@ -169,10 +169,7 @@ namespace Hazel {
 				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
 				for (auto entity : view) {
 					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
-					// 0.001fZ轴偏移量
-					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
-					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f); // 注意bc2d.Size需乘以2，以免缩小一半
-
+					
 					// Cherno的代码 有BUG
 					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
 					//	* glm::rotate(glm::mat4(1.0f), tc.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))// 围绕z旋转的角度，导致包围盒不能实时跟随物体的位置
@@ -186,8 +183,19 @@ namespace Hazel {
 					// 第二种rotation计算方式 用四元数获得矩阵
 					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
 
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					// 0.001fZ轴偏移量
+					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f); // 注意bc2d.Size需乘以2，以免缩小一半
+
+					// 若将偏移位置先和物体的位置相加后再与旋转相乘，会导致包围盒的位置很奇怪，所以不正确
+					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					//	* rotation
+					//	* glm::scale(glm::mat4(1.0f), scale);
+
+					// 应该先物体的位置乘以旋转再乘偏移量才正确
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
 						* rotation
+						* glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, 0.001f))// 包围盒的位置还需要算上偏移位置
 						* glm::scale(glm::mat4(1.0f), scale);
 
 					Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));// 绿色的包围盒
@@ -204,8 +212,14 @@ namespace Hazel {
 					// 第二种rotation计算方式 用四元数获得矩阵
 					glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
 
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					// 若将偏移位置先和物体的位置相加后再与旋转相乘，会导致包围盒的位置很奇怪，所以不正确
+					//glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+					//  * rotation
+					//	* glm::scale(glm::mat4(1.0f), scale);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation)
 						* rotation
+						* glm::translate(glm::mat4(1.0f), glm::vec3(cc2d.Offset, 0.001f))// 包围盒的位置还需要算上偏移位置
 						* glm::scale(glm::mat4(1.0f), scale);
 
 					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.01f);// 绿色的包围盒, 第三个参数控制呈现圆环

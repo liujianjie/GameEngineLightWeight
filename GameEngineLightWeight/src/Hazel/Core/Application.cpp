@@ -9,6 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include "Hazel/Utils/PlatformUtils.h"
+#include "Hazel/Scripting/ScriptEngine.h"
 
 namespace Hazel {
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -50,9 +51,12 @@ namespace Hazel {
 
 		// ≥ı ºªØ‰÷»æ
 		Renderer::Init();
+		ScriptEngine::Init();
 	}
 	Application::~Application() {
 		HZ_PROFILE_FUNCTION();
+
+		//ScriptEngine::Shutdown();
 		Renderer::Shutdown();
 	}
 	void Application::PushLayer(Layer* layer) {

@@ -342,7 +342,10 @@ namespace Hazel {
                 // 3.1定义Box包围盒
                 b2PolygonShape boxShape;
                 // TODO:待完善！
-                boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);// 包围盒跟随物体的size而变化
+                //boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);// 包围盒的计算范围跟随物体的size而变化
+                // 包围盒的计算范围跟随物体的size、偏移位置而变化
+                boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y,
+                    b2Vec2(bc2d.Offset.x, bc2d.Offset.y), 0);
                 // 3.2定义fixture，fixture包含定义的包围盒
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &boxShape;
