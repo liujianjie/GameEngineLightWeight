@@ -11,21 +11,31 @@ namespace Hazel
             X = x; Y = y; Z = z; 
         }
     }
-    public class Main
+    public static class InternalCalls
+    {
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLog(string text, int parameter);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void NativeLog_Vector(ref Vector3 parameter, out Vector3 result);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static float NativeLog_VectorDot(ref Vector3 parameter);
+    }
+    public class Entity
     {
         public float FloatVar { get; set; }
-        public Main()
+        public Entity()
         {
             Console.WriteLine("Main constructor!");
-            CppFunction();
-            NativeLog("liujianjie", 2023);
-            Vector3 vec1 = new Vector3(5, 2.5f, 1);
-            //Vector3 vec2;
-            NativeLogVec3(ref vec1, out Vector3 vec2);
-            Console.WriteLine($"{vec2.X}, {vec2.Y}, {vec2.Z}");
 
-            Vector3 vec3 = TestNativeLogVec3(ref vec1);
-            Console.WriteLine($"{vec3.X}, {vec3.Y}, {vec3.Z}");
+            // C# 调用C++函数
+            Log("liujianjie", 2023);
+
+            Vector3 pos = new Vector3(5, 2.5f, 1);
+            Vector3 result = Log(pos);
+            Console.WriteLine($"{result.X}, {result.Y}, {result.Z}");
+            Console.WriteLine("{0}", InternalCalls.NativeLog_VectorDot(ref pos));
         }
         public void PrintMessage()
         {
@@ -43,13 +53,14 @@ namespace Hazel
         {
             Console.WriteLine($"C# says: {message}");
         }
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void CppFunction();
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void NativeLog(string text, int parameter);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static void NativeLogVec3(ref Vector3 vec, out Vector3 vec2);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern static Vector3 TestNativeLogVec3(ref Vector3 vec);
+        private void Log(string text, int parameter)
+        {
+            InternalCalls.NativeLog(text, parameter);
+        }
+        private Vector3 Log(Vector3 parameter)
+        {
+            InternalCalls.NativeLog_Vector(ref parameter, out Vector3 result);
+            return result;
+        }
     }
 }
