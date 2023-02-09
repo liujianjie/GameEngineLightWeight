@@ -68,6 +68,8 @@ Entities:
       Translation: [-2.01204252, 1.86514282, 6.78857361e-08]
       Rotation: [0, 0, 0]
       Scale: [0.999987006, 0.999999881, 0.99999994]
+    ScriptComponent:
+      ClassName: Sandbox.Player
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
       TilingFactor: 1

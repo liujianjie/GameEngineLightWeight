@@ -131,11 +131,19 @@ namespace Hazel {
         CircleCollider2DComponent() = default;
         CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
     };
+    // ½Å±¾×é¼þ
+    struct ScriptComponent {
+        std::string ClassName;
+
+        ScriptComponent() = default;
+        ScriptComponent(const ScriptComponent&) = default;
+    };
     template<typename... Component>
     struct ComponentGroup {
     };
     // (except IDComponent and TagComponent)
     using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent,
-        CircleRendererComponent, CameraComponent, NativeScriptComponent,
-        Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+        CircleRendererComponent, CameraComponent, ScriptComponent,
+        NativeScriptComponent,Rigidbody2DComponent, BoxCollider2DComponent, 
+        CircleCollider2DComponent>;
 }

@@ -7,6 +7,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+
+#include "Hazel/Scripting/ScriptEngine.h"
 namespace Hazel {
 	extern const std::filesystem::path g_AssetPath;
 	// transform组件的ui
@@ -236,6 +238,7 @@ namespace Hazel {
 		}
 		if (ImGui::BeginPopup("AddComponent")) {
 			DisplayAddComponentEntry<CameraComponent>("Camera");
+			DisplayAddComponentEntry<ScriptComponent>("Script");
 			DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 			DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
 			DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
@@ -307,6 +310,23 @@ namespace Hazel {
 					camera.SetOrthographicFarClip(orthoFar);
 				}
 				ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.fixedAspectRatio);
+			}
+		});
+		// 实体的脚本组件
+		DrawComponent<ScriptComponent>("Script", entity, [](auto& component)
+		{
+			bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);
+			static char buffer[64];
+			strcpy(buffer, component.ClassName.c_str());
+			// 不存在这个实体，标红
+			if (!scriptClassExists) {
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+			}
+			if (ImGui::InputText("Class", buffer, sizeof(buffer))) {
+				component.ClassName = buffer;
+			}
+			if (!scriptClassExists) {
+				ImGui::PopStyleColor();
 			}
 		});
 		// 实体SpriteRendererComponent组件		

@@ -21,6 +21,8 @@ namespace Hazel {
 		// 复制实体
 		void DuplicateEntity(Entity entity);
 
+		Entity GetEntityByUUID(UUID uuid);
+
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
@@ -65,6 +67,8 @@ namespace Hazel {
 
 		// 当前场景的路径
 		std::string filepath;
+		// map：uuid->entity
+		std::unordered_map<UUID, entt::entity> m_EntityMap;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

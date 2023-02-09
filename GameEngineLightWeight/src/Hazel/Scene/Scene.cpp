@@ -5,6 +5,9 @@
 #include "ScriptableEntity.h"
 
 #include "Hazel/Renderer/Renderer2D.h"
+
+#include "Hazel/Scripting/ScriptEngine.h"
+
 #include <glm/glm.hpp>
 
 //#include "SceneCamera.h"
@@ -115,14 +118,6 @@ namespace Hazel {
 
         // 拷贝组件，除了IDcomponent与tagcomponent，因CreateEntityWithUUID创建了
         CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        //CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -135,14 +130,14 @@ namespace Hazel {
         // 2.复制组件
         // Copy components (except IDComponent and TagComponent)
         CopyComponentIfExists(AllComponents{}, newEntity, entity);
-        //CopyComponentIfExists<TransformComponent>(newEntity, entity);
-        //CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
-        //CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-        //CopyComponentIfExists<CameraComponent>(newEntity, entity);
-        //CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-        //CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-        //CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-        //CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+    }
+    Entity Scene::GetEntityByUUID(UUID uuid)
+    {
+        // TODO(Yan): 应该要断言？？
+        if (m_EntityMap.find(uuid) != m_EntityMap.end()) {
+            return { m_EntityMap.at(uuid), this };
+        }
+        return Entity();
     }
     Entity Scene::CreateEntity(const std::string& name)
     {
@@ -157,18 +152,35 @@ namespace Hazel {
         entity.AddComponent<IDComponent>(uuid); // 使用存在的uuid，不创建新的
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "Entity" : name;
+        
+        m_EntityMap[uuid] = entity;
+
         return entity;
     }
     void Scene::DestroyEntity(Entity entity) {
         m_Registry.destroy(entity);
+        m_EntityMap.erase(entity.GetUUID());
     }
     void Scene::OnRuntimeStart()
     {
         OnPhysics2DStart();
+
+        // 脚本
+        {
+            ScriptEngine::OnRuntimeStart(this);
+            // 实例化实体中的C#脚本
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e : view) {
+                Entity entity = { e, this };
+                ScriptEngine::OnCreateEntity(entity);
+            }
+        }
     }
     void Scene::OnRuntimeStop()
     {
         OnPhysics2DStop();
+
+        ScriptEngine::OnRuntimeStop();
     }
     void Scene::OnSimulationStart()
     {
@@ -180,6 +192,16 @@ namespace Hazel {
     }
     void Scene::OnUpdateRuntime(Timestep ts)
     {
+        // 脚本
+        {
+            ScriptEngine::OnRuntimeStart(this);
+            // 实例化实体中的C#脚本
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e : view) {
+                Entity entity = { e, this };
+                ScriptEngine::OnUpdateEntity(entity, ts);
+            }
+        }
         // 引擎运行的时候更新脚本。
         {   //  [=]是隐式值捕获，捕获ts
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
@@ -458,6 +480,10 @@ namespace Hazel {
     }
     template<>
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
     {
     }
 }

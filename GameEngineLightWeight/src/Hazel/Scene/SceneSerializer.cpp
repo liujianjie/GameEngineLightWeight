@@ -165,7 +165,15 @@ namespace Hazel {
 
 			out << YAML::EndMap;
 		}
+		if (entity.HasComponent<ScriptComponent>()) {
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
 
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+			out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+
+			out << YAML::EndMap;
+		}
 		if (entity.HasComponent<SpriteRendererComponent>()) {
 			out << YAML::Key << "SpriteRendererComponent";
 			out << YAML::BeginMap;
@@ -324,7 +332,12 @@ namespace Hazel {
 					cc.primary = cameraComponent["Primary"].as<bool>();
 					cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 				}
-
+				auto scriptComponent = entity["ScriptComponent"];
+				if (scriptComponent) {
+					// 添加实体，默认有transform组件
+					auto& sc = deserializedEntity.AddComponent<ScriptComponent>();
+					sc.ClassName = scriptComponent["ClassName"].as<std::string>();
+				}
 				auto spriteRendererComponent = entity["SpriteRendererComponent"];
 				if (spriteRendererComponent) {
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
