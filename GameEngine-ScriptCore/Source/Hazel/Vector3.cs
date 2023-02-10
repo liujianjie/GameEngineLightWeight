@@ -12,6 +12,15 @@
             Y = scalar;
             Z = scalar;
         }
+        public Vector2 XY
+        {
+            get=> new Vector2(X, Y);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+            }
+        }
         public Vector3(float x, float y, float z)
         {
             X = x;

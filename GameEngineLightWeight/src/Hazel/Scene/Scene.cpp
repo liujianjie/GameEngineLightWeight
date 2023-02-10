@@ -44,7 +44,7 @@ namespace Hazel {
     template<typename... Component>
     static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
         // 这个lambda会递归调用
-        // 隐式引用捕获"解开的Component包引用"，下面的Component是指具体的单个组件
+        // 隐式引用捕获dst、src或者"解开的Component包引用"，下面的Component是指具体的单个组件
         ([&]() {
             auto view = src.view<Component>();
             // 2.1遍历旧场景所有uuid组件的旧实体
@@ -81,7 +81,7 @@ namespace Hazel {
     template<typename... Component>
     static void CopyComponentIfExists(Entity dst, Entity src) {
         // 这个lambda会递归调用
-        // 隐式引用捕获"解开的Component包引用"，下面的Component是指具体的单个组件
+        // 隐式引用捕获dst、src或者"解开的Component包引用"，下面的Component是指具体的单个组件
         ([&]() {
             //std::cout << sizeof...(Component) << std::endl;
             if (src.HasComponent<Component>()) {

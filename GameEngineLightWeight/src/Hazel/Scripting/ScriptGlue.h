@@ -5,6 +5,7 @@ namespace Hazel {
 	public:
 		// 添加内部调用
 		static void RegisterFunctions();
+		static void RegisterComponents();
 	};
 }
 

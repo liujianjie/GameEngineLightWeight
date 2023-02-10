@@ -20,7 +20,23 @@ namespace Hazel
             set
             {
                 InternalCalls.TransformComponent_SetTranslation(ID, ref value);
-            } 
+            }
+        }
+        // C#的泛型
+        public bool HasComponent<T>() where T : Component, new()// new()是确保有空构造函数
+        {
+            Type componentType = typeof(T);// 得到命名空间.类名名称，比如Sandbox.Player
+            Console.WriteLine($"{typeof(T)}");
+            return InternalCalls.Entity_HasComponent(ID, componentType);
+        }
+        public T GetComponent<T>() where T : Component, new()
+        {
+            if (!HasComponent<T>())
+            {
+                return null;
+            }
+            T component = new T() { Entity = this };// 返回本地类实例对象
+            return component;
         }
     }
 }
