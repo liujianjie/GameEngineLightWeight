@@ -8,11 +8,12 @@ namespace Sandbox
         private TransformComponent m_Transform;
         private Rigidbody2DComponent m_Rigidbody;
 
+        public float Speed = 0;
+        public float Time = 0.0f;
         public Player()
         {
             Console.WriteLine("Player()");
             //Console.WriteLine("typeof(Player){0}", typeof(Player));
-            
         }
         void OnCreate()
         {
@@ -22,29 +23,30 @@ namespace Sandbox
         }
         void OnUpdate(float ts)
         {
+            Time += ts;
             //Console.WriteLine($"Player.OnUpdate() - {ts}");
-            float speed = 0.2f;
+            float speed = Speed;
             Vector3 velocity = Vector3.Zero;
 
             if (Input.IsKeyDown(KeyCode.W))
             {
                 velocity.Y = 1.0f;
-                Console.WriteLine("press the W key");
+                //Console.WriteLine("press the W key");
             }
             else if (Input.IsKeyDown(KeyCode.S))
             {
                 velocity.Y = -1.0f;
-                Console.WriteLine("press the S key");
+                //Console.WriteLine("press the S key");
             }
             else if (Input.IsKeyDown(KeyCode.A))
             {
                 velocity.X = -1.0f;
-                Console.WriteLine("press the A key");
+                //Console.WriteLine("press the A key");
             }
             else if (Input.IsKeyDown(KeyCode.D))
             {
                 velocity.X = 1.0f;
-                Console.WriteLine("press the D key");
+                //Console.WriteLine("press the D key");
             }
             velocity *= speed;
             //Console.WriteLine($"velocity={velocity.X},{velocity.Y}");
@@ -62,5 +64,4 @@ namespace Sandbox
             //Translation = translation;          // set是调用C++的内部函数设置实体的位置
         }
     }
-
 }

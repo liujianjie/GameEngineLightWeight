@@ -33,6 +33,11 @@ namespace Hazel {
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 		template<typename T>
+		T& GetComponent() const{
+			HZ_CORE_ASSERT(HasComponent<T>(), "实体不存在这个组件");
+			return m_Scene->m_Registry.get<T>(m_EntityHandle);
+		}
+		template<typename T>
 		bool HasComponent() {
 			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
 		}
@@ -43,6 +48,7 @@ namespace Hazel {
 		}
 		// 获取uuid
 		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		UUID GetUUID() const { return GetComponent<IDComponent>().ID; }
 		// 获取tag名称
 		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 

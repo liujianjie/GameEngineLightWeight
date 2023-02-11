@@ -312,8 +312,8 @@ namespace Hazel {
 				ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.fixedAspectRatio);
 			}
 		});
-		// 实体的脚本组件
-		DrawComponent<ScriptComponent>("Script", entity, [](auto& component)
+		// 实体的脚本组件 mutable去除常量属性
+		DrawComponent<ScriptComponent>("Script", entity, [entity](auto& component)mutable
 		{
 			bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);
 			static char buffer[64];
@@ -325,6 +325,21 @@ namespace Hazel {
 			if (ImGui::InputText("Class", buffer, sizeof(buffer))) {
 				component.ClassName = buffer;
 			}
+			// 123：c#脚本属性
+			// UUID->ScriptInstance->ScriptClass->fieldmap
+			Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
+			if (scriptInstance) {
+				const auto& fields = scriptInstance->GetScriptClass()->GetFields();// 获取保存的属性名称
+				for (const auto& [name, field] : fields)
+				{
+					if (field.Type == ScriptFieldType::Float) {
+						float data = scriptInstance->GetFieldValue<float>(name);// 获取属性值
+						if (ImGui::DragFloat(name.c_str(), &data)) {
+							scriptInstance->SetFieldValue(name, data);// 设置属性值
+						}
+					}
+				}
+			}
 			if (!scriptClassExists) {
 				ImGui::PopStyleColor();
 			}
@@ -334,7 +349,6 @@ namespace Hazel {
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-
 			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
 			if (ImGui::BeginDragDropTarget()) {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
