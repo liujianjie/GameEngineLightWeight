@@ -3,8 +3,11 @@ project "GameEngine-ScriptCore"
 	language "C#"
 	dotnetframework "4.7.2"
 
-	targetdir ("%{wks.location}/GameEngine-Editor/Resources/Scripts")
-	objdir ("%{wks.location}/GameEngine-Editor/Resources/Scripts/Intermediates")
+	-- 获取的是.sln所在的位置
+	--targetdir ("%{wks.location}/GameEngine-Editor/Resources/Scripts")
+	--objdir ("%{wks.location}/GameEngine-Editor/Resources/Scripts/Intermediates")
+	targetdir ("../GameEngine-Editor/Resources/Scripts")
+	objdir ("../GameEngine-Editor/Resources/Scripts/Intermediates")
 
 	files{
 		"Source/**.cs",

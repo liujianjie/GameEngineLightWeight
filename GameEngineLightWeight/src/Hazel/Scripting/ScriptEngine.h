@@ -21,6 +21,7 @@ namespace Hazel {
 		static void Shutdown();	// 关闭
 
 		static void LoadAssembly(const std::filesystem::path& filepath);		// 119.2.加载dll程序集
+		static void LoadAppAssembly(const std::filesystem::path& filepath);	// 119.2.加载dll程序集
 
 		// 120.C#与实体交互
 		static void OnRuntimeStart(Scene* scene);// 场景运行开始时
@@ -42,7 +43,7 @@ namespace Hazel {
 		friend class ScriptClass;
 
 		// 120.C#与实体交互
-		static void LoadAssemblyClasses(MonoAssembly* assembly);				// 加载C#中父类是entity的类，
+		static void LoadAssemblyClasses();				// 加载C#中父类是entity的类，
 	};
 	// 120.C#与实体交互
 	// 相当于new Class();得到的对象再封装一层，属性：由哪个Class初始化、存储Class的函数，行为：调用Class的函数
@@ -64,7 +65,7 @@ namespace Hazel {
 	class ScriptClass {
 	public:
 		ScriptClass() = default;
-		ScriptClass(const std::string& classNamespace, const std::string& className);				// 119.3. 创建一个MonoClass类
+		ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore = false);				// 119.3. 创建一个MonoClass类
 
 		MonoObject* Instantiate();																	// 119.4.创建一个由MonoClass类构成的mono对象并且初始化
 		MonoMethod* GetMethod(const std::string& name, int parameterCount);							// 119.5.1 获取类的函数

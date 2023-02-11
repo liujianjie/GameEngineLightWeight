@@ -1,10 +1,13 @@
 workspace "GameEngineLightWeight"
-	architecture "x64"
+	architecture "x86_64"
 	startproject "GameEngine-Editor"
 	configurations{
 		"Debug",
 		"Release",
 		"Dist"
+	}
+	flags{
+		"MultiProcessorCompile"
 	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"

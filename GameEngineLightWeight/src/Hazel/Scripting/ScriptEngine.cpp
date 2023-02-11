@@ -73,10 +73,14 @@ namespace Hazel {
 
 		MonoAssembly* CoreAssembly = nullptr;
 		MonoImage* CoreAssemblyImage = nullptr;
+
+		MonoAssembly* AppAssembly = nullptr;
+		MonoImage* AppAssemblyImage = nullptr;
+
 		ScriptClass EntityClass;// 存储Entity父类
 
-		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;// 脚本map
-		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;	// 运行脚本map
+		std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;// 所有C#脚本map
+		std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;	// 需要运行的C#脚本map
 
 		// Runtime
 		Scene* SceneContext = nullptr;	// 场景上下文，用在C#调用C++内部函数时根据UUID获取这个场景的实体
@@ -92,13 +96,14 @@ namespace Hazel {
 		// 初始化mono
 		InitMono();
 		// 加载c#程序集
-		LoadAssembly("Resources/Scripts/GameEngine-ScriptCore.dll");
+		LoadAssembly("Resources/Scripts/GameEngine-ScriptCore.dll");				// 核心库
+		LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");// 游戏脚本库
 
 		// 加载父类是entity的脚本类
-		LoadAssemblyClasses(s_Data->CoreAssembly);
+		LoadAssemblyClasses();
 
-		// 创建加载Entity父类-为了把UUID传给C#Entity的构造函数
-		s_Data->EntityClass = ScriptClass("Hazel", "Entity");
+		// 创建加载Entity父类-为了在调用OnCreate函数之前把UUID传给C#Entity的构造函数
+		s_Data->EntityClass = ScriptClass("Hazel", "Entity", true);
 
 		// 添加内部调用
 		ScriptGlue::RegisterFunctions();
@@ -131,6 +136,13 @@ namespace Hazel {
 		// 加载c#项目导出的dll
 		s_Data->CoreAssembly = Utils::LoadCSharpAssembly(filepath);
 		s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
+		//Utils::PrintAssemblyTypes(s_Data->CoreAssembly);// 打印dll的基本信息
+	}
+	void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
+	{
+		// 加载c#项目导出的dll
+		s_Data->AppAssembly = Utils::LoadCSharpAssembly(filepath);
+		s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
 		//Utils::PrintAssemblyTypes(s_Data->CoreAssembly);// 打印dll的基本信息
 	}
 	void ScriptEngine::ShutdownMono()
@@ -171,7 +183,7 @@ namespace Hazel {
 			instance->InvokeOncreate();								// 调用C#的OnCreate函数
 		}
 	}
-	void Hazel::ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
+	void ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
 	{
 		UUID entityUUID = entity.GetUUID();							// 得到这个实体的UUID
 		HZ_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
@@ -180,23 +192,22 @@ namespace Hazel {
 		Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
 		instance->InvokeOnUpdate((float)ts);							// 调用C#的OnUpdate函数
 	}
-	void ScriptEngine::LoadAssemblyClasses(MonoAssembly* assembly)
+	void ScriptEngine::LoadAssemblyClasses()
 	{
 		s_Data->EntityClasses.clear();
 
-		MonoImage* image = mono_assembly_get_image(assembly);
-		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(s_Data->AppAssemblyImage, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 		// 1.加载Entity父类
-		MonoClass* entityClass = mono_class_from_name(image, "Hazel", "Entity");
+		MonoClass* entityClass = mono_class_from_name(s_Data->CoreAssemblyImage, "Hazel", "Entity");
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
 			uint32_t cols[MONO_TYPEDEF_SIZE];
 			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-			const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-			const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+			const char* nameSpace = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(s_Data->AppAssemblyImage, cols[MONO_TYPEDEF_NAME]);
 			std::string fullName;
 			if (strlen(nameSpace) != 0) {
 				fullName = fmt::format("{}.{}", nameSpace, name);
@@ -205,7 +216,7 @@ namespace Hazel {
 				fullName = name;
 			}
 			// 2.加载Dll中所有C#类
-			MonoClass* monoClass = mono_class_from_name(image, nameSpace, name);
+			MonoClass* monoClass = mono_class_from_name(s_Data->AppAssemblyImage, nameSpace, name);
 			if (monoClass == entityClass) {// entity父类不保存
 				continue;
 			}
@@ -260,9 +271,9 @@ namespace Hazel {
 	//////////////////////////////////////////////////////////////
 	// ScriptClass////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////
-	ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className)
+	ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore)
 	{
-		m_MonoClass = mono_class_from_name(s_Data->CoreAssemblyImage, classNamespace.c_str(), className.c_str());
+		m_MonoClass = mono_class_from_name(isCore ? s_Data->CoreAssemblyImage : s_Data->AppAssemblyImage, classNamespace.c_str(), className.c_str());
 	}
 	MonoObject* ScriptClass::Instantiate()
 	{
