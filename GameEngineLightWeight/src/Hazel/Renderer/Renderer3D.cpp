@@ -544,10 +544,11 @@ namespace Hazel {
 		const float textureIndex = 0.0f; // 白色纹理
 		const float tilingFactor = 1.0f;
 		constexpr glm::vec2 textureCoords[] = { {0.0f, 0.0f}, { 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+		constexpr glm::vec3 colors[] = { {1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} };
 		// quad的左下角为起点
 		for (size_t i = 0; i < quadVertexCount; i++) {
 			s_Data.QuadVertexBufferPtr->Position = transform * glm::vec4(s_Data.Cubevertices[i], 1.0f);
-			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(colors[i % 3], 0.5f);
 			s_Data.QuadVertexBufferPtr->TexCoord = s_Data.CubeTexPos[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
