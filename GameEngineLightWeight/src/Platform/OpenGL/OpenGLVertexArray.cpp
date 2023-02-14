@@ -63,7 +63,7 @@ namespace Hazel {
 		vertexBuffer->Bind();
 
 		// 设置布局
-		uint32_t index = 0;
+		//uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout) {
 			// 定义一个通用顶点属性数据的数组
@@ -75,14 +75,14 @@ namespace Hazel {
 			case ShaderDataType::Float3:
 			case ShaderDataType::Float4:
 			{
-				glEnableVertexAttribArray(index);
-				glVertexAttribPointer(index,
+				glEnableVertexAttribArray(m_VertexBufferIndex);
+				glVertexAttribPointer(m_VertexBufferIndex,
 					element.GetComponentCount(),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
 					element.Normalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
 					(const void*)element.Offset); // 指明布局。define an array of generic vertex attribute data
-				index++;
+				m_VertexBufferIndex++;
 				break;
 			}
 			case ShaderDataType::Int:
@@ -92,13 +92,13 @@ namespace Hazel {
 			case ShaderDataType::Bool:
 			{
 				// glVertexAttribIPointer 不同 glVertexAttribPointer
-				glEnableVertexAttribArray(index);
-				glVertexAttribIPointer(index,
+				glEnableVertexAttribArray(m_VertexBufferIndex);
+				glVertexAttribIPointer(m_VertexBufferIndex,
 					element.GetComponentCount(),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
 					layout.GetStride(),
 					(const void*)element.Offset); // 指明布局。define an array of generic vertex attribute data
-				index++;
+				m_VertexBufferIndex++;
 				break;
 			}
 			case ShaderDataType::Mat3:
@@ -107,15 +107,15 @@ namespace Hazel {
 				uint8_t count = element.GetComponentCount();
 				for (uint8_t i = 0; i < count; i++)
 				{
-					glEnableVertexAttribArray(index);
-					glVertexAttribPointer(index,
+					glEnableVertexAttribArray(m_VertexBufferIndex);
+					glVertexAttribPointer(m_VertexBufferIndex,
 						count,
 						ShaderDataTypeToOpenGLBaseType(element.Type),
 						element.Normalized ? GL_TRUE : GL_FALSE,
 						layout.GetStride(),
 						(const void*)(element.Offset + sizeof(float) * count * i)); // 指明布局。define an array of generic vertex attribute data
-					glVertexAttribDivisor(index, 1);
-					index++;
+					glVertexAttribDivisor(m_VertexBufferIndex, 1);
+					m_VertexBufferIndex++;
 				}
 				break;
 			}

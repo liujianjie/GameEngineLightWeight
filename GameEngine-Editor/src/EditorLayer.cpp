@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Hazel/Core/KeyCodes.h"
 #include <Hazel/Renderer/Renderer2D.h>
+#include <Hazel/Renderer/Renderer3D.h>
 #include <chrono>
 #include <string>
 #include "Hazel/Scene/SceneSerializer.h"
@@ -145,6 +146,10 @@ namespace Hazel {
 			}
 			// DebugµÄ»æ»­²ã
 			OnOverlayRender();
+
+			Renderer3D::BeginScene(m_EditorCamera);
+			Renderer3D::DrawQuad({0, 0}, {1, 1}, {0.2, 1, 0.2, 1});
+			Renderer3D::EndScene();
 
 			// ½â°óÖ¡»º³å
 			m_Framebuffer->Unbind();

@@ -10,6 +10,8 @@ Intermediates/
 *.log
 *.ini
 提交到GitHub.bat
+*.dll
+*.pdb
 
 # Visual Studio files and folder
 .vs/
@@ -19,6 +21,7 @@ Intermediates/
 **.vcxproj.user
 **.csproj
 遇到过的问题.docx
+
 
 # vulkan
 *.exe
