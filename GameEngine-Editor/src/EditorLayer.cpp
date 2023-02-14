@@ -148,7 +148,7 @@ namespace Hazel {
 			OnOverlayRender();
 
 			Renderer3D::BeginScene(m_EditorCamera);
-			Renderer3D::DrawQuad({0, 0}, {1, 1}, {0.2, 1, 0.2, 0.5});
+			Renderer3D::DrawQuad({0, 0}, {3, 3}, {0.2, 1, 0.2, 0.5});
 			Renderer3D::EndScene();
 
 			// Ω‚∞Û÷°ª∫≥Â
